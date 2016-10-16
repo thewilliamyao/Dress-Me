@@ -1,0 +1,20 @@
+/**
+*   The closet class.
+*/
+public class Closet extends ClothesContainer{
+
+    /**
+    *   The Closet constructor
+    */
+    public Closet(){
+        super();
+    }
+
+    /**
+    * Marks the dirty clothes and updates closet.
+    *   @param c the clothes to mark dirty.
+    */
+    public Clothes markDirty(Clothes c){
+
+    }
+}
