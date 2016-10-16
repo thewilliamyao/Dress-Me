@@ -8,21 +8,24 @@ package com.weatherapp;
 import java.util.Date; 
 
 public class Weather {
-    /*
-    private String id;
-    private String title;
-    private boolean done;
-    private Date createdOn = new Date();
-    
-    public Weather(String id, String title, boolean done, Date createdOn) {
-        this.id = id;
-        this.title = title;
-        this.done = done;
-        this.createdOn = createdOn;
-    }
-    */
 
-    public Weather() {
+    private Double windSpeed;             // windspeed in miles per hour
+    private Double humidity;              // relative humidity, [0,1]
+    private String precipType;            // "rain", "snow", "sleet", "no data"
+    private Double precipProbability;     // probability of precip [0,1]
+    private Double precipIntensity;       // inches of liquid per hour
+    private Double temperature;           // temp in degrees Fahrenheit
+    private Double apparentTemperature;   // "feels like" temp in Fahrenheit
+
+    public Weather(Double windSpeed, Double humidity, String precipType,
+        Double precipProbability, Double precipIntensity, Double temperature, Double apparentTemperature) {
+        this.windSpeed = windSpeed;
+        this.humidity = humidity;
+        this.precipType = precipType;
+        this.precipProbability = precipProbability;
+        this.precipIntensity = precipIntensity;
+        this.temperature = temperature;
+        this.apparentTemperature = apparentTemperature;
         // https://api.darksky.net/forecast/[key]/[latitude],[longitude]
         // GET https://api.darksky.net/forecast/0123456789abcdef9876543210fedcba/42.3601,-71.0589
         /*

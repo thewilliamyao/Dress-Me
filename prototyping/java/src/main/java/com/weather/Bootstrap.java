@@ -19,9 +19,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Bootstrap {
-    public static final String IP_ADDRESS = "localhost";
-    public static final int PORT = 8080;
-
     private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
     public static void main(String[] args) throws Exception {
@@ -33,9 +30,8 @@ public class Bootstrap {
             System.exit(1);
         }
 
-        //Specify the IP address and Port at which the server should be run
-        ipAddress(IP_ADDRESS);
-        port(PORT);
+        //Specify the Port at which the server should be run
+        port(getHerokuAssignedPort());
 
         //Specify the sub-directory from which to serve static resources (like html and css)
         staticFileLocation("/public");
@@ -49,6 +45,14 @@ public class Bootstrap {
         }
     }
 
+    private static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 8080; //return default port if heroku-port isn't set (i.e. on localhost)
+    }
+
     /**
      * Check if the database file exists in the current directory. If it does
      * create a DataSource instance for the file and return it.
@@ -59,7 +63,7 @@ public class Bootstrap {
         if ( !(Files.exists(weatherPath) )) {
             try { Files.createFile(weatherPath); }
             catch (java.io.IOException ex) {
-                logger.error("Failed to create toto.db file in current directory. Aborting");
+                logger.error("Failed to create weather.db file in current directory. Aborting");
             }
         }
 

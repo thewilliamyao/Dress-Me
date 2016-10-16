@@ -6,6 +6,8 @@
 package com.weatherapp;
 
 import com.google.gson.Gson;
+// import com.google.gson.JsonObject;
+// import com.google.gson.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sql2o.Connection;
@@ -15,6 +17,10 @@ import com.github.dvdme.ForecastIOLib.*;
 
 import javax.sql.DataSource;
 import java.util.List;
+
+// import com.eclipsesource.json.Json;
+// import com.eclipsesource.json.JsonArray;
+// import com.eclipsesource.json.JsonObject;
 
 public class WeatherService {
 
@@ -35,39 +41,54 @@ public class WeatherService {
         //Create the schema for the database if necessary. This allows this
         //program to mostly self-contained. But this is not always what you want;
         //sometimes you want to create the schema externally via a script.
-        try (Connection conn = db.open()) {
-            String sql = "CREATE TABLE IF NOT EXISTS item (item_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                         "                                 title TEXT, done BOOLEAN, created_on TIMESTAMP)" ;
-            conn.createQuery(sql).executeUpdate();
-        } catch(Sql2oException ex) {
-            logger.error("Failed to create schema at startup", ex);
-            throw new WeatherServiceException("Failed to create schema at startup", ex);
-        }
+        // TODO database stuff
+        // try (Connection conn = db.open()) {
+        //     String sql = "CREATE TABLE IF NOT EXISTS item (item_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        //                  "                                 title TEXT, done BOOLEAN, created_on TIMESTAMP)" ;
+        //     conn.createQuery(sql).executeUpdate();
+        // } catch(Sql2oException ex) {
+        //     logger.error("Failed to create schema at startup", ex);
+        //     throw new WeatherServiceException("Failed to create schema at startup", ex);
+        // }
     }
     
     public Weather test() throws WeatherServiceException {
         // TODO: format output as we want
         ForecastIO fio = new ForecastIO("90d56a872c963f85162f81873b40fbba"); //instantiate the class with the API key.
-        fio.setUnits(ForecastIO.UNITS_SI);             //sets the units as SI - optional
-        fio.setExcludeURL("hourly,minutely");          //excluded the minutely and hourly reports from the reply
-        fio.getForecast("38.7252993", "-9.1500364");   //sets the latitude and longitude - not optional
+        fio.setUnits(ForecastIO.UNITS_US);             //sets the units as SI - optional
+        // fio.setExcludeURL("hourly,minutely");          //excluded the minutely and hourly reports from the reply
+        fio.getForecast("39.330496", "-76.620046");   //sets the latitude and longitude - not optional
                                                        //it will fail to get forecast if it is not set
                                                        //this method should be called after the options were set
-        FIOHourly hourly = new FIOHourly(fio);
-        //In case there is no hourly data available
-        if(hourly.hours()<0)
-            System.out.println("No hourly data.");
-        else
-            System.out.println("\nHourly:\n");
-        //Print hourly data
-        for(int i = 0; i<hourly.hours(); i++){
-            String [] h = hourly.getHour(i).getFieldsArray();
-            System.out.println("Hour #"+(i+1));
-            for(int j=0; j<h.length; j++)
-                System.out.println(h[j]+": "+hourly.getHour(i).getByKey(h[j]));
-            System.out.println("\n");
+        FIOHourly h = new FIOHourly(fio);
+        Double windSpeed = new Double(0);
+        Double humidity = new Double(0);
+        Double precipIntensity = new Double(0);
+        Double precipProbability = new Double(0);
+        String precipType = "";
+        Double temperature = new Double(0);
+        Double apparentTemperature = new Double(0);
+        // only assume they will be out for the next 12 hours at most
+        for (int i = 0; (i < 12) && (i < h.hours()); i++) {
+            FIODataPoint data = h.getHour(i);
+            // set all data to max (for double types)
+            windSpeed = (data.windSpeed() > windSpeed ? data.windSpeed() : windSpeed);
+            humidity = (data.humidity() > humidity ? data.humidity() : humidity);
+            precipIntensity = (data.precipIntensity() > precipIntensity ? data.precipIntensity() : precipIntensity);
+            precipProbability = (data.precipProbability() > precipProbability ? data.precipProbability() : precipProbability);
+            temperature = (data.temperature() > temperature ? data.temperature() : temperature);
+            apparentTemperature = (data.apparentTemperature() > apparentTemperature ? data.apparentTemperature() : apparentTemperature);
+            precipType = ((precipType.equals("") || precipType.equals("no data")) ? data.precipType() : precipType);
         }
-        return new Weather();
+        precipType = precipType.replace("\"", "");
+        // System.out.println("windSpeed: " + windSpeed);
+        // System.out.println("humidity: " + humidity);
+        // System.out.println("precipType: " + precipType);        
+        // System.out.println("precipProbability: " + precipProbability);
+        // System.out.println("precipIntensity: " + precipIntensity);
+        // System.out.println("temperature: " + temperature);
+        // System.out.println("apparentTemperature: " + apparentTemperature);
+        return new Weather(windSpeed, humidity, precipType, precipProbability, precipIntensity, temperature, apparentTemperature);
     }
 
     /**
