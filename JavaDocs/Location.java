@@ -23,14 +23,14 @@ public class Location{
     *   @return user Latitude.
     */
     public double getLatitude(){
-        return this.latitude
+        return this.latitude;
     }
 
     /**
     *   Gets the user Longitude.
     *   @return user Longitude.
     */
-    public double getLatitude(){
+    public double getLongitude(){
         return this.longitude;
     }
 

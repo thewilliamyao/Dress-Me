@@ -1,6 +1,7 @@
 /**
 *   Abstract class for ClothesContainer
 */
+import java.util.*;
 public abstract class ClothesContainer{
 
     /**The list of clothes in the container.*/
@@ -26,7 +27,7 @@ public abstract class ClothesContainer{
     *   Changes the amount based on user.
     *   @param c the clothes to update.
     */
-    public updateClothes(Clothes c){
+    public void updateClothes(Clothes c){
 
     }
 

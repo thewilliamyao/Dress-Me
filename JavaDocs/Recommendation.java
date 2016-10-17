@@ -1,14 +1,16 @@
 /**
 *   The list of recommendations given to user.
 */
-public class Recommendations{
+
+import java.util.*;
+public class Recommendation{
     /**List of recommended clothes*/
     private List<Clothes> clothesList;
 
     /**
     *   Recommendations class constructor
     */
-    public Reommendations(){
+    public Recommendation(){
 
     }
 
@@ -29,7 +31,7 @@ public class Recommendations{
     *   Returns the reommended list of outfit.
     *   @return List the list of clothes to wear.
     */
-    public List getRecommendation(){
-
+    public List<Clothes> getRecommendation(){
+        return null;
     }
 }

@@ -18,7 +18,7 @@ public class Clothes{
     *   @return the type of clothe.
     */
     public ClothesType getType(){
-
+        return null;
     }
 
     /**
@@ -26,7 +26,7 @@ public class Clothes{
     *   @return the number of this type of clothe.
     */
     public int getNumberOwned(){
-
+        return 0;
     }
 
     /**
@@ -34,7 +34,7 @@ public class Clothes{
     *   @return the number dirty.
     */
     public int getNumberDirty(){
-
+        return 0;
     }
 
     /**
@@ -42,7 +42,7 @@ public class Clothes{
     *   @return the max temp.
     */
     public double getTempHight(){
-
+        return 0;
     }
 
     /**
@@ -50,7 +50,7 @@ public class Clothes{
     *   @return the min temp.
     */
     public double getTempLow(){
-
+        return 0;
     }
 
     /**
@@ -65,7 +65,7 @@ public class Clothes{
     *   Sets how many of this type are dirty.
     *   @param x number dirty.
     */
-    public void setNumberOwned(int x){
+    public void setNumberDirty(int x){
 
     }
 

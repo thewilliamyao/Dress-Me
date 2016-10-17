@@ -14,7 +14,7 @@ public class Closet extends ClothesContainer{
     * Marks the dirty clothes and updates closet.
     *   @param c the clothes to mark dirty.
     */
-    public Clothes markDirty(Clothes c){
-
+    public void markDirty(Clothes c){
+        
     }
 }

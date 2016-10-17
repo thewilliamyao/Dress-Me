@@ -7,7 +7,7 @@ public class UserProfile{
     /**User account password.*/
     private String password;
     /**User's list of cloethes in closet*/
-    private Close closet;
+    private Closet closet;
     /**User's list of clothes in laundry*/
     private Laundry laundry;
     /**Generated recommendation for the weather*/
@@ -22,6 +22,7 @@ public class UserProfile{
 
     /**
     *   Lets user change their email.
+    *   @param s the new email
     */
     public void updateEmail(String s){
 
@@ -29,6 +30,7 @@ public class UserProfile{
 
     /**
     *   Lets user change their password.
+    *   @param s the new password
     */
     public void updatePassword(String s){
 
@@ -40,7 +42,7 @@ public class UserProfile{
     *   @return the updated closet.
     */
     public Closet updateCloset(Closet c){
-
+        return null;
     }
 
     /**
@@ -49,7 +51,7 @@ public class UserProfile{
     *   @return the updated laundry.
     */
     public Laundry updateLaundry(Laundry l){
-
+        return null;
     }
 
     /**
@@ -66,7 +68,7 @@ public class UserProfile{
     *   @return the user's location.
     */
     public Location getLocation(){
-
+        return null;
     }
 
     /**
@@ -77,6 +79,6 @@ public class UserProfile{
     *   @return the recommended daily outfit.
     */
     public Recommendation getRecommendation(Closet c, Laundry l, Location loc){
-        
+        return null;
     }
 }
