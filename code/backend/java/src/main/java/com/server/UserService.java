@@ -17,8 +17,9 @@ import java.util.HashMap;
 public class UserService {
 
     private Sql2o db;
-    private int userCounter;
-    private int clothesCounter;
+    private static int userCounter;
+    private static int clothesCounter;
+    private static int locationCounter;
     private String[] allTops = {"tank_top", "t_shirt", "long_sleeve"};
     private String[] allPants = {"shorts", "long_pants"};
     private String[] allOuterwear = {"hoodie", "windbreaker", "sweater"};
@@ -28,6 +29,8 @@ public class UserService {
     private HashMap<String, Double> highTempMap;
     private double TEMP_MAX = 120.0;
     private double TEMP_MIN = -120.0;
+    private final double BALTIMORE_LATITUDE = 39.330496;
+    private final double BALTIMORE_LONGITUDE = -76.620046;
 
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -55,6 +58,20 @@ public class UserService {
                          "                                 number_dirty INTEGER, temp_high DOUBLE, temp_low DOUBLE)" ;
             conn.createQuery(sqlClothes).executeUpdate();
 
+            String sqlLocation = "CREATE TABLE IF NOT EXISTS locations (location_id INTEGER PRIMARY KEY, " +
+                         "                                  user_id INTEGER, latitude DOUBLE, longitude DOUBLE)";
+            conn.createQuery(sqlLocation).executeUpdate();
+
+            String sqlLocationId = "SELECT MAX(location_id) FROM locations";
+            Integer latestLocation = conn.createQuery(sqlLocationId)
+                .addColumnMapping("location_id", "locationId")
+                .addColumnMapping("user_id", "userId")
+                .addColumnMapping("latitute", "latitute")
+                .addColumnMapping("longitude", "longitude")
+                .executeAndFetchFirst(Integer.class);
+            if (latestLocation != null) {
+                this.locationCounter = latestLocation.intValue() + 1;
+            }
 
             String sqlUserId = "SELECT MAX(user_id) FROM users";
 
@@ -141,18 +158,62 @@ public class UserService {
     public User createNewUser(String body) throws UserServiceException {
         User user = new Gson().fromJson(body, User.class);
         int currUserId = this.userCounter++;
+        int currLocationId = this.locationCounter++;
         user.setUserId(currUserId);
+
+        // TODO password encryption/token authentication
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(body).getAsJsonObject();
+        String currEmail = obj.get("email").getAsString();
+        String currPassword = obj.get("password").getAsString();
+        // give default location of baltimore
+        // TODO change this
+        double longitude = BALTIMORE_LONGITUDE;
+        double latitude = BALTIMORE_LATITUDE;
+
         // now populate default clothing
         addClothing("tops", allTops, currUserId);
         addClothing("pants", allPants, currUserId);
         addClothing("outerwear", allOuterwear, currUserId);
         addClothing("footwear", allFootwear, currUserId);
         addClothing("accessories", allAccessories, currUserId);
+
+        // add user to database
+        String sqlUser = "INSERT INTO users (user_id, email, password)" +
+                "                  VALUES (:userId, :email, :password)";
+        String sqlLocation = "INSERT INTO locations (location_id, user_id, latitude, longitude)" +
+                "                  VALUES (:locationId, :userId, :latitude, :longitude)";
+        try (Connection conn = db.open()) {
+            conn.createQuery(sqlUser)
+                .addColumnMapping("user_id", "userId")
+                .addColumnMapping("email", "email")
+                .addColumnMapping("password", "password")
+                .addParameter("userId", currUserId)
+                .addParameter("email", currEmail)
+                .addParameter("password", currPassword)
+                .executeUpdate();
+
+            conn.createQuery(sqlLocation)
+                .addColumnMapping("location_id", "locationId")
+                .addColumnMapping("user_id", "userId")
+                .addColumnMapping("latitude", "latitude")
+                .addColumnMapping("longitude", "longitude")
+                .addParameter("userId", currUserId)
+                .addParameter("locationId", currLocationId)
+                .addParameter("longitude", longitude)
+                .addParameter("latitude", latitude)
+                .executeUpdate();
+            } catch (Sql2oException ex) {
+                logger.error("UserService.createNewUser: Failed to add new user entry", ex);
+                throw new UserServiceException("UserService.createNewUser: Failed to add new user entry", ex);
+            }
+
+    
         return user;
     }
 
     public HashMap<String, Integer> getClothesMap(int id) throws UserServiceException {
-        String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId ";
+        String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
 
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         try (Connection conn = db.open()) {
@@ -172,11 +233,58 @@ public class UserService {
             for (Clothes c : allClothes) {
                 map.put(c.getSpecificType(), c.getNumberOwned());
             }
+
         } catch (Sql2oException ex) {
                 logger.error("UserService.getClothesMap: Failed to get clothes map", ex);
                 throw new UserServiceException("UserService.getClothesMap: Failed to get clothes map", ex);
         }
         return map;
+    }
+
+    public Location getLocation(int userId) throws UserServiceException {
+        String sqlLocation = "SELECT * FROM locations WHERE user_id = :userId";
+        try (Connection conn = db.open()) {
+            Location currLocation = 
+                conn.createQuery(sqlLocation)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("location_id", "locationId")
+                    .addColumnMapping("latitude", "latitude")
+                    .addColumnMapping("longitude", "longitude")
+                    .addParameter("userId", userId)
+                    .executeAndFetchFirst(Location.class);
+            return currLocation;
+        } catch (Sql2oException ex) {
+                logger.error("UserService.getLocation: Failed to get location", ex);
+                throw new UserServiceException("UserService.getLocation: Failed to get location", ex);
+        }
+    }
+
+    public Location updateLocation(String id, String body) throws UserServiceException {
+        // grab params
+        int currId = Integer.parseInt(id);
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(body).getAsJsonObject();
+        double latitude = obj.get("latitude").getAsDouble();
+        double longitude = obj.get("longitude").getAsDouble();
+
+        // update location in table
+        String sqlUpdateLocation = "UPDATE locations SET latitude = :latitude, longitude = :longitude WHERE user_id = :userId";
+        try (Connection conn = db.open()) {
+            conn.createQuery(sqlUpdateLocation)
+                .addColumnMapping("location_id", "locationId")
+                .addColumnMapping("user_id", "userId")
+                .addColumnMapping("latitude", "latitude")
+                .addColumnMapping("longitude", "longitude")
+                .addParameter("userId", currId)
+                .addParameter("latitude", latitude)
+                .addParameter("longitude", longitude)
+                .executeUpdate();
+        } catch (Sql2oException ex) {
+                logger.error("UserService.updateLocation: Failed to update location", ex);
+                throw new UserServiceException("UserService.updateLocation: Failed to update location", ex);
+        }
+
+        return getLocation(currId);
     }
 
     public HashMap<String, Integer> updateClothes(String id, String body) throws UserServiceException {

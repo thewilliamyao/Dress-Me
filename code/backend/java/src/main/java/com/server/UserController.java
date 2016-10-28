@@ -55,6 +55,18 @@ public class UserController {
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
+
+        // update a user's location
+        put(API_CONTEXT + "/user/location/:userId", "application/json", (request, response) -> {
+            try {
+                return userService.updateLocation(request.params(":userId"), request.body());
+            } catch (UserService.UserServiceException ex) {
+                logger.error("Failed to update location");
+                response.status(410);
+            }
+            return Collections.EMPTY_MAP;
+        }, new JsonTransformer());
+
         // get a new recommendation
         get(API_CONTEXT + "/recommendation/:userid/:recommendationNum", "application/json", (request, response) -> {
             try {

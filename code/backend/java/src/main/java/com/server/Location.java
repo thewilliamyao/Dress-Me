@@ -4,7 +4,8 @@ package com.serverapp;
 *   The Location of the user.
 */
 public class Location{
-
+    private int userId;
+    private int locationId;
     /**User latitude.*/
     private double latitude;
     /**User longitude.*/
@@ -15,9 +16,24 @@ public class Location{
     *   @param x User latitude.
     *   @param y User longitude.
     */
-    public Location(double x, double y){
+    public Location(int userId, int locationId, double x, double y){
+        this.userId = userId;
+        this.locationId = locationId;
         this.latitude = x;
         this.longitude = y;
+    }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
+    }
+    public int getUserId() {
+        return this.userId;
+    }
+
+    public int getLocationId() {
+        return this.locationId;
     }
 
     /**
@@ -40,7 +56,7 @@ public class Location{
     *   Sets the user Latitude.
     *   @param x user Latitude.
     */
-    public void setLatitude(int x){
+    public void setLatitude(double x){
         this.latitude = x;
     }
 
@@ -48,7 +64,7 @@ public class Location{
     *   Sets the user Longitude.
     *   @param y user Longitude.
     */
-    public void setLongitude(int y){
+    public void setLongitude(double y){
         this.longitude = y;
     }
 }
