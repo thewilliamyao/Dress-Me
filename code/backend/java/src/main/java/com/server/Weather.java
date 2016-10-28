@@ -44,10 +44,10 @@ public class Weather {
     }
 
     // for now, return a weather object with the hardcoded location of baltimore.
-    public Weather() {
+    public Weather(double latitude, double longitude) {
         ForecastIO fio = new ForecastIO("90d56a872c963f85162f81873b40fbba"); //instantiate the class with the API key.
         fio.setUnits(ForecastIO.UNITS_US);             //sets the units as SI - optional
-        fio.getForecast("39.330496", "-76.620046"); // location of baltimore
+        fio.getForecast(String.valueOf(latitude), String.valueOf(longitude)); // location of baltimore
 
         FIOHourly h = new FIOHourly(fio);
         this.windSpeed = new Double(0);

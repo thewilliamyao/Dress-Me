@@ -17,20 +17,20 @@ import java.util.HashMap;
 public class UserService {
 
     private Sql2o db;
-    private static int userCounter;
-    private static int clothesCounter;
-    private static int locationCounter;
-    private String[] allTops = {"tank_top", "t_shirt", "long_sleeve"};
-    private String[] allPants = {"shorts", "long_pants"};
-    private String[] allOuterwear = {"hoodie", "windbreaker", "sweater"};
-    private String[] allFootwear = {"shoes", "boots", "sandals"};
-    private String[] allAccessories = {"umbrella", "scarf"};
-    private HashMap<String, Double> lowTempMap;
-    private HashMap<String, Double> highTempMap;
-    private double TEMP_MAX = 120.0;
-    private double TEMP_MIN = -120.0;
-    private final double BALTIMORE_LATITUDE = 39.330496;
-    private final double BALTIMORE_LONGITUDE = -76.620046;
+    private static int userCounter; // counter for free value of the id
+    private static int clothesCounter; // counter for free value of the id
+    private static int locationCounter; // counter for free value of the id
+    private String[] allTops = {"tank_top", "t_shirt", "long_sleeve"}; // types of clothing
+    private String[] allPants = {"shorts", "long_pants"}; // types of clothing
+    private String[] allOuterwear = {"hoodie", "windbreaker", "sweater", "winter_coat"}; // types of clothing
+    private String[] allFootwear = {"shoes", "boots", "sandals"}; // types of clothing
+    private String[] allAccessories = {"umbrella", "scarf"}; // types of clothing
+    private HashMap<String, Double> lowTempMap; // map to hold defaults for high and low temps
+    private HashMap<String, Double> highTempMap; // map to hold defaults for high and low temps
+    private double TEMP_MAX = 120.0; // limit for temp values
+    private double TEMP_MIN = -120.0; // limit for temp values
+    private final double BALTIMORE_LATITUDE = 39.330496; // used for default location
+    private final double BALTIMORE_LONGITUDE = -76.620046; // used for default location
 
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -100,22 +100,42 @@ public class UserService {
             }
 
             // create default mapping of temperatures
-            // TODO: turn this into a static DB
+            // TODO: turn this into a static DB maybe?
             lowTempMap = new HashMap<String, Double>();
             highTempMap = new HashMap<String, Double>();
-            lowTempMap.put("tank_top", 80.0);
-            highTempMap.put("tank_top", TEMP_MAX);
-            lowTempMap.put("t_shirt", TEMP_MIN);
-            highTempMap.put("t_shirt", TEMP_MAX);
-            lowTempMap.put("long_sleeve", TEMP_MIN);
-            highTempMap.put("long_sleeve", 80.0);
-            lowTempMap.put("shorts", 60.0);
-            highTempMap.put("shorts", 120.0);
-            lowTempMap.put("long_pants", TEMP_MIN);
-            highTempMap.put("long_pants", 80.0);
-            lowTempMap.put("hoodie", TEMP_MIN);
-            highTempMap.put("hoodie", 120.0);
-
+            // shirts
+            lowTempMap.put("tank_top", new Double(80));
+            highTempMap.put("tank_top", new Double(TEMP_MAX));
+            lowTempMap.put("t_shirt", new Double(TEMP_MIN));
+            highTempMap.put("t_shirt", new Double(TEMP_MAX));
+            lowTempMap.put("long_sleeve", new Double(TEMP_MIN));
+            highTempMap.put("long_sleeve", new Double(80));
+            // pants
+            lowTempMap.put("shorts", new Double(60));
+            highTempMap.put("shorts", new Double(120));
+            lowTempMap.put("long_pants", new Double(TEMP_MIN));
+            highTempMap.put("long_pants", new Double(80));
+            // outerwear
+            lowTempMap.put("hoodie", new Double(50));
+            highTempMap.put("hoodie", new Double(80));
+            lowTempMap.put("windbreaker", new Double(50));
+            highTempMap.put("windbreaker", new Double(TEMP_MAX));
+            lowTempMap.put("sweater", new Double(50));
+            highTempMap.put("sweater", new Double(80));
+            lowTempMap.put("winter_coat", new Double(TEMP_MIN));
+            highTempMap.put("winter_coat", new Double(40));
+            // accessories
+            lowTempMap.put("umbrella", new Double(TEMP_MIN));
+            highTempMap.put("umbrella", new Double(TEMP_MAX));
+            lowTempMap.put("scarf", new Double(TEMP_MIN));
+            highTempMap.put("scarf", new Double(50));
+            // shoes
+            lowTempMap.put("boots", new Double(TEMP_MIN));
+            highTempMap.put("boots", new Double(40));
+            lowTempMap.put("sandals", new Double(80));
+            highTempMap.put("sandals", new Double(TEMP_MAX));
+            lowTempMap.put("shoes", new Double(TEMP_MIN));
+            highTempMap.put("shoes", new Double(TEMP_MAX));
         } catch(Sql2oException ex) {
             logger.error("Failed to create schema at startup", ex);
             throw new UserServiceException("Failed to create schema at startup", ex);
@@ -145,8 +165,8 @@ public class UserService {
                         .addParameter("specificType", s)
                         .addParameter("numberOwned", 0)
                         .addParameter("numberDirty", 0)
-                        .addParameter("tempHigh", 0.0)
-                        .addParameter("tempLow", 0.0)
+                        .addParameter("tempHigh", highTempMap.containsKey(s) ? highTempMap.get(s) : TEMP_MAX)
+                        .addParameter("tempLow", lowTempMap.containsKey(s) ? lowTempMap.get(s) : TEMP_MIN)
                     .executeUpdate();
             } catch (Sql2oException ex) {
                 logger.error("UserService.addClothing: Failed to add new clothing entry", ex);
@@ -212,6 +232,28 @@ public class UserService {
         return user;
     }
 
+    public List<Clothes> getClothesList(int id) throws UserServiceException {
+        String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
+        try (Connection conn = db.open()) {
+            List<Clothes> allClothes = 
+                conn.createQuery(sqlClothes)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("clothes_id", "clothesId")
+                    .addColumnMapping("type", "type")
+                    .addColumnMapping("specific_type", "specificType")
+                    .addColumnMapping("number_owned", "numberOwned")
+                    .addColumnMapping("number_dirty", "numberDirty")
+                    .addColumnMapping("temp_high", "tempHigh")
+                    .addColumnMapping("temp_low", "tempLow")
+                    .addParameter("userId", id)
+                    .executeAndFetch(Clothes.class);
+            return allClothes;
+        } catch (Sql2oException ex) {
+            logger.error("UserService.getClothesMap: Failed to get clothes map", ex);
+            throw new UserServiceException("UserService.getClothesMap: Failed to get clothes map", ex);
+        }
+    }
+
     public HashMap<String, Integer> getClothesMap(int id) throws UserServiceException {
         String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
 
@@ -235,8 +277,8 @@ public class UserService {
             }
 
         } catch (Sql2oException ex) {
-                logger.error("UserService.getClothesMap: Failed to get clothes map", ex);
-                throw new UserServiceException("UserService.getClothesMap: Failed to get clothes map", ex);
+            logger.error("UserService.getClothesMap: Failed to get clothes map", ex);
+            throw new UserServiceException("UserService.getClothesMap: Failed to get clothes map", ex);
         }
         return map;
     }
@@ -255,7 +297,7 @@ public class UserService {
             return currLocation;
         } catch (Sql2oException ex) {
                 logger.error("UserService.getLocation: Failed to get location", ex);
-                throw new UserServiceException("UserService.getLocation: Failed to get location", ex);
+            throw new UserServiceException("UserService.getLocation: Failed to get location", ex);
         }
     }
 
@@ -280,8 +322,8 @@ public class UserService {
                 .addParameter("longitude", longitude)
                 .executeUpdate();
         } catch (Sql2oException ex) {
-                logger.error("UserService.updateLocation: Failed to update location", ex);
-                throw new UserServiceException("UserService.updateLocation: Failed to update location", ex);
+            logger.error("UserService.updateLocation: Failed to update location", ex);
+            throw new UserServiceException("UserService.updateLocation: Failed to update location", ex);
         }
 
         return getLocation(currId);
@@ -312,52 +354,265 @@ public class UserService {
                 .addParameter("userId", currId)
                 .executeUpdate();
         } catch (Sql2oException ex) {
-                logger.error("UserService.updateClothes: Failed to update clothes", ex);
-                throw new UserServiceException("UserService.updateClothes: Failed to update clothes", ex);
+            logger.error("UserService.updateClothes: Failed to update clothes", ex);
+            throw new UserServiceException("UserService.updateClothes: Failed to update clothes", ex);
         }
 
         return getClothesMap(currId);
     }
 
     public Recommendation getRecommendation(int currId, int recommendationNum) throws UserServiceException {
-        // generate three recommendations.
-        // TODO Maybe store in database, so we don't have to constantly ping weather and re-calculate.
-        // Weather currWeather = new Weather();
-        // // set pants, purely off of weather
-        // if (currWeather.getMaxTemp() > highTempMap()) {
-        // }
-/*
-// determine type of pants
-        -determine based on just temperature
-    // determine types of footwear
-        -precipType
-            -if its raining or snowing
-                boots
-        -temperature 
-            -if its cold, not sandals
-    // determine accessories
-        -if raining and not super windy
-            -umbrella
-        -if really cold or really windy
-            -scarf
-    // determine shirt
-        -if its really hot (over 85)
-            -tank top
-        -if its cold
-            -prefer a long sleeve
-    // determine outerwear
-        -if its temperature really cold or snowing
-            -winter coat
-        -if its super windy
-            -windbreaker
-        -if its raining
-            -rain jacket
-        -its its not raining and somewhat cold
-            -hoodie
-            -sweater
+        // get the location lat and long
+        Location currLocation = getLocation(currId);
 
-*/
-        return new Recommendation("t_shirt", "long_pants", "shoes", "none", "hoodie");
+        // get the weather based on the location
+        Weather currWeather = new Weather(currLocation.getLatitude(), currLocation.getLongitude());
+
+        // recreate clothes map for this user
+        List<Clothes> currClothes = getClothesList(currId);
+        HashMap<String, Double> highMap = new HashMap<String, Double>();
+        HashMap<String, Double> lowMap = new HashMap<String, Double>();
+        HashMap<String, Integer> ownedMap = new HashMap<String, Integer>();
+        HashMap<String, Integer> dirtyMap = new HashMap<String, Integer>();
+        for (Clothes c : currClothes) {
+            ownedMap.put(c.getSpecificType(), new Integer(c.getNumberOwned()));
+            dirtyMap.put(c.getSpecificType(), new Integer(c.getNumberDirty()));
+            highMap.put(c.getSpecificType(), new Double(c.getTempHigh()));
+            lowMap.put(c.getSpecificType(), new Double(c.getTempLow()));
+        }
+
+        String pantsRecommendation = "";
+        String backupPants = "";
+        String shirtRecommendation = "";
+        String backupShirt = "";
+        String outwearRecommendation = "";
+        String backupOuterwear = "";
+        String footwearRecommendation = "";
+        String backupFootwear = "";
+        String accessoryRecommendation = "";
+
+        // if too hot for long pants, recommend shorts
+        if (currWeather.getMaxApparentTemp() > highMap.get("long_pants")) {
+            // recommend shorts if possible
+            if (dirtyMap.get("shorts") - ownedMap.get("shorts") > 0) {
+                pantsRecommendation = "shorts";
+                if ((dirtyMap.get("long_pants") - ownedMap.get("long_pants") > 0)) {
+                    // we can recommend long pants as a backup
+                    backupPants = "long_pants";
+                }
+            } else if ((dirtyMap.get("long_pants") - ownedMap.get("long_pants") > 0)) {
+                // if not recommend long pants if he owns it
+                pantsRecommendation = "long_pants";
+            } else {
+                // he has no pants...
+                pantsRecommendation = "NONE";
+            }
+            // recommend 
+        } else {
+            // we prefer long pants
+            if (dirtyMap.get("long_pants") - ownedMap.get("long_pants") > 0) {
+                pantsRecommendation = "long_pants";
+            } else if ((dirtyMap.get("shorts") - ownedMap.get("shorts") > 0)) {
+                // if not recommend long pants if he owns it
+                pantsRecommendation = "shorts";
+            } else {
+                // he has no pants...
+                pantsRecommendation = "NONE";
+            }
+        }
+
+        // set shirt.
+        //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
+        if (currWeather.getMaxApparentTemp() > lowMap.get("tank_top")) {
+            // want to prefer tank
+            if (dirtyMap.get("tank_top") - ownedMap.get("tank_top") > 0) {
+                shirtRecommendation = "tank_top";
+                if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                    backupShirt = "t_shirt";
+                } else if (dirtyMap.get("tank_top") - ownedMap.get("tank_top") > 0) {
+                    backupShirt = "long_sleeve";
+                }
+            } else if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                // if owned none, then shirt
+                shirtRecommendation = "t_shirt";
+                if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+                    backupShirt = "long_sleeve";
+                }
+            } else if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+                // if owned none, then long sleeve
+                shirtRecommendation = "long_sleeve";
+                if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                    backupShirt = "t_shirt";
+                }
+            }
+        } else if (currWeather.getMaxApparentTemp() < highMap.get("long_sleeve")) { // TODO: double check this
+            // it is cold enough for a long sleeve
+            if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+                shirtRecommendation = "long_sleeve";
+                if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                    backupShirt = "t_shirt";
+                }
+            } else if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                shirtRecommendation = "t_shirt";
+            } else if (dirtyMap.get("tank_top") - ownedMap.get("tank_top") > 0) {
+                shirtRecommendation = "tank_top";
+            }
+        } else {
+            // recommend a t-shirt
+            if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                shirtRecommendation = "t_shirt";
+                if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+                    backupShirt = "long_sleeve";
+                }
+            } else if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+                shirtRecommendation = "long_sleeve";
+            } else if (dirtyMap.get("tank_top") - ownedMap.get("tank_top") > 0) {
+                shirtRecommendation = "tank_top";
+            }
+        }
+
+        // set footwear.
+            //check precip. if raining or snowing, recommend boots. if not, but still cold, recommend shoes. if hot and clear, recommend sandals.
+        if (currWeather.getPrecipType().equals("rain") || currWeather.getPrecipType().equals("snow") || (currWeather.getMaxApparentTemp() < lowMap.get("boots"))) {
+            // wear boots
+            if (ownedMap.get("boots") > 0) {
+                footwearRecommendation = "boots";
+                if (ownedMap.get("shoes") > 0) {
+                    backupFootwear = "shoes";
+                }
+            } else if (ownedMap.get("shoes") > 0) {
+                footwearRecommendation = "shoes";
+            } else if (ownedMap.get("sandals") > 0) {
+                footwearRecommendation = "sandals";
+            }
+        } else if (currWeather.getMaxApparentTemp() > lowMap.get("sandals")) {
+            // really hot, wear sandals
+            if (ownedMap.get("sandals") > 0) {
+                footwearRecommendation = "sandals";
+                if (ownedMap.get("shoes") > 0) {
+                    backupFootwear = "shoes";
+                }
+            } else if (ownedMap.get("shoes") > 0) {
+                footwearRecommendation = "shoes";
+            } else if (ownedMap.get("boots") > 0) {
+                footwearRecommendation = "boots";
+            }
+        } else {
+            // recommend shoes
+            if (ownedMap.get("shoes") > 0) {
+                footwearRecommendation = "shoes";
+            } else if (ownedMap.get("boots") > 0) {
+                footwearRecommendation = "boots";
+            } else if (ownedMap.get("sandals") > 0) {
+                footwearRecommendation = "sandals";
+            }
+        }
+
+        // set outerwear.
+            // check precip. if very cold, recommend winter jacket. else if rainig, recommend rain jacket. if clear but somewhat cold, recommend hoodie.
+        if (currWeather.getMaxApparentTemp() < highMap.get("winter_coat") || currWeather.getPrecipType().equals("snow")) {
+            // recommend winter coat
+            if (dirtyMap.get("winter_coat") - ownedMap.get("winter_coat") > 0) {
+                outwearRecommendation = "winter_coat";
+            } else if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+                outwearRecommendation = "hoodie";
+            } else if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+                outwearRecommendation = "sweater";
+            } else if (dirtyMap.get("windbreaker") - ownedMap.get("windbreaker") > 0) {
+                outwearRecommendation = "windbreaker";
+            } else if (dirtyMap.get("rain_jacket") - ownedMap.get("rain_jacket") > 0) {
+                outwearRecommendation = "rain_jacket";
+            }
+        } else if (currWeather.getWindSpeed() > 20) {
+            // if windy, recommend windbreaker
+            if (dirtyMap.get("windbreaker") - ownedMap.get("windbreaker") > 0) {
+                outwearRecommendation = "windbreaker";
+            } else if (dirtyMap.get("rain_jacket") - ownedMap.get("rain_jacket") > 0) {
+                outwearRecommendation = "rain_jacket";
+            } else if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+                outwearRecommendation = "hoodie";
+            } else if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+                outwearRecommendation = "sweater";
+            }
+        } else if (currWeather.getPrecipType().equals("rain")) {
+            // if rainy, recommend rain jacket
+            if (dirtyMap.get("rain_jacket") - ownedMap.get("rain_jacket") > 0) {
+                outwearRecommendation = "rain_jacket";
+            } else if (dirtyMap.get("windbreaker") - ownedMap.get("windbreaker") > 0) {
+                outwearRecommendation = "windbreaker";
+            } else if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+                outwearRecommendation = "hoodie";
+            } else if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+                outwearRecommendation = "sweater";
+            }
+        } else if (currWeather.getMaxApparentTemp() < highMap.get("hoodie")) {
+            // recommend hoodie/sweater
+            if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+                outwearRecommendation = "hoodie";
+                if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+                    backupOuterwear = "sweater";
+                }
+            } else if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+                outwearRecommendation = "sweater";
+                if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+                    backupOuterwear = "hoodie";
+                }
+            }
+        } else {
+            // actually recommend nothing, its nice outside.
+        }
+
+        // set accessory
+            // if windy or cold, scarf. if raining and not windy, recommend umbrella.
+            // prefer umbrella to scarf.
+        if (currWeather.getPrecipType().equals("rain") && currWeather.getWindSpeed() < 30) {
+            if (ownedMap.get("umbrella") > 0) {
+                accessoryRecommendation = "umbrella";
+            }
+        } else if (currWeather.getMaxApparentTemp() < highMap.get("scarf") || currWeather.getWindSpeed() > 20) {
+            if (ownedMap.get("scarf") > 0) {
+                accessoryRecommendation = "scarf";
+            }
+        }
+
+        // generate three recommendations.
+        if (recommendationNum == 1) {
+            return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+        } else if (recommendationNum == 2) {
+            // swap out shirt if possible
+            if (!backupShirt.equals("")) {
+                return new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+            } else if (!backupPants.equals("")) {
+                return new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+            } else if (!backupOuterwear.equals("")) {
+                return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear);
+            } else if (!backupFootwear.equals("")) {
+                return new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, outwearRecommendation);
+            } else {
+                // there is no other recommendation, return default
+                return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+            }
+        } else if (recommendationNum == 3) {
+            if (!backupShirt.equals("") && !backupPants.equals("")) {
+                return new Recommendation(backupShirt, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+            } else if (!backupShirt.equals("") && !backupOuterwear.equals("")) {
+                return new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear);
+            } else if (!backupOuterwear.equals("") && !backupPants.equals("")) {
+                return new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, backupOuterwear);
+            } else if (!backupFootwear.equals("") && !backupOuterwear.equals("")) {
+                return new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear);
+            } else if (!backupFootwear.equals("") && !backupShirt.equals("")) {
+                return new Recommendation(backupShirt, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear);
+            } else if (!backupFootwear.equals("") && !backupPants.equals("")) {
+                return new Recommendation(shirtRecommendation, backupPants, backupFootwear, accessoryRecommendation, backupOuterwear);
+            } else {
+                // there is no other recommendation, return default
+                return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+            }
+        } else {
+            // BAD
+            return new Recommendation("ERROR", "ERROR", "ERROR", "ERROR", "ERROR");
+        }
     }
 
     //-----------------------------------------------------------------------------//
