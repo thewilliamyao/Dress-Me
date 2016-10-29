@@ -394,13 +394,13 @@ public class UserService {
         // if too hot for long pants, recommend shorts
         if (currWeather.getMaxApparentTemp() > highMap.get("long_pants")) {
             // recommend shorts if possible
-            if (dirtyMap.get("shorts") - ownedMap.get("shorts") > 0) {
+            if (ownedMap.get("shorts") - dirtyMap.get("shorts") > 0) {
                 pantsRecommendation = "shorts";
-                if ((dirtyMap.get("long_pants") - ownedMap.get("long_pants") > 0)) {
+                if ((ownedMap.get("long_pants") - dirtyMap.get("long_pants") > 0)) {
                     // we can recommend long pants as a backup
                     backupPants = "long_pants";
                 }
-            } else if ((dirtyMap.get("long_pants") - ownedMap.get("long_pants") > 0)) {
+            } else if ((ownedMap.get("long_pants") - dirtyMap.get("long_pants") > 0)) {
                 // if not recommend long pants if he owns it
                 pantsRecommendation = "long_pants";
             } else {
@@ -410,9 +410,9 @@ public class UserService {
             // recommend 
         } else {
             // we prefer long pants
-            if (dirtyMap.get("long_pants") - ownedMap.get("long_pants") > 0) {
+            if (ownedMap.get("long_pants") - dirtyMap.get("long_pants") > 0) {
                 pantsRecommendation = "long_pants";
-            } else if ((dirtyMap.get("shorts") - ownedMap.get("shorts") > 0)) {
+            } else if ((ownedMap.get("shorts") - dirtyMap.get("shorts") > 0)) {
                 // if not recommend long pants if he owns it
                 pantsRecommendation = "shorts";
             } else {
@@ -425,48 +425,48 @@ public class UserService {
         //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
         if (currWeather.getMaxApparentTemp() > lowMap.get("tank_top")) {
             // want to prefer tank
-            if (dirtyMap.get("tank_top") - ownedMap.get("tank_top") > 0) {
+            if (ownedMap.get("tank_top") - dirtyMap.get("tank_top") > 0) {
                 shirtRecommendation = "tank_top";
-                if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                if (ownedMap.get("t_shirt") - dirtyMap.get("t_shirt") > 0) {
                     backupShirt = "t_shirt";
-                } else if (dirtyMap.get("tank_top") - ownedMap.get("tank_top") > 0) {
+                } else if (ownedMap.get("tank_top") - dirtyMap.get("tank_top") > 0) {
                     backupShirt = "long_sleeve";
                 }
-            } else if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+            } else if (ownedMap.get("t_shirt") - dirtyMap.get("t_shirt") > 0) {
                 // if owned none, then shirt
                 shirtRecommendation = "t_shirt";
-                if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+                if (ownedMap.get("long_sleeve") - dirtyMap.get("long_sleeve") > 0) {
                     backupShirt = "long_sleeve";
                 }
-            } else if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+            } else if (ownedMap.get("long_sleeve") - dirtyMap.get("long_sleeve") > 0) {
                 // if owned none, then long sleeve
                 shirtRecommendation = "long_sleeve";
-                if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                if (ownedMap.get("t_shirt") - dirtyMap.get("t_shirt") > 0) {
                     backupShirt = "t_shirt";
                 }
             }
         } else if (currWeather.getMaxApparentTemp() < highMap.get("long_sleeve")) { // TODO: double check this
             // it is cold enough for a long sleeve
-            if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+            if (ownedMap.get("long_sleeve") - dirtyMap.get("long_sleeve") > 0) {
                 shirtRecommendation = "long_sleeve";
-                if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+                if (ownedMap.get("t_shirt") - dirtyMap.get("t_shirt") > 0) {
                     backupShirt = "t_shirt";
                 }
-            } else if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+            } else if (ownedMap.get("t_shirt") - dirtyMap.get("t_shirt") > 0) {
                 shirtRecommendation = "t_shirt";
-            } else if (dirtyMap.get("tank_top") - ownedMap.get("tank_top") > 0) {
+            } else if (ownedMap.get("tank_top") - dirtyMap.get("tank_top") > 0) {
                 shirtRecommendation = "tank_top";
             }
         } else {
             // recommend a t-shirt
-            if (dirtyMap.get("t_shirt") - ownedMap.get("t_shirt") > 0) {
+            if (ownedMap.get("t_shirt") - dirtyMap.get("t_shirt") > 0) {
                 shirtRecommendation = "t_shirt";
-                if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+                if (ownedMap.get("long_sleeve") - dirtyMap.get("long_sleeve") > 0) {
                     backupShirt = "long_sleeve";
                 }
-            } else if (dirtyMap.get("long_sleeve") - ownedMap.get("long_sleeve") > 0) {
+            } else if (ownedMap.get("long_sleeve") - dirtyMap.get("long_sleeve") > 0) {
                 shirtRecommendation = "long_sleeve";
-            } else if (dirtyMap.get("tank_top") - ownedMap.get("tank_top") > 0) {
+            } else if (ownedMap.get("tank_top") - dirtyMap.get("tank_top") > 0) {
                 shirtRecommendation = "tank_top";
             }
         }
@@ -512,54 +512,55 @@ public class UserService {
             // check precip. if very cold, recommend winter jacket. else if rainig, recommend rain jacket. if clear but somewhat cold, recommend hoodie.
         if (currWeather.getMaxApparentTemp() < highMap.get("winter_coat") || currWeather.getPrecipType().equals("snow")) {
             // recommend winter coat
-            if (dirtyMap.get("winter_coat") - ownedMap.get("winter_coat") > 0) {
+            if (ownedMap.get("winter_coat") - dirtyMap.get("winter_coat") > 0) {
                 outwearRecommendation = "winter_coat";
-            } else if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+            } else if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
                 outwearRecommendation = "hoodie";
-            } else if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+            } else if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
                 outwearRecommendation = "sweater";
-            } else if (dirtyMap.get("windbreaker") - ownedMap.get("windbreaker") > 0) {
+            } else if (ownedMap.get("windbreaker") - dirtyMap.get("windbreaker") > 0) {
                 outwearRecommendation = "windbreaker";
-            } else if (dirtyMap.get("rain_jacket") - ownedMap.get("rain_jacket") > 0) {
+            } else if (ownedMap.get("rain_jacket") - dirtyMap.get("rain_jacket") > 0) {
                 outwearRecommendation = "rain_jacket";
             }
         } else if (currWeather.getWindSpeed() > 20) {
             // if windy, recommend windbreaker
-            if (dirtyMap.get("windbreaker") - ownedMap.get("windbreaker") > 0) {
+            if (ownedMap.get("windbreaker") - dirtyMap.get("windbreaker") > 0) {
                 outwearRecommendation = "windbreaker";
-            } else if (dirtyMap.get("rain_jacket") - ownedMap.get("rain_jacket") > 0) {
+            } else if (ownedMap.get("rain_jacket") - dirtyMap.get("rain_jacket") > 0) {
                 outwearRecommendation = "rain_jacket";
-            } else if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+            } else if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
                 outwearRecommendation = "hoodie";
-            } else if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+            } else if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
                 outwearRecommendation = "sweater";
             }
         } else if (currWeather.getPrecipType().equals("rain")) {
             // if rainy, recommend rain jacket
-            if (dirtyMap.get("rain_jacket") - ownedMap.get("rain_jacket") > 0) {
+            if (ownedMap.get("rain_jacket") - dirtyMap.get("rain_jacket") > 0) {
                 outwearRecommendation = "rain_jacket";
-            } else if (dirtyMap.get("windbreaker") - ownedMap.get("windbreaker") > 0) {
+            } else if (ownedMap.get("windbreaker") - dirtyMap.get("windbreaker") > 0) {
                 outwearRecommendation = "windbreaker";
-            } else if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+            } else if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
                 outwearRecommendation = "hoodie";
-            } else if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+            } else if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
                 outwearRecommendation = "sweater";
             }
         } else if (currWeather.getMaxApparentTemp() < highMap.get("hoodie")) {
             // recommend hoodie/sweater
-            if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+            if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
                 outwearRecommendation = "hoodie";
-                if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+                if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
                     backupOuterwear = "sweater";
                 }
-            } else if (dirtyMap.get("sweater") - ownedMap.get("sweater") > 0) {
+            } else if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
                 outwearRecommendation = "sweater";
-                if (dirtyMap.get("hoodie") - ownedMap.get("hoodie") > 0) {
+                if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
                     backupOuterwear = "hoodie";
                 }
             }
         } else {
             // actually recommend nothing, its nice outside.
+            outwearRecommendation = "";
         }
 
         // set accessory

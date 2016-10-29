@@ -35,7 +35,7 @@ public class UserController {
         }, new JsonTransformer());
 
         // get a user's closet
-        get(API_CONTEXT + "/user/closet/:userid", "application/json", (request, response) -> {
+        get(API_CONTEXT + "/user/closet/:userId", "application/json", (request, response) -> {
             try {
                 return userService.getClothesMap(Integer.parseInt(request.params(":userId")));
             } catch (UserService.UserServiceException ex) {
@@ -68,7 +68,7 @@ public class UserController {
         }, new JsonTransformer());
 
         // get a new recommendation
-        get(API_CONTEXT + "/recommendation/:userid/:recommendationNum", "application/json", (request, response) -> {
+        get(API_CONTEXT + "/recommendation/:userId/:recommendationNum", "application/json", (request, response) -> {
             try {
                 return userService.getRecommendation(Integer.parseInt(request.params(":userId")), Integer.parseInt(request.params(":recommendationNum")));
             } catch (UserService.UserServiceException ex) {
