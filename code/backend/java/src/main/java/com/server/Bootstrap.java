@@ -13,13 +13,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Bootstrap {
+    public static final String TEST_IP_ADDRESS = "localhost";
+    public static final int TEST_PORT = 8080;
     private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
     public static void main(String[] args) throws Exception {
         //Check if the database file exists in the current directory. Abort if not
         DataSource dataSource = configureDataSource();
         if (dataSource == null) {
-            System.out.printf("Could not find weather.db in the current directory (%s). Terminating\n",
+            System.out.printf("Could not find server.db in the current directory (%s). Terminating\n",
                     Paths.get(".").toAbsolutePath().normalize());
             System.exit(1);
         }
@@ -30,13 +32,6 @@ public class Bootstrap {
         //Specify the sub-directory from which to serve static resources (like html and css)
         staticFileLocation("/public");
 
-        //Create the model for weather
-        // try {
-        //     WeatherService model = new WeatherService(dataSource);
-        //     new WeatherController(model);
-        // } catch (WeatherService.WeatherServiceException ex) {
-        //     logger.error("Failed to create a WeatherService instance. Aborting");
-        // }
         try {
             UserService model = new UserService(dataSource);
             new UserController(model);

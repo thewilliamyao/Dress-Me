@@ -17,9 +17,9 @@ import java.util.HashMap;
 public class UserService {
 
     private Sql2o db;
-    private static int userCounter; // counter for free value of the id
-    private static int clothesCounter; // counter for free value of the id
-    private static int locationCounter; // counter for free value of the id
+    private int userCounter = 0; // counter for free value of the id
+    private int clothesCounter = 0; // counter for free value of the id
+    private int locationCounter = 0; // counter for free value of the id
     private String[] allTops = {"tank_top", "t_shirt", "long_sleeve"}; // types of clothing
     private String[] allPants = {"shorts", "long_pants"}; // types of clothing
     private String[] allOuterwear = {"hoodie", "windbreaker", "sweater", "winter_coat"}; // types of clothing

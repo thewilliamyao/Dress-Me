@@ -37,6 +37,7 @@ public class UserController {
         // get a user's closet
         get(API_CONTEXT + "/user/closet/:userId", "application/json", (request, response) -> {
             try {
+                response.status(200);
                 return userService.getClothesMap(Integer.parseInt(request.params(":userId")));
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to create new user");
@@ -48,6 +49,7 @@ public class UserController {
         // update a user's clothes counts
         put(API_CONTEXT + "/user/closet/:userId", "application/json", (request, response) -> {
             try {
+                response.status(200);
                 return userService.updateClothes(request.params(":userId"), request.body());
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to update closet");
@@ -59,6 +61,7 @@ public class UserController {
         // update a user's location
         put(API_CONTEXT + "/user/location/:userId", "application/json", (request, response) -> {
             try {
+                response.status(200);
                 return userService.updateLocation(request.params(":userId"), request.body());
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to update location");
@@ -70,6 +73,7 @@ public class UserController {
         // get a new recommendation
         get(API_CONTEXT + "/recommendation/:userId/:recommendationNum", "application/json", (request, response) -> {
             try {
+                response.status(200);
                 return userService.getRecommendation(Integer.parseInt(request.params(":userId")), Integer.parseInt(request.params(":recommendationNum")));
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to create new user");

@@ -9,15 +9,21 @@ public class User {
     private String email;
     /**User account password.*/
     private String password;
-    /**User's list of cloethes in closet*/
-    private Closet closet;
-    /**User's list of clothes in laundry*/
-    private Laundry laundry;
-    /**Generated recommendation for the weather*/
-    private Recommendation recommendation;
-    /**User's current location*/
-    private Location currrentLocation;
 
+    /**User's list of cloethes in closet*/
+    // private Closet closet;
+    /**User's list of clothes in laundry*/
+    // private Laundry laundry;
+    /**Generated recommendation for the weather*/
+    // private Recommendation recommendation;
+    /**User's current location*/
+    // private Location currrentLocation;
+
+    public User(int userId, String email, String password) {
+        this.userId = userId;
+        this.email = email;
+        this.password = password;
+    }
     /**
     *   Constructor for User
     */
