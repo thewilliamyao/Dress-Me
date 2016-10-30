@@ -178,6 +178,17 @@ public class UserService {
 
     public User createNewUser(String body) throws UserServiceException {
         User user = new Gson().fromJson(body, User.class);
+	
+	// If no username was entered
+	if(user.getEmail().equals("")) {
+	    logger.error("UserService.createNewUser: No username specified.");
+	    throw new NewUserException("UserService.createNewUser: No username specified.");
+	} // If no password was entered
+	else if(user.getPassword().equals("")) {
+	    logger.error("UserService.createNewUser: No password specified.");
+	    throw new NewUserException("UserService.createNewUser: No password specified.");
+	}
+	
         int currUserId = this.userCounter++;
         int currLocationId = this.locationCounter++;
         user.setUserId(currUserId);
@@ -202,7 +213,7 @@ public class UserService {
 
         // add user to database
         String sqlUser = "INSERT INTO users (user_id, email, password)" +
-                "                  VALUES (:userId, :email, :password)";
+	        "                  VALUES (:userId, :email, :password)";
         String sqlLocation = "INSERT INTO locations (location_id, user_id, latitude, longitude)" +
                 "                  VALUES (:locationId, :userId, :latitude, :longitude)";
         try (Connection conn = db.open()) {
@@ -226,7 +237,7 @@ public class UserService {
                 .addParameter("latitude", latitude)
                 .executeUpdate();
             } catch (Sql2oException ex) {
-                logger.error("UserService.createNewUser: Failed to add new user entry", ex);
+	        logger.error("UserService.createNewUser: Failed to add new user entry", ex);
                 throw new UserServiceException("UserService.createNewUser: Failed to add new user entry", ex);
             }
         return user;
@@ -656,5 +667,11 @@ public class UserService {
         public UserServiceException(String message, Throwable cause) {
             super(message, cause);
         }
+    }
+
+    public static class NewUserException extends UserServiceException {
+	public NewUserException(String message) {
+	    super(message, null);
+	}
     }
 }

@@ -122,6 +122,25 @@ public class TestServer {
             assertEquals(201, radd.httpStatus);
             assertEquals(expectedJson, radd.content);
         }
+	// Test for empty username
+	/*UserJson emptyUser = new UserJson("", "pass");
+	Response badd;
+	try {
+	    badd = request("POST", "/api/v1/user", emptyUser);
+	} catch (Exception ex) {
+	    //System.out.println("\n STATUS: " + badd.httpStatus + "\nCONTENT: " + badd.content);
+	    assertEquals(411, badd.httpStatus);
+	    assertEquals(Collections.EMPTY_MAP, badd.content);
+	}
+	// Test for empty password
+	UserJson emptyPass = new UserJson("user", "");
+	try {
+	    badd = request("POST", "/api/v1/user", emptyPass);
+	} catch (Exception ex) {
+	    System.out.println("\n STATUS: " + badd.httpStatus + "\nCONTENT: " + badd.content);
+	    assertEquals(411, badd.httpStatus);
+	    assertEquals(Collections.EMPTY_MAP, badd.content);
+	    }*/
     }
 
     //------------------------------------------------------------------------//
