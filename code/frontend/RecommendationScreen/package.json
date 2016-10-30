@@ -1,5 +1,5 @@
 {
-  "name": "RecommendationScreen",
+  "name": "Recommendation",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,8 +7,10 @@
     "test": "jest"
   },
   "dependencies": {
+    "minutes-seconds-milliseconds": "^1.0.3",
     "react": "15.3.2",
-    "react-native": "0.36.0"
+    "react-native": "0.36.0",
+    "react-native-linear-gradient": "^1.5.14"
   },
   "jest": {
     "preset": "jest-react-native"

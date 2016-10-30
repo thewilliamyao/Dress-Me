@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-export default class RecommendationScreen extends Component {
+export default class Recommendation extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('RecommendationScreen', () => RecommendationScreen);
+AppRegistry.registerComponent('Recommendation', () => Recommendation);
