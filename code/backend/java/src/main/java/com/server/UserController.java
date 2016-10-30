@@ -71,12 +71,12 @@ public class UserController {
         }, new JsonTransformer());
 
         // get a new recommendation
-        get(API_CONTEXT + "/recommendation/:userId/:recommendationNum", "application/json", (request, response) -> {
+        get(API_CONTEXT + "/recommendation/:userId", "application/json", (request, response) -> {
             try {
                 response.status(200);
-                return userService.getRecommendation(Integer.parseInt(request.params(":userId")), Integer.parseInt(request.params(":recommendationNum")));
+                return userService.getRecommendation(Integer.parseInt(request.params(":userId")));
             } catch (UserService.UserServiceException ex) {
-                logger.error("Failed to create new user");
+                logger.error("Failed to generate recommendation");
                 response.status(410);
             }
             return Collections.EMPTY_MAP;

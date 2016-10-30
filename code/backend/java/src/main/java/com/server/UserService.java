@@ -13,6 +13,7 @@ import com.github.dvdme.ForecastIOLib.*;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class UserService {
 
@@ -22,7 +23,7 @@ public class UserService {
     private int locationCounter = 0; // counter for free value of the id
     private String[] allTops = {"tank_top", "t_shirt", "long_sleeve"}; // types of clothing
     private String[] allPants = {"shorts", "long_pants"}; // types of clothing
-    private String[] allOuterwear = {"hoodie", "windbreaker", "sweater", "winter_coat"}; // types of clothing
+    private String[] allOuterwear = {"hoodie", "windbreaker", "sweater", "winter_coat", "rain_jacket"}; // types of clothing
     private String[] allFootwear = {"shoes", "boots", "sandals"}; // types of clothing
     private String[] allAccessories = {"umbrella", "scarf"}; // types of clothing
     private HashMap<String, Double> lowTempMap; // map to hold defaults for high and low temps
@@ -163,7 +164,7 @@ public class UserService {
                         .addParameter("clothesId", this.clothesCounter++)
                         .addParameter("type", "top")
                         .addParameter("specificType", s)
-                        .addParameter("numberOwned", 0)
+                        .addParameter("numberOwned", 10) //TODO change later to 0
                         .addParameter("numberDirty", 0)
                         .addParameter("tempHigh", highTempMap.containsKey(s) ? highTempMap.get(s) : TEMP_MAX)
                         .addParameter("tempLow", lowTempMap.containsKey(s) ? lowTempMap.get(s) : TEMP_MIN)
@@ -186,6 +187,7 @@ public class UserService {
         JsonObject obj = parser.parse(body).getAsJsonObject();
         String currEmail = obj.get("email").getAsString();
         String currPassword = obj.get("password").getAsString();
+
         // give default location of baltimore
         // TODO change this
         double longitude = BALTIMORE_LONGITUDE;
@@ -227,8 +229,6 @@ public class UserService {
                 logger.error("UserService.createNewUser: Failed to add new user entry", ex);
                 throw new UserServiceException("UserService.createNewUser: Failed to add new user entry", ex);
             }
-
-    
         return user;
     }
 
@@ -361,7 +361,7 @@ public class UserService {
         return getClothesMap(currId);
     }
 
-    public Recommendation getRecommendation(int currId, int recommendationNum) throws UserServiceException {
+    public HashMap<String, Recommendation> getRecommendation(int currId) throws UserServiceException {
         // get the location lat and long
         Location currLocation = getLocation(currId);
 
@@ -381,15 +381,15 @@ public class UserService {
             lowMap.put(c.getSpecificType(), new Double(c.getTempLow()));
         }
 
-        String pantsRecommendation = "";
+        String pantsRecommendation = "NONE";
         String backupPants = "";
-        String shirtRecommendation = "";
+        String shirtRecommendation = "NONE";
         String backupShirt = "";
-        String outwearRecommendation = "";
+        String outwearRecommendation = "NONE";
         String backupOuterwear = "";
-        String footwearRecommendation = "";
+        String footwearRecommendation = "NONE";
         String backupFootwear = "";
-        String accessoryRecommendation = "";
+        String accessoryRecommendation = "NONE";
 
         // if too hot for long pants, recommend shorts
         if (currWeather.getMaxApparentTemp() > highMap.get("long_pants")) {
@@ -558,9 +558,6 @@ public class UserService {
                     backupOuterwear = "hoodie";
                 }
             }
-        } else {
-            // actually recommend nothing, its nice outside.
-            outwearRecommendation = "";
         }
 
         // set accessory
@@ -576,44 +573,79 @@ public class UserService {
             }
         }
 
-        // generate three recommendations.
-        if (recommendationNum == 1) {
-            return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-        } else if (recommendationNum == 2) {
-            // swap out shirt if possible
-            if (!backupShirt.equals("")) {
-                return new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-            } else if (!backupPants.equals("")) {
-                return new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-            } else if (!backupOuterwear.equals("")) {
-                return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear);
-            } else if (!backupFootwear.equals("")) {
-                return new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, outwearRecommendation);
-            } else {
-                // there is no other recommendation, return default
-                return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-            }
-        } else if (recommendationNum == 3) {
-            if (!backupShirt.equals("") && !backupPants.equals("")) {
-                return new Recommendation(backupShirt, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-            } else if (!backupShirt.equals("") && !backupOuterwear.equals("")) {
-                return new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear);
-            } else if (!backupOuterwear.equals("") && !backupPants.equals("")) {
-                return new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, backupOuterwear);
-            } else if (!backupFootwear.equals("") && !backupOuterwear.equals("")) {
-                return new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear);
-            } else if (!backupFootwear.equals("") && !backupShirt.equals("")) {
-                return new Recommendation(backupShirt, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear);
-            } else if (!backupFootwear.equals("") && !backupPants.equals("")) {
-                return new Recommendation(shirtRecommendation, backupPants, backupFootwear, accessoryRecommendation, backupOuterwear);
-            } else {
-                // there is no other recommendation, return default
-                return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-            }
-        } else {
-            // BAD
-            return new Recommendation("ERROR", "ERROR", "ERROR", "ERROR", "ERROR");
+        HashMap<String, Recommendation> toReturn = new HashMap<String, Recommendation>();
+        // ArrayList<Recommendation> toReturn = new ArrayList<Recommendation>();
+        // first recommendation
+        toReturn.put("FirstRecommendation", new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation));
+  
+        //second recommendation
+        // swap out shirt if possible
+        if (!backupShirt.equals("")) {
+            toReturn.put("SecondRecommendation", new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation));
+        } else if (!backupPants.equals("")) {
+            toReturn.put("SecondRecommendation", new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation));
+        } else if (!backupOuterwear.equals("")) {
+            toReturn.put("SecondRecommendation", new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear));
+        } else if (!backupFootwear.equals("")) {
+            toReturn.put("SecondRecommendation", new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, outwearRecommendation));
         }
+
+        // third recommendation
+        if (!backupShirt.equals("") && !backupPants.equals("")) {
+            toReturn.put("ThirdRecommendation", new Recommendation(backupShirt, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation));
+        } else if (!backupShirt.equals("") && !backupOuterwear.equals("")) {
+            toReturn.put("ThirdRecommendation", new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear));
+        } else if (!backupOuterwear.equals("") && !backupPants.equals("")) {
+            toReturn.put("ThirdRecommendation", new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, backupOuterwear));
+        } else if (!backupFootwear.equals("") && !backupOuterwear.equals("")) {
+            toReturn.put("ThirdRecommendation", new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear));
+        } else if (!backupFootwear.equals("") && !backupShirt.equals("")) {
+            toReturn.put("ThirdRecommendation", new Recommendation(backupShirt, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear));
+        } else if (!backupFootwear.equals("") && !backupPants.equals("")) {
+            toReturn.put("ThirdRecommendation", new Recommendation(shirtRecommendation, backupPants, backupFootwear, accessoryRecommendation, backupOuterwear));
+        }
+
+        return toReturn;
+
+
+        // generate three recommendations.
+        // if (recommendationNum == 1) {
+        //     return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+        // } else if (recommendationNum == 2) {
+        //     // swap out shirt if possible
+        //     if (!backupShirt.equals("")) {
+        //         return new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+        //     } else if (!backupPants.equals("")) {
+        //         return new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+        //     } else if (!backupOuterwear.equals("")) {
+        //         return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear);
+        //     } else if (!backupFootwear.equals("")) {
+        //         return new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, outwearRecommendation);
+        //     } else {
+        //         // there is no other recommendation, return default
+        //         return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+        //     }
+        // } else if (recommendationNum == 3) {
+        //     if (!backupShirt.equals("") && !backupPants.equals("")) {
+        //         return new Recommendation(backupShirt, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+        //     } else if (!backupShirt.equals("") && !backupOuterwear.equals("")) {
+        //         return new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear);
+        //     } else if (!backupOuterwear.equals("") && !backupPants.equals("")) {
+        //         return new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, backupOuterwear);
+        //     } else if (!backupFootwear.equals("") && !backupOuterwear.equals("")) {
+        //         return new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear);
+        //     } else if (!backupFootwear.equals("") && !backupShirt.equals("")) {
+        //         return new Recommendation(backupShirt, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear);
+        //     } else if (!backupFootwear.equals("") && !backupPants.equals("")) {
+        //         return new Recommendation(shirtRecommendation, backupPants, backupFootwear, accessoryRecommendation, backupOuterwear);
+        //     } else {
+        //         // there is no other recommendation, return default
+        //         return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
+        //     }
+        // } else {
+        //     // BAD
+        //     return new Recommendation("ERROR", "ERROR", "ERROR", "ERROR", "ERROR");
+        // }
     }
 
     //-----------------------------------------------------------------------------//

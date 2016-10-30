@@ -24,6 +24,8 @@ import static org.junit.Assert.*;
 
 public class TestServer {
 
+    private static final int NUMBER_CLOTHES_DEFAULT = 10;
+
     //------------------------------------------------------------------------//
     // Setup
     //------------------------------------------------------------------------//
@@ -110,6 +112,18 @@ public class TestServer {
         assertEquals(expectedJson, radd.content);
     }
 
+    @Test
+    public void testCreateMultipleUsers() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            UserJson firstUser = new UserJson("test", "testpassword");
+            Response radd = request("POST", "/api/v1/user", firstUser);
+            User expectedFirstUser = new User(i, "test", "testpassword");
+            String expectedJson = new Gson().toJson(expectedFirstUser);
+            assertEquals(201, radd.httpStatus);
+            assertEquals(expectedJson, radd.content);
+        }
+    }
+
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes
     //------------------------------------------------------------------------//
@@ -155,6 +169,7 @@ public class TestServer {
         public int long_sleeve;
         public int tank_top;
         public int sandals;
+        public int rain_jacket;
         public int shoes;
         public int hoodie;
         public int windbreaker;
@@ -165,20 +180,21 @@ public class TestServer {
         public int t_shirt;
 
         public ClosetJson() {
-            this.umbrella = 0;
-            this.long_pants = 0;
-            this.scarf = 0;
-            this.long_sleeve = 0;
-            this.tank_top = 0;
-            this.sandals = 0;
-            this.shoes = 0;
-            this.hoodie = 0;
-            this.windbreaker = 0;
-            this.boots = 0;
-            this.sweater = 0;
-            this.shorts = 0;
-            this.winter_coat = 0;
-            this.t_shirt = 0;
+            this.umbrella       = NUMBER_CLOTHES_DEFAULT;
+            this.long_pants     = NUMBER_CLOTHES_DEFAULT;
+            this.scarf          = NUMBER_CLOTHES_DEFAULT;
+            this.long_sleeve    = NUMBER_CLOTHES_DEFAULT;
+            this.tank_top       = NUMBER_CLOTHES_DEFAULT;
+            this.sandals        = NUMBER_CLOTHES_DEFAULT;
+            this.rain_jacket    = NUMBER_CLOTHES_DEFAULT;
+            this.shoes          = NUMBER_CLOTHES_DEFAULT;
+            this.hoodie         = NUMBER_CLOTHES_DEFAULT;
+            this.windbreaker    = NUMBER_CLOTHES_DEFAULT;
+            this.boots          = NUMBER_CLOTHES_DEFAULT;
+            this.sweater        = NUMBER_CLOTHES_DEFAULT;
+            this.shorts         = NUMBER_CLOTHES_DEFAULT;
+            this.winter_coat    = NUMBER_CLOTHES_DEFAULT;
+            this.t_shirt        = NUMBER_CLOTHES_DEFAULT;
         }
     }
 
