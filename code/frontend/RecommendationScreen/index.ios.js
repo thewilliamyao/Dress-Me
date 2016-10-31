@@ -14,7 +14,7 @@ import {
   TouchableHighlight
 } from 'react-native';
 // var Rec = null
-class Recommendation extends Component {
+class RecommendationScreen extends Component {
   // constructor(props) {
   //   super(props);
   //   this.onChange = this.onChange.bind(this);
@@ -315,4 +315,4 @@ var styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('Recommendation', () => Recommendation);
+AppRegistry.registerComponent('RecommendationScreen', () => RecommendationScreen);
