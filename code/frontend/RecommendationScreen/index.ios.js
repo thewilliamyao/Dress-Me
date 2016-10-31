@@ -13,8 +13,15 @@ import {
   View,
   TouchableHighlight
 } from 'react-native';
-
+var Rec = null
 var Recommendation = React.createClass({
+  getInitialState: function(){
+      /*This is run once when it is rendered*/
+      return{
+        Rec: null
+      }
+    },
+
   render: function(){
     return <View style= {styles.container}>
     {/*View Below is Settings Bar*/}  
@@ -73,7 +80,9 @@ var Recommendation = React.createClass({
       </View>
 
       <View style={[styles.midMid, this.border('orange')]}>
-        
+        <Text>
+          {Rec}
+        </Text>
       </View>
 
       <View style={[styles.midRight, styles.arrowWrapper, this.border('orange')]}>
@@ -128,7 +137,34 @@ var Recommendation = React.createClass({
   },
 
   handleDressMePress:function() {
-    console.log('Dress Me was pressed');
+    //console.log('Dress Me was pressed');
+    var rec: null
+    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/0', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+      
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        
+        console.log(responseJson.FirstRecommendation);
+        //console.log({rec});
+        //this.setState({Rec:responseJson.FirstRecommendation});
+      
+      })
+      //{this.render()}
+      {this.tempRender}
+
+  },
+
+  tempRender: function(){
+    <View>
+            <Text>
+              TRYING TO RERENDER
+            </Text>
+    </View>
+
   },
 
   border: function(color){
