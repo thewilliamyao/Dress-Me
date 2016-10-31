@@ -122,35 +122,33 @@ public class TestServer {
             assertEquals(201, radd.httpStatus);
             assertEquals(expectedJson, radd.content);
         }
-	// Test for empty username
-	/*UserJson emptyUser = new UserJson("", "pass");
-	Response badd;
-	try {
-	    badd = request("POST", "/api/v1/user", emptyUser);
-	} catch (Exception ex) {
-	    //System.out.println("\n STATUS: " + badd.httpStatus + "\nCONTENT: " + badd.content);
-	    assertEquals(411, badd.httpStatus);
-	    assertEquals(Collections.EMPTY_MAP, badd.content);
-	}
-	// Test for empty password
-	UserJson emptyPass = new UserJson("user", "");
-	try {
-	    badd = request("POST", "/api/v1/user", emptyPass);
-	} catch (Exception ex) {
-	    System.out.println("\n STATUS: " + badd.httpStatus + "\nCONTENT: " + badd.content);
-	    assertEquals(411, badd.httpStatus);
-	    assertEquals(Collections.EMPTY_MAP, badd.content);
-	    }*/
+    }
+    
+    @Test
+    public void testCreateUserNoEmailFail() throws Exception {
+        UserJson emptyUser = new UserJson("", "test");
+        Response badd = request("POST", "/api/v1/user", emptyUser);
+        assertEquals(411, badd.httpStatus);
+        assertEquals("{}", badd.content);
+    }
+
+    @Test
+    public void testCreateUserNoPasswordFail() throws Exception {
+        UserJson emptyUser = new UserJson("test", "");
+        Response badd = request("POST", "/api/v1/user", emptyUser);
+        assertEquals(411, badd.httpStatus);
+        assertEquals("{}", badd.content);
     }
 
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes
     //------------------------------------------------------------------------//
     
-    private Response request(String method, String path, Object content) {
+    private Response request(String method, String path, Object content) throws Exception {
+        String responseBody;
+        URL url = new URL("http", Bootstrap.TEST_IP_ADDRESS, Bootstrap.TEST_PORT, path);
+        HttpURLConnection http = (HttpURLConnection) url.openConnection();
         try {
-			URL url = new URL("http", Bootstrap.TEST_IP_ADDRESS, Bootstrap.TEST_PORT, path);
-			HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoInput(true);
             if (content != null) {
@@ -162,14 +160,12 @@ public class TestServer {
                 output.flush();
                 output.close();
             }
-
-            String responseBody = IOUtils.toString(http.getInputStream());
-			return new Response(http.getResponseCode(), responseBody);
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail("Sending request failed: " + e.getMessage());
-			return null;
+            responseBody = IOUtils.toString(http.getInputStream());
+        } catch (IOException e) {
+            responseBody = "{}";
 		}
+        return new Response(http.getResponseCode(), responseBody);
+
     }
 
     private static class UserJson {
