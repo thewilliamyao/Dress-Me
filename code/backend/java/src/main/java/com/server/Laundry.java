@@ -1,4 +1,4 @@
-package com.serverapp;
+package com.server;
 
 /**
 *   The laundry class.

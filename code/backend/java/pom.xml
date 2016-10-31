@@ -96,7 +96,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.serverapp.Bootstrap</mainClass>
+                                    <mainClass>com.server.Bootstrap</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

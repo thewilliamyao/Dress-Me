@@ -1,7 +1,11 @@
-package com.serverapp;
+package com.server;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.server.Bootstrap;
+import com.server.Location;
+import com.server.User;
+
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Description;
 import org.sql2o.Connection;
