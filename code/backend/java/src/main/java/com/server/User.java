@@ -1,4 +1,4 @@
-package com.serverapp;
+package com.server;
 
 /**
 * The user's profile, information, and daily recommendations

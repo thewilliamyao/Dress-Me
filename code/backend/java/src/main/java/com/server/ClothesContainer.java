@@ -1,4 +1,4 @@
-package com.serverapp;
+package com.server;
 
 /**
 *   Abstract class for ClothesContainer

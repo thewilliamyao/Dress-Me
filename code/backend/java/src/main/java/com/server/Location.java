@@ -1,4 +1,4 @@
-package com.serverapp;
+package com.server;
 
 /**
 *   The Location of the user.
