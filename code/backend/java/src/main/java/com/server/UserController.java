@@ -29,7 +29,11 @@ public class UserController {
                 return u;
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to create new user");
-                response.status(410);
+		if(ex instanceof UserService.NewUserException) {
+		    response.status(411);
+		} else {
+		    response.status(410);
+		}
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());

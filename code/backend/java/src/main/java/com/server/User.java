@@ -42,6 +42,14 @@ public class User {
 
 
     /**
+    *   Get the user's email.
+    *   @return the user's email.
+    */
+    public String getEmail(){
+	return email;
+    }
+    
+    /**
     *   Lets user change their email.
     *   @param s the new email
     */
@@ -49,6 +57,14 @@ public class User {
 
     }
 
+    /**
+    *   Get the user's password. For testing purposes only.
+    *   @return the user's password.
+    */
+    public String getPassword(){
+	return password;
+    }
+    
     /**
     *   Lets user change their password.
     *   @param s the new password
