@@ -13,16 +13,40 @@ import {
   View,
   TouchableHighlight
 } from 'react-native';
-var Rec = null
-var Recommendation = React.createClass({
-  getInitialState: function(){
-      /*This is run once when it is rendered*/
-      return{
-        Rec: null
-      }
-    },
+// var Rec = null
+class Recommendation extends Component {
+  // constructor(props) {
+  //   super(props);
+  //   this.onChange = this.onChange.bind(this);
+  //   this.state = {Rec : null};
+  // }
+  // componentDidMount() {
+  //   Recommendation.listen(this.onChange);
+  // }
+  // componentWillUnmount() {
+  //   Recommendation.unlisten(this.onChange);
+  // }
+  // onChange(state) {
+  //   this.setState(state);
+  // }
 
-  render: function(){
+  constructor(props) {
+    super(props);
+    this.state = {Rec: null};
+    // this.onChange = this.onChange.bind(this);
+  }
+  
+  componentDidMount() {
+    this.requestClothing();
+  }
+  // getInitialState() {
+  //     This is run once when it is rendered
+  //   return{
+  //     Rec: null
+  //   }
+  // }
+
+  render() {
     return <View style= {styles.container}>
     {/*View Below is Settings Bar*/}  
       <View style= {[styles.settingsContainer, styles.buttonWrapper, this.border('pink')]}>
@@ -41,22 +65,11 @@ var Recommendation = React.createClass({
     {/*View Below is Dress me Button*/}
       <View style= {[styles.dressMeContainer,styles.buttonWrapper, this.border('cyan')]}>
         {this.dressMeButton()}
-        
-        {/*<LinearGradient
-          start={[0.0, 0.25]} end={[0.5, 1.0]}
-          locations={[0,0.5,0.6]}
-          colors={['#4c669f', '#3b5998', '#192f6a']}
-          style={styles.linearGradient}>
-          <Text style={styles.buttonText}>
-            Sign in with Facebook
-          </Text>
-        </LinearGradient>
-      */}
       </View>
     </View>
-  },
+  }
 
-  settingsButton: function() {
+  settingsButton() {
     return <TouchableHighlight
       underlayColor="gray"
       onPress={this.handleSettingsPress}
@@ -67,66 +80,93 @@ var Recommendation = React.createClass({
         </Text>
 
     </TouchableHighlight>
-  },
+  }
 
-  handleSettingsPress: function (){
+  handleSettingsPress(){
     console.log('Settings was pressed');
-  },
+  }
 
-  middleDisplay: function() {
+  middleDisplay() {
     return <View style={[styles.displayContainer,this.border('lime')]}>
       <View style={[styles.midLeft, styles.arrowWrapper, this.border('orange')]}>
-        {this.arrowRightButton()}
+        {this.arrowLeftButton()}
       </View>
 
       <View style={[styles.midMid, this.border('orange')]}>
-        <Text>
-          {Rec}
-        </Text>
+        {this.middleContent()}
       </View>
 
       <View style={[styles.midRight, styles.arrowWrapper, this.border('orange')]}>
-        {this.arrowLeftButton()}
+        {this.arrowRightButton()}
       </View>
     </View>
-  },
+  }
 
-  arrowLeftButton: function(){
+  middleContent() {
+    if (!this.state.Rec) {
+      return (
+        <View>
+          <Text>Loading...</Text>
+        </View>
+      )
+    } else {
+      return (
+        <View style={styles.contentText}>
+          <View>
+            <Text style={styles.contentTextLeft}>Top</Text>
+            <Text style={styles.contentTextLeft}>Pants</Text>
+            <Text style={styles.contentTextLeft}>Footwear</Text>
+            <Text style={styles.contentTextLeft}>Accessory</Text>
+            <Text style={styles.contentTextLeft}>Outerwear</Text>
+          </View>
+          <View>
+            <Text>: {this.state.Rec.top}</Text>
+            <Text>: {this.state.Rec.pants}</Text>
+            <Text>: {this.state.Rec.footwear}</Text>
+            <Text>: {this.state.Rec.accessory}</Text>
+            <Text>: {this.state.Rec.outerwear}</Text>
+          </View>
+        </View>
+      )
+    }
+  }
+
+  arrowLeftButton(){
     return <TouchableHighlight
       underlayColor="gray"
       onPress={this.handleArrowLeft}
-      style= {[styles.triangle,styles.triangleRotRight]}
+      style= {[styles.triangle,styles.triangleRotLeft]}
       > 
         <Text>
           Back
         </Text>
     </TouchableHighlight>
-  }, 
+  }
 
-  handleArrowLeft: function(){
+  handleArrowLeft(){
     console.log('Left Arrow was pressed');
-  },
+  }
 
-  arrowRightButton: function(){
+  arrowRightButton(){
     return <TouchableHighlight
       underlayColor="gray"
       onPress={this.handleArrowRight}
-      style= {[styles.triangleRotLeft, styles.triangle]}
+      style= {[styles.triangleRotRight, styles.triangle]}
       > 
         <Text>
           Forward
         </Text>
     </TouchableHighlight>
-  },
+  }
 
-  handleArrowRight: function(){
+  handleArrowRight(){
     console.log('Right Arrow was pressed');
-  },
+  }
 
-  dressMeButton: function() {
+  dressMeButton() {
     return <TouchableHighlight
       underlayColor="gray"
-      onPress={this.handleDressMePress}
+      onPress={() => this.handleDressMePress()}
       style={styles.dressMeButton}
       >
         <Text>
@@ -134,11 +174,9 @@ var Recommendation = React.createClass({
         </Text>
 
     </TouchableHighlight>
-  },
-
-  handleDressMePress:function() {
-    //console.log('Dress Me was pressed');
-    var rec: null
+  }
+  
+  requestClothing() {
     fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/0', {
       method: 'GET',
       headers: {
@@ -147,33 +185,30 @@ var Recommendation = React.createClass({
       
     }).then((response) => response.json())
       .then((responseJson) => {
-        
-        console.log(responseJson.FirstRecommendation);
-        //console.log({rec});
-        //this.setState({Rec:responseJson.FirstRecommendation});
-      
+        this.setState({Rec: responseJson.FirstRecommendation});
       })
-      //{this.render()}
-      {this.tempRender}
+  }
 
-  },
+  handleDressMePress() {
+    console.log('Dress Me was pressed');
+  }
 
-  tempRender: function(){
+  tempRender(){
     <View>
             <Text>
               TRYING TO RERENDER
             </Text>
     </View>
 
-  },
+  }
 
-  border: function(color){
+  border(color){
     return {
       borderColor: color,
       borderWidth: 4
     }
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -198,6 +233,8 @@ var styles = StyleSheet.create({
     alignItems: 'center'
   },
   midMid: {
+    justifyContent: 'center',
+    alignItems: 'center',
     flex: 3
   },
   midRight: {
@@ -270,6 +307,12 @@ var styles = StyleSheet.create({
     color: '#ffffff',
     backgroundColor: 'transparent',
   },
+  contentText: {
+    flexDirection: 'row',
+  },
+  contentTextLeft: {
+     textAlign: 'right',
+  }
 });
 
 AppRegistry.registerComponent('Recommendation', () => Recommendation);
