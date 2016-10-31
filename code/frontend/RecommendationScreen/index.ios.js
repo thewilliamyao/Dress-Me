@@ -4,7 +4,7 @@
  * @flow
  */
 //var formatTime = require('minutes-seconds-milliseconds');
-import LinearGradient from 'react-native-linear-gradient';
+// import LinearGradient from 'react-native-linear-gradient';
 import React, { Component } from 'react';
 import {
   AppRegistry,
