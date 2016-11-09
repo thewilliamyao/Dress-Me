@@ -29,6 +29,8 @@ class RecommendationScreen extends Component {
   // onChange(state) {
   //   this.setState(state);
   // }
+  static recommendationJson = null;
+  static choiceInt = 0;
 
   constructor(props) {
     super(props);
@@ -37,7 +39,7 @@ class RecommendationScreen extends Component {
   }
   
   componentDidMount() {
-    this.requestClothing();
+    this.requestClothing(0);
   }
   // getInitialState() {
   //     This is run once when it is rendered
@@ -134,7 +136,8 @@ class RecommendationScreen extends Component {
   arrowLeftButton(){
     return <TouchableHighlight
       underlayColor="gray"
-      onPress={this.handleArrowLeft}
+      // onPress={this.handleArrowLeft}
+      onPress = {() => this.requestClothing(-1)}
       style= {[styles.triangle,styles.triangleRotLeft]}
       > 
         <Text>
@@ -150,7 +153,8 @@ class RecommendationScreen extends Component {
   arrowRightButton(){
     return <TouchableHighlight
       underlayColor="gray"
-      onPress={this.handleArrowRight}
+      // onPress={this.handleArrowRight}
+      onPress = {() => this.requestClothing(1)}
       style= {[styles.triangleRotRight, styles.triangle]}
       > 
         <Text>
@@ -161,6 +165,7 @@ class RecommendationScreen extends Component {
 
   handleArrowRight(){
     console.log('Right Arrow was pressed');
+    this.requestClothing(-1);
   }
 
   dressMeButton() {
@@ -176,17 +181,33 @@ class RecommendationScreen extends Component {
     </TouchableHighlight>
   }
   
-  requestClothing() {
-    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/0', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+  requestClothing(option) {
+    if (this.recommendationJson == null) {
+      console.log('im here now');
+      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/0', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+        
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          this.recommendationJson = responseJson;
+          this.choiceInt = 1;
+          this.setState({Rec: responseJson.FirstRecommendation});
+        })
+    } else {
+      if ((this.choiceInt != 1 && option < 0) || (this.choiceInt != 3 && option > 0)) {
+        this.choiceInt = this.choiceInt + option;
+        if (this.choiceInt == 1) {
+          this.setState({Rec: this.recommendationJson.FirstRecommendation});
+        } else if (this.choiceInt == 2) {
+          this.setState({Rec: this.recommendationJson.SecondRecommendation});
+        } else {
+          this.setState({Rec: this.recommendationJson.ThirdRecommendation});
+        }
       }
-      
-    }).then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({Rec: responseJson.FirstRecommendation});
-      })
+    }
   }
 
   handleDressMePress() {
