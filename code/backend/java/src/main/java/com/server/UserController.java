@@ -85,5 +85,17 @@ public class UserController {
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
+
+        // mark items as choosen (which in turn makes them dirty)
+        get(API_CONTEXT + "/user/dirty/:userId", "application/json", (request, response) -> {
+            try {
+                response.status(200);
+                return userService.markDirty(Integer.parseInt(request.params("userId")), request.body());
+            } catch (UserService.UserServiceException ex) {
+                logger.error("Failed to generate recommendation");
+                response.status(410);
+            }
+            return Collections.EMPTY_MAP;
+        }, new JsonTransformer());
     }
 }
