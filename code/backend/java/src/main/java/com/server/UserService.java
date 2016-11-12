@@ -690,7 +690,7 @@ public class UserService {
         return false;
     }
 
-    public void markClean(int currId) {
+    public void markClean(int currId) throws UserServiceException {
         // set all dirty fields to be 0
         String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty WHERE user_id = :userId";
         
