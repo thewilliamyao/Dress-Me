@@ -620,7 +620,6 @@ public class UserService {
         return toReturn;
     }
 
-
     public boolean markDirty(int currId, String body) throws UserServiceException {
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
@@ -632,7 +631,7 @@ public class UserService {
 
         // obtain the current count of dirty items
         String sqlTops = "SELECT * FROM clothes WHERE (user_id = :userId AND type = :type)";
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        HashMap<String, Integer> dirtyMap = new HashMap<String, Integer>();
         try (Connection conn = db.open()) {
             List<Clothes> allClothes = 
                 conn.createQuery(sqlTops)
@@ -648,7 +647,7 @@ public class UserService {
                     .addParameter("type", "top")
                     .executeAndFetch(Clothes.class);
             for (Clothes c : allClothes) {
-                map.put(c.getSpecificType(), c.getNumberDirty());
+                dirtyMap.put(c.getSpecificType(), c.getNumberDirty());
             }
 
         } catch (Sql2oException ex) {
@@ -657,7 +656,7 @@ public class UserService {
         }
 
         // update in the local map
-        map.put(top, map.get(top) - 1); 
+        dirtyMap.put(top, (dirtyMap.get(top) + 1)); 
         // update the top we need to
         String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty WHERE (user_id = :userId AND specific_type = :specificType)";
 
@@ -672,7 +671,7 @@ public class UserService {
                 .addColumnMapping("temp_high", "tempHigh")
                 .addColumnMapping("temp_low", "tempLow")
                 .addParameter("specificType", top)
-                .addParameter("numberDirty", map.get(top))
+                .addParameter("numberDirty", dirtyMap.get(top))
                 .addParameter("userId", currId)
                 .executeUpdate();
         } catch (Sql2oException ex) {
@@ -681,8 +680,13 @@ public class UserService {
         }
 
         // then check for each item, if there is less than 30% clean, return true, to signal should do laundry
-        for (HashMap.Entry<String, Integer> entry : map.entrySet()) {
-            if (entry.getValue() < (0.3) * map.get(entry.getKey())) {
+        HashMap<String, Integer> ownedMap = getClothesMap(currId);
+        for (HashMap.Entry<String, Integer> entry : dirtyMap.entrySet()) {
+            // if we have more than 70% dirty, then we return true
+            if (entry.getValue() > (0.7) * ownedMap.get(entry.getKey())) {
+                System.out.println("---------------------------------------------------");
+                System.out.println("key: " + entry.getKey() + ", value:" + entry.getValue());
+                System.out.println("---------------------------------------------------");
                 return true;
             }
         }
