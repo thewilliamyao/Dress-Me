@@ -10,12 +10,6 @@ import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 import com.github.dvdme.ForecastIOLib.*;
 
-// for postgres
-// import java.sql.Connection;
-// import java.sql.DriverManager;
-// import java.sql.SQLException;
-// import java.util.Properties;
-
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.HashMap;
@@ -46,37 +40,27 @@ public class UserService {
     private static String dbUsername = "hhaivykbviqvhs";
     private static String dbPassword = "rWny-OLus9WiTIvQ1k4Q_GVBUV";
 
+    // to use for testing purposes
+    private static String dbHost_test = "ec2-54-243-245-58.compute-1.amazonaws.com";
+    private static String dbPort_test = "5432";
+    private static String dbName_test = "d6fvfp446bnac1";
+    private static String dbUsername_test = "zramgenmiqkrmg";
+    private static String dbPassword_test = "2E7ZBZHu1bERfmGuYLzIwJAiWa";
+
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    // public Connection CreateConnection() {
-    //     try {
-    //         String url = "jdbc:postgresql://ec2-23-23-211-21.compute-1.amazonaws.com:5432/d8gthm1ipiqkps";
-    //         Properties props = new Properties();
-    //         props.setProperty("user", "hhaivykbviqvhs");
-    //         props.setProperty("password", "rWny-OLus9WiTIvQ1k4Q_GVBUV");
-    //         props.setProperty("ssl", "true");
-    //         return DriverManager.getConnection(url, props);
-    //     } catch (SQLException e) {
-    //         System.out.println("Connection Failed! Check output console");
-    //         e.printStackTrace();
-    //         return null;
-    //     }
-    // }
     /**
      * Construct the model with a pre-defined datasource. The current implementation
      * also ensures that the DB schema is created if necessary.
      *
      * @param dataSource
      */
-    public UserService(DataSource dataSource) throws UserServiceException {
-        // db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?sslmode=require", dbUsername, dbPassword);
-        db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
-
-        // db = new Sql2o(dataSource);
-        // db = new Sql2o("jdbc:postgresql://ec2-23-23-211-21.compute-1.amazonaws.com:5432/d8gthm1ipiqkps?sslmode=require&user=hhaivykbviqvhs&password=<rWny-OLus9WiTIvQ1k4Q_GVBUV", "hhaivykbviqvhs", "rWny-OLus9WiTIvQ1k4Q_GVBUV");
-
-//        db = new Sql2o("jdbc:postgresql://ec2-23-23-211-21.compute-1.amazonaws.com:5432/d8gthm1ipiqkps", "hhaivykbviqvhs", "rWny-OLus9WiTIvQ1k4Q_GVBUV");
-
+    public UserService(boolean localHost) throws UserServiceException {
+        if (!localHost) {
+            db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
+        } else {
+            db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
+        }
         //Create the schema for the database if necessary. This allows this
         //program to mostly self-contained. But this is not always what you want;
         //sometimes you want to create the schema externally via a script.
@@ -115,8 +99,6 @@ public class UserService {
             if (latestUser != null) {
                 this.userCounter = latestUser.intValue() + 1;
             }
-
-            String sqlClothesId = "SELECT MAX(clothes_id) FROM clothes";
 
             Integer latestClothes = conn.createQuery(sqlUserId)
                 .addColumnMapping("clothes_id", "clothesId")

@@ -29,6 +29,12 @@ import static org.junit.Assert.*;
 public class TestServer {
 
     private static final int NUMBER_CLOTHES_DEFAULT = 10;
+    // to use for testing purposes
+    private static String dbHost_test = "ec2-54-243-245-58.compute-1.amazonaws.com";
+    private static String dbPort_test = "5432";
+    private static String dbName_test = "d6fvfp446bnac1";
+    private static String dbUsername_test = "zramgenmiqkrmg";
+    private static String dbPassword_test = "2E7ZBZHu1bERfmGuYLzIwJAiWa";
 
     //------------------------------------------------------------------------//
     // Setup
@@ -72,8 +78,10 @@ public class TestServer {
         ClosetJson expectedCloset = new ClosetJson();
         String expectedJson = new Gson().toJson(expectedCloset);
         Response radd = request("GET", "/api/v1/user/closet/0", null);
+        ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+
         assertEquals(200, radd.httpStatus);
-        assertEquals(expectedJson, radd.content);
+        assertEquals(expectedCloset, resultCloset);
     }
 
     @Test
@@ -82,20 +90,24 @@ public class TestServer {
         testAddUser();
         ClosetJson expectedCloset = new ClosetJson();
         // update a few closet items
-        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("long_pants", 10);
-        expectedCloset.long_pants = 10;
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("long_pants", 6);
+        expectedCloset.long_pants = 6;
         String expectedJson = new Gson().toJson(expectedCloset);
         Response radd = request("PUT", "/api/v1/user/closet/0", closetUpdate);
+        ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        
         assertEquals(200, radd.httpStatus);
-        assertEquals(expectedJson, radd.content);
+        assertEquals(expectedCloset, resultCloset);
         // another update
         closetUpdate.type = "t_shirt";
         closetUpdate.number = 15;
         expectedCloset.t_shirt = 15;
         expectedJson = new Gson().toJson(expectedCloset);
         radd = request("PUT", "/api/v1/user/closet/0", closetUpdate);
+        resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+
         assertEquals(200, radd.httpStatus);
-        assertEquals(expectedJson, radd.content);
+        assertEquals(expectedCloset, resultCloset);
     }
 
     @Test
@@ -291,6 +303,63 @@ public class TestServer {
             this.winter_coat    = NUMBER_CLOTHES_DEFAULT;
             this.t_shirt        = NUMBER_CLOTHES_DEFAULT;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (!ClosetJson.class.isAssignableFrom(obj.getClass())) {
+                return false;
+            }
+            final ClosetJson other = (ClosetJson) obj;
+            if (this.umbrella != other.umbrella) {
+                return false;
+            }
+            if (this.long_pants != other.long_pants) {
+                return false;
+            }
+            if (this.scarf != other.scarf) {
+                return false;
+            }
+            if (this.long_sleeve != other.long_sleeve) {
+                return false;
+            }
+            if (this.tank_top != other.tank_top) {
+                return false;
+            }
+            if (this.sandals != other.sandals) {
+                return false;
+            }
+            if (this.rain_jacket != other.rain_jacket) {
+                return false;
+            }
+            if (this.shoes != other.shoes) {
+                return false;
+            }
+            if (this.hoodie != other.hoodie) {
+                return false;
+            }
+            if (this.windbreaker != other.windbreaker) {
+                return false;
+            }
+            if (this.boots != other.boots) {
+                return false;
+            }
+            if (this.sweater != other.sweater) {
+                return false;
+            }
+            if (this.shorts != other.shorts) {
+                return false;
+            }
+            if (this.winter_coat != other.winter_coat) {
+                return false;
+            }
+            if (this.t_shirt != other.t_shirt) {
+                return false;
+            }
+            return true;
+        }    
     }
 
     private static class ClosetUpdateJson {
@@ -332,10 +401,7 @@ public class TestServer {
     //------------------------------------------------------------------------//
 
     private void clearDB() {
-        SQLiteDataSource dataSource = new SQLiteDataSource();
-        dataSource.setUrl("jdbc:sqlite:server.db");
-
-        Sql2o db = new Sql2o(dataSource);
+        Sql2o db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
 
         try (Connection conn = db.open()) {
             String sql = "DROP TABLE IF EXISTS users";
