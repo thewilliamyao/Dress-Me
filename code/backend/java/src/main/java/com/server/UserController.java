@@ -97,5 +97,17 @@ public class UserController {
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
-    }
+
+
+        // reset laundry, set all dirty counts to 0
+        put(API_CONTEXT + "/user/clean/:userId", "application/json", (request, response) -> {
+            try {
+                response.status(200);
+                return userService.markClean(Integer.parseInt(request.params("userId")));
+            } catch (UserService.UserServiceException ex) {
+                logger.error("Failed to generate recommendation");
+                response.status(410);
+            }
+            return Collections.EMPTY_MAP;
+        }, new JsonTransformer());    }
 }

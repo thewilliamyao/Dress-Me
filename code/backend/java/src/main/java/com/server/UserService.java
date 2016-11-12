@@ -684,16 +684,34 @@ public class UserService {
         for (HashMap.Entry<String, Integer> entry : dirtyMap.entrySet()) {
             // if we have more than 70% dirty, then we return true
             if (entry.getValue() > (0.7) * ownedMap.get(entry.getKey())) {
-                System.out.println("---------------------------------------------------");
-                System.out.println("key: " + entry.getKey() + ", value:" + entry.getValue());
-                System.out.println("---------------------------------------------------");
                 return true;
             }
         }
         return false;
     }
 
-
+    public void markClean(int currId) {
+        // set all dirty fields to be 0
+        String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty WHERE user_id = :userId";
+        
+        try (Connection conn = db.open()) {
+            conn.createQuery(updateDirty)
+                .addColumnMapping("user_id", "userId")
+                .addColumnMapping("clothes_id", "clothesId")
+                .addColumnMapping("type", "type")
+                .addColumnMapping("specific_type", "specificType")
+                .addColumnMapping("number_owned", "numberOwned")
+                .addColumnMapping("number_dirty", "numberDirty")
+                .addColumnMapping("temp_high", "tempHigh")
+                .addColumnMapping("temp_low", "tempLow")
+                .addParameter("numberDirty", 0)
+                .addParameter("userId", currId)
+                .executeUpdate();
+        } catch (Sql2oException ex) {
+            logger.error("UserService.markClean: Failed to update clean clothes", ex);
+            throw new UserServiceException("UserService.markClean: Failed to update clean clothes", ex);
+        }
+    }
 
     //-----------------------------------------------------------------------------//
     // Helper Classes and Methods
