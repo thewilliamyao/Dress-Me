@@ -1,0 +1,22 @@
+dependencies: \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTTabBar.m \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTTabBar.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTEventDispatcher.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTBridge.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTBridgeDelegate.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTJavaScriptLoader.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTBridgeModule.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTDefines.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTFrameUpdate.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTInvalidating.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTLog.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTAssert.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTTabBarItem.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTComponent.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTUtils.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTView.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTBorderStyle.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTPointerEvents.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTViewControllerProtocol.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTWrapperViewController.h \
+  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/UIView+React.h
