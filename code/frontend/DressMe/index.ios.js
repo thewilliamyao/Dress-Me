@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import AppNavigator from './app/navigation/AppNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import RecommendationScreen from './app/screens/RecommendationScreen'
 
 export default class DressMe extends Component {
   constructor(props) {
@@ -30,27 +31,44 @@ export default class DressMe extends Component {
         selectedTab = {this.state.selectedTab}>
 
         <TabBarIOS.Item
-          selectedTab = {this.state.selectedTab === "tab1"}
-          title={"Recommendation"}
-          onPress={() => this.setState({selectedTab: "tab1"})}>
-          <AppNavigator
-            initialRoute={{ident: "Recommendation"}} />
+          title="Recommendation"
+          selected={this.state.selectedTab === "tab1"}
+          onPress={() => {
+            this.setState({
+              selectedTab: "tab1",
+            });
+          }}>
+
+          <RecommendationScreen/>
+          {/*<AppNavigator initialRoute={{ident: "Recommendation", index: 0}} />*/}
+          {/*this._renderContent("blue")*/}
+
         </TabBarIOS.Item>
 
         <TabBarIOS.Item
-          selectedTab = {this.state.selectedTab === "tab2"}
-          title={"Closet"}
-          onPress={() => this.setState({selectedTab: "tab2"})}>
-          console.log('Closet was Pressed');
-          {this.changeTheState()}
+          title="Closet"
+          selected={this.state.selectedTab === "tab2"}
+          onPress={() => {
+            this.setState({
+              selectedTab: "tab2",
+            });
+          }}>
+
+          {this._renderContent("red")}
+
         </TabBarIOS.Item>
 
         <TabBarIOS.Item
-          selectedTab = {this.state.selectedTab === "tab3"}
-          title={"Laundry"}
-          onPress={() => this.setState({selectedTab: "tab3"})}>
-          console.log('Laundry was Pressed');
-          {this.changeTheState()}
+          title="Laundry"
+          selected={this.state.selectedTab === "tab3"}
+          onPress={() => {
+            this.setState({
+              selectedTab: "tab3",
+            });
+          }}>
+
+          {this._renderContent("green")}
+
         </TabBarIOS.Item>
 
       </TabBarIOS>
@@ -60,6 +78,14 @@ export default class DressMe extends Component {
   changeTheState(){
     console.log(this.state.selectedTab);
   }
+
+  _renderContent = (color: string) => {
+    return(
+      <View style = {[{flex: 1}, {backgroundColor: color}]}>
+            <Text> "Tab 2" </Text>
+      </View>
+    );
+  };
 }
 
 const styles = StyleSheet.create({

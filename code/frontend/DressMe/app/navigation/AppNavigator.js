@@ -38,7 +38,7 @@ class AppNavigator extends Component {
             initialRoute={this.props.initialRoute}
             ref="appNavigator"
             style={styles.navigatorStyles}
-            renderScene={this.renderScene}
+            renderScene={this.renderScene(initialRoute, navigator)}
             configureScene={(route) => ({
               ...route.sceneConfig || Navigator.SceneConfigs.FloatFromRight })} />
         )
@@ -48,7 +48,7 @@ class AppNavigator extends Component {
 const styles = StyleSheet.create({
 
   navigatorStyles: {
-
+    fontSize: 36
   }
 
 })
