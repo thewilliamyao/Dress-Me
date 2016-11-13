@@ -162,7 +162,7 @@ public class UserService {
                         .addColumnMapping("temp_low", "tempLow")
                         .addParameter("userId", currUserId)
                         .addParameter("clothesId", this.clothesCounter++)
-                        .addParameter("type", "top")
+                        .addParameter("type", type)
                         .addParameter("specificType", s)
                         .addParameter("numberOwned", 10) //TODO change later to 0
                         .addParameter("numberDirty", 0)
@@ -205,11 +205,11 @@ public class UserService {
         double latitude = BALTIMORE_LATITUDE;
 
         // now populate default clothing
-        addClothing("tops", allTops, currUserId);
+        addClothing("top", allTops, currUserId);
         addClothing("pants", allPants, currUserId);
         addClothing("outerwear", allOuterwear, currUserId);
         addClothing("footwear", allFootwear, currUserId);
-        addClothing("accessories", allAccessories, currUserId);
+        addClothing("accessory", allAccessories, currUserId);
 
         // add user to database
         String sqlUser = "INSERT INTO users (user_id, email, password)" +
@@ -265,6 +265,7 @@ public class UserService {
         }
     }
 
+    // returns a map of item : number_owned
     public HashMap<String, Integer> getClothesMap(int id) throws UserServiceException {
         String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
 
@@ -617,46 +618,99 @@ public class UserService {
         }
 
         return toReturn;
+    }
 
+    public boolean markDirty(int currId, String body) throws UserServiceException {
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(body).getAsJsonObject();
+        String top = obj.get("top").getAsString();
+        String pants = obj.get("pants").getAsString();
+        String footwear = obj.get("footwear").getAsString();
+        String accessory = obj.get("accessory").getAsString();
+        String outerwear = obj.get("outerwear").getAsString();
 
-        // generate three recommendations.
-        // if (recommendationNum == 1) {
-        //     return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-        // } else if (recommendationNum == 2) {
-        //     // swap out shirt if possible
-        //     if (!backupShirt.equals("")) {
-        //         return new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-        //     } else if (!backupPants.equals("")) {
-        //         return new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-        //     } else if (!backupOuterwear.equals("")) {
-        //         return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear);
-        //     } else if (!backupFootwear.equals("")) {
-        //         return new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, outwearRecommendation);
-        //     } else {
-        //         // there is no other recommendation, return default
-        //         return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-        //     }
-        // } else if (recommendationNum == 3) {
-        //     if (!backupShirt.equals("") && !backupPants.equals("")) {
-        //         return new Recommendation(backupShirt, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-        //     } else if (!backupShirt.equals("") && !backupOuterwear.equals("")) {
-        //         return new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear);
-        //     } else if (!backupOuterwear.equals("") && !backupPants.equals("")) {
-        //         return new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, backupOuterwear);
-        //     } else if (!backupFootwear.equals("") && !backupOuterwear.equals("")) {
-        //         return new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear);
-        //     } else if (!backupFootwear.equals("") && !backupShirt.equals("")) {
-        //         return new Recommendation(backupShirt, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear);
-        //     } else if (!backupFootwear.equals("") && !backupPants.equals("")) {
-        //         return new Recommendation(shirtRecommendation, backupPants, backupFootwear, accessoryRecommendation, backupOuterwear);
-        //     } else {
-        //         // there is no other recommendation, return default
-        //         return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation);
-        //     }
-        // } else {
-        //     // BAD
-        //     return new Recommendation("ERROR", "ERROR", "ERROR", "ERROR", "ERROR");
-        // }
+        // obtain the current count of dirty items
+        String sqlTops = "SELECT * FROM clothes WHERE (user_id = :userId AND type = :type)";
+        HashMap<String, Integer> dirtyMap = new HashMap<String, Integer>();
+        try (Connection conn = db.open()) {
+            List<Clothes> allClothes = 
+                conn.createQuery(sqlTops)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("clothes_id", "clothesId")
+                    .addColumnMapping("type", "type")
+                    .addColumnMapping("specific_type", "specificType")
+                    .addColumnMapping("number_owned", "numberOwned")
+                    .addColumnMapping("number_dirty", "numberDirty")
+                    .addColumnMapping("temp_high", "tempHigh")
+                    .addColumnMapping("temp_low", "tempLow")
+                    .addParameter("userId", currId)
+                    .addParameter("type", "top")
+                    .executeAndFetch(Clothes.class);
+            for (Clothes c : allClothes) {
+                dirtyMap.put(c.getSpecificType(), c.getNumberDirty());
+            }
+
+        } catch (Sql2oException ex) {
+            logger.error("UserService.markDirty: Failed to get clothes map", ex);
+            throw new UserServiceException("UserService.markDirty: Failed to get clothes map", ex);
+        }
+
+        // update in the local map
+        dirtyMap.put(top, (dirtyMap.get(top) + 1)); 
+        // update the top we need to
+        String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty WHERE (user_id = :userId AND specific_type = :specificType)";
+
+        try (Connection conn = db.open()) {
+            conn.createQuery(updateDirty)
+                .addColumnMapping("user_id", "userId")
+                .addColumnMapping("clothes_id", "clothesId")
+                .addColumnMapping("type", "type")
+                .addColumnMapping("specific_type", "specificType")
+                .addColumnMapping("number_owned", "numberOwned")
+                .addColumnMapping("number_dirty", "numberDirty")
+                .addColumnMapping("temp_high", "tempHigh")
+                .addColumnMapping("temp_low", "tempLow")
+                .addParameter("specificType", top)
+                .addParameter("numberDirty", dirtyMap.get(top))
+                .addParameter("userId", currId)
+                .executeUpdate();
+        } catch (Sql2oException ex) {
+            logger.error("UserService.markDirty: Failed to update clothes", ex);
+            throw new UserServiceException("UserService.markDirty: Failed to update clothes", ex);
+        }
+
+        // then check for each item, if there is less than 30% clean, return true, to signal should do laundry
+        HashMap<String, Integer> ownedMap = getClothesMap(currId);
+        for (HashMap.Entry<String, Integer> entry : dirtyMap.entrySet()) {
+            // if we have more than 70% dirty, then we return true
+            if (entry.getValue() > (0.7) * ownedMap.get(entry.getKey())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void markClean(int currId) throws UserServiceException {
+        // set all dirty fields to be 0
+        String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty WHERE user_id = :userId";
+        
+        try (Connection conn = db.open()) {
+            conn.createQuery(updateDirty)
+                .addColumnMapping("user_id", "userId")
+                .addColumnMapping("clothes_id", "clothesId")
+                .addColumnMapping("type", "type")
+                .addColumnMapping("specific_type", "specificType")
+                .addColumnMapping("number_owned", "numberOwned")
+                .addColumnMapping("number_dirty", "numberDirty")
+                .addColumnMapping("temp_high", "tempHigh")
+                .addColumnMapping("temp_low", "tempLow")
+                .addParameter("numberDirty", 0)
+                .addParameter("userId", currId)
+                .executeUpdate();
+        } catch (Sql2oException ex) {
+            logger.error("UserService.markClean: Failed to update clean clothes", ex);
+            throw new UserServiceException("UserService.markClean: Failed to update clean clothes", ex);
+        }
     }
 
     //-----------------------------------------------------------------------------//

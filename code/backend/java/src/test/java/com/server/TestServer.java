@@ -67,8 +67,6 @@ public class TestServer {
     @Test
     public void testDefaultCloset() throws Exception {
         // create new user
-        // UserJson firstUser = new UserJson("test", "testpassword");
-        // Response radd = request("POST", "/api/v1/user", firstUser);
         testAddUser();
         // check closet
         ClosetJson expectedCloset = new ClosetJson();
@@ -81,8 +79,6 @@ public class TestServer {
     @Test
     public void testUpdateClosetItem() throws Exception {
         // create new user
-        // UserJson firstUser = new UserJson("test", "testpassword");
-        // Response radd = request("POST", "/api/v1/user", firstUser);
         testAddUser();
         ClosetJson expectedCloset = new ClosetJson();
         // update a few closet items
@@ -144,6 +140,70 @@ public class TestServer {
         assertEquals("{}", badd.content);
     }
 
+    @Test
+    public void testMarkDirty() throws Exception {
+        // create a new user
+        testAddUser();
+        // mark an item as dirty
+        DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "long_pants", "shoes", "NONE", "NONE");
+
+        // mark an item dirty until we expect it to return true
+        Response radd;
+        for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
+            radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+            assertEquals(200, radd.httpStatus);
+            assertEquals("false", radd.content);
+        }
+
+        // one more time, should return true this time
+        radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        assertEquals(200, radd.httpStatus);
+        assertEquals("true", radd.content);
+    }
+
+    @Test
+    public void testMoreDirty() throws Exception {
+        // other stuff is already past the limit
+        testMarkDirty();
+
+        // mark items as dirty, should all continue to return true
+        DirtyClothesJson dirty = new DirtyClothesJson("long_sleeve", "long_pants", "shoes", "NONE", "NONE");
+        Response radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        assertEquals(200, radd.httpStatus);
+        assertEquals("true", radd.content);
+
+        dirty.top = "tank_top";
+        radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        assertEquals(200, radd.httpStatus);
+        assertEquals("true", radd.content);
+
+        dirty.top = "tank_top";
+        radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        assertEquals(200, radd.httpStatus);
+        assertEquals("true", radd.content);
+    }
+
+    @Test
+    public void testMarkClean() throws Exception {
+        testMarkDirty();
+        // now lets mark clean
+        Response radd = request("PUT", "/api/v1/user/clean/0", null);
+        assertEquals(200, radd.httpStatus);
+        // now mark dirty should work again
+        DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "long_pants", "shoes", "NONE", "NONE");
+
+        // mark an item dirty until we expect it to return true
+        for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
+            radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+            assertEquals(200, radd.httpStatus);
+            assertEquals("false", radd.content);
+        }
+
+        // one more time, should return true this time
+        radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        assertEquals(200, radd.httpStatus);
+        assertEquals("true", radd.content);
+    }
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes
     //------------------------------------------------------------------------//
@@ -178,6 +238,22 @@ public class TestServer {
         public UserJson(String email, String password) {
             this.email = email;
             this.password = password;
+        }
+    }
+
+    private static class DirtyClothesJson {
+        public String top;
+        public String pants;
+        public String footwear;
+        public String accessory;
+        public String outerwear;
+
+        public DirtyClothesJson(String top, String pants, String footwear, String accessory, String outerwear) {
+            this.top = top;
+            this.pants = pants;
+            this.footwear = footwear;
+            this.accessory = accessory;
+            this.outerwear = outerwear;
         }
     }
 
