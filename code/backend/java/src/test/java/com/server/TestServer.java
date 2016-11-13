@@ -60,16 +60,20 @@ public class TestServer {
     //------------------------------------------------------------------------//
     // Tests for User
     //------------------------------------------------------------------------//
+
     @Test
     public void testAddUser() throws Exception {
         UserJson firstUser = new UserJson("test", "testpassword");
         Response radd = request("POST", "/api/v1/user", firstUser);
         User expectedFirstUser = new User(0, "test", "testpassword");
         String expectedJson = new Gson().toJson(expectedFirstUser);
+        System.out.println("------------------------------");
+        System.out.println(radd.content);
+        System.out.println("------------------------------");
         assertEquals(201, radd.httpStatus);
         assertEquals(expectedJson, radd.content);
     }
-
+/*
     @Test
     public void testDefaultCloset() throws Exception {
         // create new user
@@ -216,13 +220,16 @@ public class TestServer {
         assertEquals(200, radd.httpStatus);
         assertEquals("true", radd.content);
     }
+    */
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes
     //------------------------------------------------------------------------//
     
     private Response request(String method, String path, Object content) throws Exception {
         String responseBody;
-        URL url = new URL("http", Bootstrap.TEST_IP_ADDRESS, Bootstrap.TEST_PORT, path);
+        URL url = new URL("http", "localhost", 8080, path);
+        // URL url = new URL("http", "https://dry-beyond-51182.herokuapp.com", path);
+
         HttpURLConnection http = (HttpURLConnection) url.openConnection();
         try {
             http.setRequestMethod(method);
@@ -268,7 +275,7 @@ public class TestServer {
             this.outerwear = outerwear;
         }
     }
-
+    
     private static class ClosetJson {
         public int umbrella;
         public int long_pants;
@@ -401,6 +408,8 @@ public class TestServer {
     //------------------------------------------------------------------------//
 
     private void clearDB() {
+        System.out.println("-------------------------------------");
+        System.out.println("CLEARING DB");
         Sql2o db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
 
         try (Connection conn = db.open()) {
@@ -411,5 +420,7 @@ public class TestServer {
             sql = "DROP TABLE IF EXISTS locations";
             conn.createQuery(sql).executeUpdate();
         }
+        System.out.println("-------------------------------------");
+
     }
 }

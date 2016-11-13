@@ -8,9 +8,19 @@ import org.slf4j.LoggerFactory;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
+
 import com.github.dvdme.ForecastIOLib.*;
 
-import javax.sql.DataSource;
+// import javax.sql.DataSource;
+// import javax.naming.InitialContext;
+// import javax.naming.NamingException;
+// import javax.naming.Context;
+// import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
+// import org.postgresql.jdbc3.Jdbc3ConnectionPool;
+// import org.postgresql.ds.PGPoolingDataSource;
+// import java.sql.*;
+// import org.postgresql.*;
+
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -56,11 +66,61 @@ public class UserService {
      * @param dataSource
      */
     public UserService(boolean localHost) throws UserServiceException {
+        db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
+
+        /*
         if (!localHost) {
-            db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
-        } else {
+            // db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
             db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
+
+            // db = new Sql2o("jdbc:postgres://" + dbHost + ":" + dbPort + "/" + dbName + "?sslmode=requre&user=" + dbUsername + "&password=" + dbPassword); 
+
+                // =true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
+
+            // db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName, dbUsername, dbPassword);
+
+            // db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?user=" + dbUsername + "&password=" + dbPassword);
+                                // jdbc:postgresql://localhost/test?user=fred&password=secret
+
+            // InitialContext ic = new InitialContext();
+            // ic.createSubcontext("java:comp");
+            // ic.createSubcontext("java:comp/env");
+            // ic.createSubcontext("java:comp/env/jdbc");
+
+            // PGPoolingDataSource source = new PGPoolingDataSource();
+            // source.setDataSourceName("A Data Source");
+            // source.setServerName(dbHost_test);
+            // source.setDatabaseName(dbName_test);
+            // source.setUser(dbUsername_test);
+            // source.setPassword(dbPassword_test);
+            // ic.bind("java:comp/env/jdbc/" + dbName_test, source);
+            // DataSource ds = new DataSource();
+            // ds.setUrl("jdbc:postgres://" + dbHost + ":" + dbPort + "/" + dbName);
+            // ds.setUser(dbUsername);
+            // ds.setPassword(dbPassword);
+            // ic.bind("java:comp/env/jdbc/" + dbName, ds);
+            // db = new Sql2o("jdbc:postgresql://ec2-54-243-245-58.compute-1.amazonaws.com:5432/d6fvfp446bnac1?user=zramgenmiqkrmg&password=2E7ZBZHu1bERfmGuYLzIwJAiWa&sslmode=require");
+
+            // Context webContext = (Context)initContext.lookup("java:/comp/env");
+            // db = new sql2o((DataSource) webContext.lookup("jdbc/nameofmyjdbcresource"));
+        } else {
+            System.out.println("ON LOCAL HOST");
+            db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
+            // db = new Sql2o("jdbc:postgres://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test, dbUsername_test, dbPassword_test); 
+
+            // Connection conn = db.open();
+            // String dbUrl = System.getenv("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory");
+            // com.dbaccess.BasicDataSource basicDataSource = new com.dbaccess.BasicDataSource();
+            // basicDataSource.setUrl(dbUrl);
+            // basicDataSource.setUsername(dbUsername);
+            // basicDataSource.setPassword(dbPassword);
+            // db = new Sql2o(basicDataSource);
+
+
+
+            // db = new Sql2o(source);
         }
+        */
         //Create the schema for the database if necessary. This allows this
         //program to mostly self-contained. But this is not always what you want;
         //sometimes you want to create the schema externally via a script.
