@@ -15,6 +15,7 @@ import {
 import AppNavigator from './app/navigation/AppNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import RecommendationScreen from './app/screens/RecommendationScreen'
+import ClosetScreen from './app/screens/ClosetScreen'
 
 export default class DressMe extends Component {
   constructor(props) {
@@ -26,7 +27,6 @@ export default class DressMe extends Component {
 
   render() {
     return (
-
       <TabBarIOS
         selectedTab = {this.state.selectedTab}>
 
@@ -54,7 +54,7 @@ export default class DressMe extends Component {
             });
           }}>
 
-          {this._renderContent("red")}
+          <ClosetScreen/>
 
         </TabBarIOS.Item>
 
