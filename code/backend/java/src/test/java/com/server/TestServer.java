@@ -66,9 +66,6 @@ public class TestServer {
         Response radd = request("POST", "/api/v1/user", firstUser);
         User expectedFirstUser = new User(0, "test", "testpassword");
         String expectedJson = new Gson().toJson(expectedFirstUser);
-        System.out.println("------------------------------");
-        System.out.println(radd.content);
-        System.out.println("------------------------------");
         assertEquals(201, radd.httpStatus);
         assertEquals(expectedJson, radd.content);
 
@@ -408,10 +405,7 @@ public class TestServer {
     //------------------------------------------------------------------------//
 
     private void clearDB() {
-        System.out.println("-------------------------------------");
-        System.out.println("CLEARING DB");
         Sql2o db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
-
         try (Connection conn = db.open()) {
             String sql = "DROP TABLE IF EXISTS users";
             conn.createQuery(sql).executeUpdate();
@@ -420,7 +414,5 @@ public class TestServer {
             sql = "DROP TABLE IF EXISTS locations";
             conn.createQuery(sql).executeUpdate();
         }
-        System.out.println("-------------------------------------");
-
     }
 }

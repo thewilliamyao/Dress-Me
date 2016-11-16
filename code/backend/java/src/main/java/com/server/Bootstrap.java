@@ -43,8 +43,6 @@ public class Bootstrap {
         } catch (UserService.UserServiceException ex) {
             logger.error("Failed to create a UserService instance. Aborting");
         }
-
-        System.out.println("DONE WITH BOOTSTRAP MAIN");
     }
 
     private static int getHerokuAssignedPort() {
