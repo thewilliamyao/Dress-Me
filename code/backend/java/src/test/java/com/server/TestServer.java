@@ -10,7 +10,6 @@ import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Description;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
-// import org.sqlite.SQLiteDataSource;
 import spark.Spark;
 import spark.utils.IOUtils;
 
@@ -74,7 +73,7 @@ public class TestServer {
         assertEquals(expectedJson, radd.content);
 
     }
-/*
+
     @Test
     public void testDefaultCloset() throws Exception {
         // create new user
@@ -221,7 +220,7 @@ public class TestServer {
         assertEquals(200, radd.httpStatus);
         assertEquals("true", radd.content);
     }
-    */
+
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes
     //------------------------------------------------------------------------//
