@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 // import java.sql.SQLException;
 // import java.util.Properties;
+import org.postgresql.*;
 // import org.postgresql.ds.PGPoolingDataSource;
 
 // import org.sql2o.Connection;
@@ -39,23 +40,16 @@ public class Bootstrap {
     private static String dbPassword_test = "2E7ZBZHu1bERfmGuYLzIwJAiWa";
 
     public static void main(String[] args) throws Exception {
-        // Sql2o db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
-        // Connection conn = db.open();
-        // Connection conn = DriverManager.getConnection("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
-        // Class.forName("org.postgresql.Driver");
-        // Context initContext = new InitialContext();
-        // Context envContext  = (Context)initContext.lookup("java:/comp/env");
-        // DataSource ds = (DataSource)envContext.lookup("jdbc/" + dbName_test);
-        // Connection conn = ds.getConnection();
-
+        // System.out.println("IN BOOTSTRAP MAIN");
+        Class.forName("org.postgresql.Driver");
 
         //Specify the Port at which the server should be run
         int currPort = getHerokuAssignedPort();
-        System.out.println("-------------------------------------");
+        // System.out.println("-------------------------------------");
 
-        System.out.println("HEROKU ASSIGNED PORT: " + currPort);
+        // System.out.println("HEROKU ASSIGNED PORT: " + currPort);
         port(currPort);
-        System.out.println("-------------------------------------");
+        // System.out.println("-------------------------------------");
 
         try {
             UserService model = new UserService(currPort == 8080);
@@ -65,6 +59,7 @@ public class Bootstrap {
             logger.error("Failed to create a UserService instance. Aborting");
         }
 
+        System.out.println("DONE WITH BOOTSTRAP MAIN");
     }
 
     private static int getHerokuAssignedPort() {

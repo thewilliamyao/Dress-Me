@@ -66,12 +66,12 @@ public class UserService {
      * @param dataSource
      */
     public UserService(boolean localHost) throws UserServiceException {
-        db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
+        // db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
 
-        /*
+        
         if (!localHost) {
             // db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
-            db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
+            db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
 
             // db = new Sql2o("jdbc:postgres://" + dbHost + ":" + dbPort + "/" + dbName + "?sslmode=requre&user=" + dbUsername + "&password=" + dbPassword); 
 
@@ -104,7 +104,7 @@ public class UserService {
             // Context webContext = (Context)initContext.lookup("java:/comp/env");
             // db = new sql2o((DataSource) webContext.lookup("jdbc/nameofmyjdbcresource"));
         } else {
-            System.out.println("ON LOCAL HOST");
+            // System.out.println("ON LOCAL HOST");
             db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
             // db = new Sql2o("jdbc:postgres://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test, dbUsername_test, dbPassword_test); 
 
@@ -120,7 +120,7 @@ public class UserService {
 
             // db = new Sql2o(source);
         }
-        */
+        
         //Create the schema for the database if necessary. This allows this
         //program to mostly self-contained. But this is not always what you want;
         //sometimes you want to create the schema externally via a script.
