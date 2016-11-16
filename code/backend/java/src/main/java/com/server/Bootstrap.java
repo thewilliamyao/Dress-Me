@@ -62,18 +62,14 @@ public class Bootstrap {
         try {
             UserService userModel = new UserService(db);
             new UserController(userModel);
-        } catch (UserService.UserServiceException ex) {
-            logger.error("Failed to create a UserService instance. Aborting");
-        }
-        try {
             ClothesService clothesModel = new ClothesService(db);
             new ClothesController(clothesModel);
-        } catch (ClothesService.ClothesServiceException ex) {
-            logger.error("Failed to create a ClothesService instance. Aborting");
-        }
-        try {
             LocationService locationModel = new LocationService(db);
             new LocationController(locationModel);
+        } catch (UserService.UserServiceException ex) {
+            logger.error("Failed to create a UserService instance. Aborting");
+        } catch (ClothesService.ClothesServiceException ex) {
+            logger.error("Failed to create a ClothesService instance. Aborting");
         } catch (LocationService.LocationServiceException ex) {
             logger.error("Failed to create a LocationService instance. Aborting");
         }

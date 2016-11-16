@@ -10,16 +10,21 @@ import static spark.Spark.*;
 public class UserController {
 
     private static final String API_CONTEXT = "/api/v1";
-
     private final UserService userService;
-
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    /**
+    * The controller to setup the endpoints for the user portion of the API.
+    * @param userService the service object to handle the endpoint.
+    */
     public UserController(UserService userService) {
         this.userService = userService;
         setupEndpoints();
     }
 
+    /**
+    * Sets up the endpoints for a user.
+    */
     private void setupEndpoints() {
         // create a new user
         post(API_CONTEXT + "/user", "application/json", (request, response) -> {

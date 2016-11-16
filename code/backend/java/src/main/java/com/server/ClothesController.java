@@ -10,16 +10,21 @@ import static spark.Spark.*;
 public class ClothesController {
 
     private static final String API_CONTEXT = "/api/v1";
-
     private final ClothesService clothesService;
-
     private final Logger logger = LoggerFactory.getLogger(ClothesController.class);
 
+    /**
+    * The controller to setup the endpoints for the clothes portion of the API.
+    * @param clothesService the service object to handle the endpoint.
+    */
     public ClothesController(ClothesService clothesService) {
         this.clothesService = clothesService;
         setupEndpoints();
     }
 
+    /**
+    * Sets up the endpoints for clothes.
+    */
     private void setupEndpoints() {
         // get a user's closet
         get(API_CONTEXT + "/closet/:userId", "application/json", (request, response) -> {
@@ -68,5 +73,6 @@ public class ClothesController {
                 response.status(410);
             }
             return Collections.EMPTY_MAP;
-        }, new JsonTransformer());    }
+        }, new JsonTransformer());
+    }
 }

@@ -24,11 +24,11 @@ public class LocationService {
     private static final Logger logger = LoggerFactory.getLogger(LocationService.class);
 
     /**
-     * Construct the model with a pre-defined datasource. The current implementation
-     * also ensures that the DB schema is created if necessary.
-     *
-     * @param dataSource
-     */
+    * Construct the model with a pre-defined datasource. The current implementation
+    * also ensures that the DB schema is created if necessary.
+    *
+    * @param currDb the sq2o object containing the connection to the database.
+    */
     public LocationService(Sql2o currDb) throws LocationServiceException {
         db = currDb;
         
@@ -58,11 +58,11 @@ public class LocationService {
         }
     }
     
+    /**
+    * Creates a new location for a user. Updates the db. Defaults to Baltimore.
+    * @param userId, the id of the user.
+    */
     public static void createNewLocation(int userId) throws LocationServiceException {
-        System.out.println("-------------------------------");
-        System.out.println("MAKING A NEW LOCATION");
-        System.out.println("-------------------------------");
-
         int currLocationId = locationCounter++;
         // give default location of baltimore
         double longitude = BALTIMORE_LONGITUDE;
@@ -86,6 +86,11 @@ public class LocationService {
         }
     }
 
+    /**
+    * Gets the location object of a user.
+    * @param userId, the id of the user.
+    * @return the location object of the user.
+    */
     public static Location getLocation(int userId) throws LocationServiceException {
         String sqlLocation = "SELECT * FROM locations WHERE user_id = :userId";
         try (Connection conn = db.open()) {
@@ -104,6 +109,12 @@ public class LocationService {
         }
     }
 
+    /**
+    * Updates the location of a user.
+    * @param id the id of a user.
+    * @body the json form of the update, {latitude: x, longitude: y}.
+    * @return the new location of the user.
+    */
     public Location updateLocation(String id, String body) throws LocationServiceException {
         // grab params
         int currId = Integer.parseInt(id);

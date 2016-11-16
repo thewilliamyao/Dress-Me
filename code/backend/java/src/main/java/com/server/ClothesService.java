@@ -30,11 +30,11 @@ public class ClothesService {
     private static final Logger logger = LoggerFactory.getLogger(ClothesService.class);
 
     /**
-     * Construct the model with a pre-defined datasource. The current implementation
-     * also ensures that the DB schema is created if necessary.
-     *
-     * @param dataSource
-     */
+    * Construct the model with a pre-defined datasource. The current implementation
+    * also ensures that the DB schema is created if necessary.
+    *
+    * @param currDb the sq2o object containing the connection to the database.
+    */
     public ClothesService (Sql2o currDb) throws ClothesServiceException {
         db = currDb;
         try (Connection conn = db.open()) {
@@ -97,6 +97,10 @@ public class ClothesService {
         }
     }
 
+    /**
+    * Adds default values to the clothes db for a user.
+    * @param currUserId the id of the user.
+    */
     public static void createNewClothes(int currUserId) throws ClothesServiceException {
         // now populate default clothing
         addClothing("top", allTops, currUserId);
@@ -106,6 +110,13 @@ public class ClothesService {
         addClothing("accessory", allAccessories, currUserId);
     }
 
+    /**
+    * Adds a specific type of default clothing values for a user into the
+    * backend db.
+    * @param type the type of clothing item [top, pants, outerwear, footwear, accesory].
+    * @param specificType an array of the specific types of clothing.
+    * @param currUserId the id corresponding to the user.
+    */
     public static void addClothing(String type, String specificType [], int currUserId) throws ClothesServiceException {
         String sqlClothes = "INSERT INTO clothes (clothes_id, user_id, type, specific_type, number_owned, number_dirty, temp_high, temp_low)" + 
                 "                   VALUES (:clothesId, :userId, :type, :specificType, :numberOwned, :numberDirty, :tempHigh, :tempLow) ";
@@ -137,6 +148,11 @@ public class ClothesService {
         }
     }
 
+    /**
+    * Returns the list of clothes items from a specific user.
+    * @param id the id of the user.
+    * @return the list of clothes items.
+    */
     public static List<Clothes> getClothesList(int id) throws ClothesServiceException {
         String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
         try (Connection conn = db.open()) {
@@ -159,7 +175,11 @@ public class ClothesService {
         }
     }
 
-    // returns a map of item : number_owned
+    /**
+    * Returns a map of clothes items to the number of each item owned.
+    * @param id the id of the user.
+    * @return a map of the clothes item specific types to the number owned.
+    */
     public static HashMap<String, Integer> getClothesMap(int id) throws ClothesServiceException {
         String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
 
@@ -189,6 +209,12 @@ public class ClothesService {
         return map;
     }
 
+    /**
+    * Updates the number of items owned for a specific user.
+    * @param id the id of the user.
+    * @body the json form containing the clothes type and number, {type: x, number: y}.
+    * @return a map of the new counts for all items.
+    */
     public HashMap<String, Integer> updateClothes(String id, String body) throws ClothesServiceException {
         // grab params
         int currId = Integer.parseInt(id);
@@ -221,6 +247,12 @@ public class ClothesService {
         return getClothesMap(currId);
     }
 
+    /**
+    * Marks the items as dirty.
+    * @param currId the id of the user.
+    * @param body the json form of the items to be marked dirty, {top: a, pants: b, footwear: c, accessory: d, outerwear: e}.
+    * @return true if the user should do laundry, false otherwise.
+    */
     public boolean markDirty(int currId, String body) throws ClothesServiceException {
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
@@ -291,6 +323,10 @@ public class ClothesService {
         return false;
     }
 
+    /**
+    * Resets the laundry of a user, resetting all dirty counts to 0.
+    * @param currId the id of the user.
+    */
     public void markClean(int currId) throws ClothesServiceException {
         // set all dirty fields to be 0
         String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty WHERE user_id = :userId";
@@ -313,6 +349,7 @@ public class ClothesService {
             throw new ClothesServiceException("ClothesService.markClean: Failed to update clean clothes", ex);
         }
     }
+
     //-----------------------------------------------------------------------------//
     // Helper Classes and Methods
     //-----------------------------------------------------------------------------//

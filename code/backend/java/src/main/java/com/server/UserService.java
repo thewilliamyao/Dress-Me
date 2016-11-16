@@ -22,11 +22,11 @@ public class UserService {
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     /**
-     * Construct the model with a pre-defined datasource. The current implementation
-     * also ensures that the DB schema is created if necessary.
-     *
-     * @param dataSource
-     */
+    * Construct the model with a pre-defined datasource. The current implementation
+    * also ensures that the DB schema is created if necessary.
+    *
+    * @param currDb the sq2o object containing the connection to the database.
+    */
     public UserService(Sql2o currDb) throws UserServiceException {
         db = currDb;
         
@@ -54,6 +54,12 @@ public class UserService {
         }
     }
 
+    /**
+    * Creates a new user, and adds it to the db. Also calls LocationService and ClothesService to
+    * add defaults values into the location and clothes db.
+    * @param body the json request form to create a user, {email: x, password: y}.
+    * @return the java User object created.
+    */
     public User createNewUser(String body) throws UserServiceException, LocationService.LocationServiceException,
             ClothesService.ClothesServiceException {
         User user = new Gson().fromJson(body, User.class);
@@ -100,6 +106,11 @@ public class UserService {
         return user;
     }
 
+    /**
+    * Creates a map of 3 recommendations based on a user's location and closet.
+    * @param currId, the id of the user.
+    * @return a map of FirstRecommendation, SecondRecommendation, and ThirdRecommendation to the respective recommendations.
+    */
     public HashMap<String, Recommendation> getRecommendation(int currId) throws UserServiceException, LocationService.LocationServiceException,
             ClothesService.ClothesServiceException {
         // get the location lat and long
@@ -162,7 +173,7 @@ public class UserService {
         }
 
         // set shirt.
-        //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
+            //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
         if (currWeather.getMaxApparentTemp() > lowMap.get("tank_top")) {
             // want to prefer tank
             if (ownedMap.get("tank_top") - dirtyMap.get("tank_top") > 0) {
