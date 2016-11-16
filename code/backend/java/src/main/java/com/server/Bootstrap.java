@@ -5,6 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
+// for postgres
+import java.sql.Connection;
+import java.sql.DriverManager;
+import org.postgresql.*;
+
+import javax.sql.DataSource;
+import javax.naming.InitialContext;
+import javax.naming.Context;
 
 import static spark.Spark.*;
 
@@ -13,32 +21,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Bootstrap {
-    public static final String TEST_IP_ADDRESS = "localhost";
-    public static final int TEST_PORT = 8080;
     private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
+    // to use for testing purposes
+    private static String dbHost_test = "ec2-54-243-245-58.compute-1.amazonaws.com";
+    private static String dbPort_test = "5432";
+    private static String dbName_test = "d6fvfp446bnac1";
+    private static String dbUsername_test = "zramgenmiqkrmg";
+    private static String dbPassword_test = "2E7ZBZHu1bERfmGuYLzIwJAiWa";
+
     public static void main(String[] args) throws Exception {
-        //Check if the database file exists in the current directory. Abort if not
-        DataSource dataSource = configureDataSource();
-        if (dataSource == null) {
-            System.out.printf("Could not find server.db in the current directory (%s). Terminating\n",
-                    Paths.get(".").toAbsolutePath().normalize());
-            System.exit(1);
-        }
+        Class.forName("org.postgresql.Driver");
 
         //Specify the Port at which the server should be run
-        port(getHerokuAssignedPort());
-
-        //Specify the sub-directory from which to serve static resources (like html and css)
-        staticFileLocation("/public");
+        int currPort = getHerokuAssignedPort();
+        port(currPort);
 
         try {
-            UserService model = new UserService(dataSource);
+            UserService model = new UserService(currPort == 8080);
             new UserController(model);
         } catch (UserService.UserServiceException ex) {
             logger.error("Failed to create a UserService instance. Aborting");
         }
-
     }
 
     private static int getHerokuAssignedPort() {
@@ -49,23 +53,4 @@ public class Bootstrap {
         return 8080; //return default port if heroku-port isn't set (i.e. on localhost)
     }
 
-    /**
-     * Check if the database file exists in the current directory. If it does
-     * create a DataSource instance for the file and return it.
-     * @return javax.sql.DataSource corresponding to the weather database
-     */
-    private static DataSource configureDataSource() {
-        Path weatherPath = Paths.get(".", "server.db");
-        if ( !(Files.exists(weatherPath) )) {
-            try { Files.createFile(weatherPath); }
-            catch (java.io.IOException ex) {
-                logger.error("Failed to create server.db file in current directory. Aborting");
-            }
-        }
-
-        SQLiteDataSource dataSource = new SQLiteDataSource();
-        dataSource.setUrl("jdbc:sqlite:server.db");
-        return dataSource;
-
-    }
 }

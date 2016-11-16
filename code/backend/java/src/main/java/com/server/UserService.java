@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
+
 import com.github.dvdme.ForecastIOLib.*;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -33,6 +33,20 @@ public class UserService {
     private final double BALTIMORE_LATITUDE = 39.330496; // used for default location
     private final double BALTIMORE_LONGITUDE = -76.620046; // used for default location
 
+
+    private static String dbHost = "ec2-23-23-211-21.compute-1.amazonaws.com";
+    private static String dbPort = "5432";
+    private static String dbName = "d8gthm1ipiqkps";
+    private static String dbUsername = "hhaivykbviqvhs";
+    private static String dbPassword = "rWny-OLus9WiTIvQ1k4Q_GVBUV";
+
+    // to use for testing purposes
+    private static String dbHost_test = "ec2-54-243-245-58.compute-1.amazonaws.com";
+    private static String dbPort_test = "5432";
+    private static String dbName_test = "d6fvfp446bnac1";
+    private static String dbUsername_test = "zramgenmiqkrmg";
+    private static String dbPassword_test = "2E7ZBZHu1bERfmGuYLzIwJAiWa";
+
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     /**
@@ -41,14 +55,16 @@ public class UserService {
      *
      * @param dataSource
      */
-    
-    public UserService(DataSource dataSource) throws UserServiceException {
-        db = new Sql2o(dataSource);
-
+    public UserService(boolean localHost) throws UserServiceException {       
+        if (!localHost) {
+            db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
+        } else {
+            db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
+        }
+        
         //Create the schema for the database if necessary. This allows this
         //program to mostly self-contained. But this is not always what you want;
         //sometimes you want to create the schema externally via a script.
-        // TODO database stuff
         try (Connection conn = db.open()) {
             String sqlUser = "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, " +
                          "                                 email TEXT, password TEXT)" ;
@@ -56,11 +72,11 @@ public class UserService {
 
             String sqlClothes = "CREATE TABLE IF NOT EXISTS clothes (clothes_id INTEGER PRIMARY KEY, " +
                          "                                 user_id INTEGER, type TEXT, specific_type TEXT, number_owned INTEGER, " + 
-                         "                                 number_dirty INTEGER, temp_high DOUBLE, temp_low DOUBLE)" ;
+                         "                                 number_dirty INTEGER, temp_high DECIMAL, temp_low DECIMAL)" ;
             conn.createQuery(sqlClothes).executeUpdate();
 
             String sqlLocation = "CREATE TABLE IF NOT EXISTS locations (location_id INTEGER PRIMARY KEY, " +
-                         "                                  user_id INTEGER, latitude DOUBLE, longitude DOUBLE)";
+                         "                                  user_id INTEGER, latitude DECIMAL, longitude DECIMAL)";
             conn.createQuery(sqlLocation).executeUpdate();
 
             String sqlLocationId = "SELECT MAX(location_id) FROM locations";
@@ -84,8 +100,6 @@ public class UserService {
             if (latestUser != null) {
                 this.userCounter = latestUser.intValue() + 1;
             }
-
-            String sqlClothesId = "SELECT MAX(clothes_id) FROM clothes";
 
             Integer latestClothes = conn.createQuery(sqlUserId)
                 .addColumnMapping("clothes_id", "clothesId")
@@ -179,15 +193,15 @@ public class UserService {
     public User createNewUser(String body) throws UserServiceException {
         User user = new Gson().fromJson(body, User.class);
 	
-	// If no username was entered
-	if(user.getEmail().equals("")) {
-	    logger.error("UserService.createNewUser: No username specified.");
-	    throw new NewUserException("UserService.createNewUser: No username specified.");
-	} // If no password was entered
-	else if(user.getPassword().equals("")) {
-	    logger.error("UserService.createNewUser: No password specified.");
-	    throw new NewUserException("UserService.createNewUser: No password specified.");
-	}
+    	// If no username was entered
+    	if(user.getEmail().equals("")) {
+    	    logger.error("UserService.createNewUser: No username specified.");
+    	    throw new NewUserException("UserService.createNewUser: No username specified.");
+    	} // If no password was entered
+    	else if(user.getPassword().equals("")) {
+    	    logger.error("UserService.createNewUser: No password specified.");
+    	    throw new NewUserException("UserService.createNewUser: No password specified.");
+    	}
 	
         int currUserId = this.userCounter++;
         int currLocationId = this.locationCounter++;
