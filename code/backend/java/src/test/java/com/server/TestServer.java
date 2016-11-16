@@ -66,9 +66,9 @@ public class TestServer {
         Response radd = request("POST", "/api/v1/user", firstUser);
         User expectedFirstUser = new User(0, "test", "testpassword");
         String expectedJson = new Gson().toJson(expectedFirstUser);
+        User resultUser = new Gson().fromJson(radd.content, User.class);
         assertEquals(201, radd.httpStatus);
         assertEquals(expectedJson, radd.content);
-
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TestServer {
         // check closet
         ClosetJson expectedCloset = new ClosetJson();
         String expectedJson = new Gson().toJson(expectedCloset);
-        Response radd = request("GET", "/api/v1/user/closet/0", null);
+        Response radd = request("GET", "/api/v1/closet/0", null);
         ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
 
         assertEquals(200, radd.httpStatus);
@@ -94,7 +94,7 @@ public class TestServer {
         ClosetUpdateJson closetUpdate = new ClosetUpdateJson("long_pants", 6);
         expectedCloset.long_pants = 6;
         String expectedJson = new Gson().toJson(expectedCloset);
-        Response radd = request("PUT", "/api/v1/user/closet/0", closetUpdate);
+        Response radd = request("PUT", "/api/v1/closet/0", closetUpdate);
         ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
         
         assertEquals(200, radd.httpStatus);
@@ -104,7 +104,7 @@ public class TestServer {
         closetUpdate.number = 15;
         expectedCloset.t_shirt = 15;
         expectedJson = new Gson().toJson(expectedCloset);
-        radd = request("PUT", "/api/v1/user/closet/0", closetUpdate);
+        radd = request("PUT", "/api/v1/closet/0", closetUpdate);
         resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
 
         assertEquals(200, radd.httpStatus);
@@ -118,11 +118,11 @@ public class TestServer {
 
         // change location
         LocationUpdateJson locationUpdate = new LocationUpdateJson(21.2718, -157.7738);
-        Response radd = request("PUT", "/api/v1/user/location/0", locationUpdate);
+        Response radd = request("PUT", "/api/v1/location/0", locationUpdate);
         Location expectedLocation = new Location(0, 0, 21.2718, -157.7738);
-        String expectedJson = new Gson().toJson(expectedLocation);
+        Location resultLocation = new Gson().fromJson(radd.content, Location.class);
         assertEquals(200, radd.httpStatus);
-        assertEquals(expectedJson, radd.content);
+        assertEquals(expectedLocation, resultLocation);
     }
 
     @Test
@@ -163,13 +163,13 @@ public class TestServer {
         // mark an item dirty until we expect it to return true
         Response radd;
         for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
-            radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+            radd = request("PUT", "/api/v1/dirty/0", dirty);
             assertEquals(200, radd.httpStatus);
             assertEquals("false", radd.content);
         }
 
         // one more time, should return true this time
-        radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        radd = request("PUT", "/api/v1/dirty/0", dirty);
         assertEquals(200, radd.httpStatus);
         assertEquals("true", radd.content);
     }
@@ -181,17 +181,17 @@ public class TestServer {
 
         // mark items as dirty, should all continue to return true
         DirtyClothesJson dirty = new DirtyClothesJson("long_sleeve", "long_pants", "shoes", "NONE", "NONE");
-        Response radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        Response radd = request("PUT", "/api/v1/dirty/0", dirty);
         assertEquals(200, radd.httpStatus);
         assertEquals("true", radd.content);
 
         dirty.top = "tank_top";
-        radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        radd = request("PUT", "/api/v1/dirty/0", dirty);
         assertEquals(200, radd.httpStatus);
         assertEquals("true", radd.content);
 
         dirty.top = "tank_top";
-        radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        radd = request("PUT", "/api/v1/dirty/0", dirty);
         assertEquals(200, radd.httpStatus);
         assertEquals("true", radd.content);
     }
@@ -200,20 +200,20 @@ public class TestServer {
     public void testMarkClean() throws Exception {
         testMarkDirty();
         // now lets mark clean
-        Response radd = request("PUT", "/api/v1/user/clean/0", null);
+        Response radd = request("PUT", "/api/v1/clean/0", null);
         assertEquals(200, radd.httpStatus);
         // now mark dirty should work again
         DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "long_pants", "shoes", "NONE", "NONE");
 
         // mark an item dirty until we expect it to return true
         for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
-            radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+            radd = request("PUT", "/api/v1/dirty/0", dirty);
             assertEquals(200, radd.httpStatus);
             assertEquals("false", radd.content);
         }
 
         // one more time, should return true this time
-        radd = request("PUT", "/api/v1/user/dirty/0", dirty);
+        radd = request("PUT", "/api/v1/dirty/0", dirty);
         assertEquals(200, radd.httpStatus);
         assertEquals("true", radd.content);
     }
