@@ -17,13 +17,13 @@ import {
 } from 'react-native';
 // var Rec = null
 class RecommendationScreen extends Component {
-
+/*
   var top;
   var bottom;
   var footwear;
   var accessory;
   var outerwear;
-
+*/
   static recommendationJson = null;
   static choiceInt = 0;
 
@@ -222,7 +222,7 @@ class RecommendationScreen extends Component {
 
   handleDressMePress() {
     console.log('Dress Me was pressed');
-    fetch('https://dry-beyond-51182.herokuapp.com/user/dirty/:userid', {
+    {/*fetch('https://dry-beyond-51182.herokuapp.com/user/dirty/:userid', {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -235,7 +235,7 @@ class RecommendationScreen extends Component {
           accessory: {this.accessory},
           outerwear: {this.outerwear}
       })
-    })
+    })*/}
   }
 
   tempRender(){
