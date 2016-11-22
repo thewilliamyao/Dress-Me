@@ -12,7 +12,7 @@ import {
   Text,
   View
 } from 'react-native';
-import AppNavigator from './app/navigation/AppNavigator'
+//import AppNavigator from './app/navigation/AppNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import RecommendationScreen from './app/screens/RecommendationScreen'
 import ClosetScreen from './app/screens/ClosetScreen'

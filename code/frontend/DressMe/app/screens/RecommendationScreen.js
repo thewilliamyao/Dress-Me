@@ -18,6 +18,12 @@ import {
 // var Rec = null
 class RecommendationScreen extends Component {
 
+  var top;
+  var bottom;
+  var footwear;
+  var accessory;
+  var outerwear;
+
   static recommendationJson = null;
   static choiceInt = 0;
 
@@ -100,6 +106,11 @@ class RecommendationScreen extends Component {
     } else {
       return (
         <View style={styles.contentText}>
+          top=  {this.state.Rec.top},
+          bottom=  {this.state.Rec.pants},
+          footwear=  {this.state.Rec.footwear},
+          accessory={this.state.Rec.accessory},
+          outerwear={this.state.Rec.outerwear}
           <View>
             <Text style={styles.contentTextLeft}>Top</Text>
             <Text style={styles.contentTextLeft}>Pants</Text>
@@ -211,6 +222,20 @@ class RecommendationScreen extends Component {
 
   handleDressMePress() {
     console.log('Dress Me was pressed');
+    fetch('https://dry-beyond-51182.herokuapp.com/user/dirty/:userid', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          top:  {this.top},
+          bottom:  {thispants},
+          footwear:  {this.footwear},
+          accessory: {this.accessory},
+          outerwear: {this.outerwear}
+      })
+    })
   }
 
   tempRender(){
