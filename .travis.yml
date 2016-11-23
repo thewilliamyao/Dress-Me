@@ -1,4 +1,3 @@
 language: java
 script:
-  cd code/backend/java/
-  mvn test
+  cd code/backend/java/ && mvn test
