@@ -1,3 +1,5 @@
 language: java
+jdk:
+  - oraclejdk8
 script:
-  cd code/backend/java/ && mvn test
+  cd code/backend/java/ && mvn clean verify && cd ../../../
