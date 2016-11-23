@@ -18,49 +18,17 @@ import java.util.ArrayList;
 public class UserService {
 
     private Sql2o db;
-    private int userCounter = 0; // counter for free value of the id
-    private int clothesCounter = 0; // counter for free value of the id
-    private int locationCounter = 0; // counter for free value of the id
-    private String[] allTops = {"tank_top", "t_shirt", "long_sleeve"}; // types of clothing
-    private String[] allPants = {"shorts", "long_pants"}; // types of clothing
-    private String[] allOuterwear = {"hoodie", "windbreaker", "sweater", "winter_coat", "rain_jacket"}; // types of clothing
-    private String[] allFootwear = {"shoes", "boots", "sandals"}; // types of clothing
-    private String[] allAccessories = {"umbrella", "scarf"}; // types of clothing
-    private HashMap<String, Double> lowTempMap; // map to hold defaults for high and low temps
-    private HashMap<String, Double> highTempMap; // map to hold defaults for high and low temps
-    private double TEMP_MAX = 120.0; // limit for temp values
-    private double TEMP_MIN = -120.0; // limit for temp values
-    private final double BALTIMORE_LATITUDE = 39.330496; // used for default location
-    private final double BALTIMORE_LONGITUDE = -76.620046; // used for default location
-
-
-    private static String dbHost = "ec2-23-23-211-21.compute-1.amazonaws.com";
-    private static String dbPort = "5432";
-    private static String dbName = "d8gthm1ipiqkps";
-    private static String dbUsername = "hhaivykbviqvhs";
-    private static String dbPassword = "rWny-OLus9WiTIvQ1k4Q_GVBUV";
-
-    // to use for testing purposes
-    private static String dbHost_test = "ec2-54-243-245-58.compute-1.amazonaws.com";
-    private static String dbPort_test = "5432";
-    private static String dbName_test = "d6fvfp446bnac1";
-    private static String dbUsername_test = "zramgenmiqkrmg";
-    private static String dbPassword_test = "2E7ZBZHu1bERfmGuYLzIwJAiWa";
-
+    private static int userCounter = 0; // counter for free value of the id
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     /**
-     * Construct the model with a pre-defined datasource. The current implementation
-     * also ensures that the DB schema is created if necessary.
-     *
-     * @param dataSource
-     */
-    public UserService(boolean localHost) throws UserServiceException {       
-        if (!localHost) {
-            db = new Sql2o("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername, dbPassword);
-        } else {
-            db = new Sql2o("jdbc:postgresql://" + dbHost_test + ":" + dbPort_test + "/" + dbName_test + "?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory", dbUsername_test, dbPassword_test);
-        }
+    * Construct the model with a pre-defined datasource. The current implementation
+    * also ensures that the DB schema is created if necessary.
+    *
+    * @param currDb the sq2o object containing the connection to the database.
+    */
+    public UserService(Sql2o currDb) throws UserServiceException {
+        db = currDb;
         
         //Create the schema for the database if necessary. This allows this
         //program to mostly self-contained. But this is not always what you want;
@@ -69,128 +37,31 @@ public class UserService {
             String sqlUser = "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, " +
                          "                                 email TEXT, password TEXT)" ;
             conn.createQuery(sqlUser).executeUpdate();
-
-            String sqlClothes = "CREATE TABLE IF NOT EXISTS clothes (clothes_id INTEGER PRIMARY KEY, " +
-                         "                                 user_id INTEGER, type TEXT, specific_type TEXT, number_owned INTEGER, " + 
-                         "                                 number_dirty INTEGER, temp_high DECIMAL, temp_low DECIMAL)" ;
-            conn.createQuery(sqlClothes).executeUpdate();
-
-            String sqlLocation = "CREATE TABLE IF NOT EXISTS locations (location_id INTEGER PRIMARY KEY, " +
-                         "                                  user_id INTEGER, latitude DECIMAL, longitude DECIMAL)";
-            conn.createQuery(sqlLocation).executeUpdate();
-
-            String sqlLocationId = "SELECT MAX(location_id) FROM locations";
-            Integer latestLocation = conn.createQuery(sqlLocationId)
-                .addColumnMapping("location_id", "locationId")
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("latitute", "latitute")
-                .addColumnMapping("longitude", "longitude")
-                .executeAndFetchFirst(Integer.class);
-            if (latestLocation != null) {
-                this.locationCounter = latestLocation.intValue() + 1;
-            }
-
             String sqlUserId = "SELECT MAX(user_id) FROM users";
-
             Integer latestUser = conn.createQuery(sqlUserId)
                 .addColumnMapping("user_id", "userId")
                 .addColumnMapping("email", "email")
                 .addColumnMapping("password", "password")
                 .executeAndFetchFirst(Integer.class);
             if (latestUser != null) {
-                this.userCounter = latestUser.intValue() + 1;
+                userCounter = latestUser.intValue() + 1;
+            } else {
+                userCounter = 0;
             }
-
-            Integer latestClothes = conn.createQuery(sqlUserId)
-                .addColumnMapping("clothes_id", "clothesId")
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("type", "type")
-                .addColumnMapping("number_owned", "numberOwned")
-                .addColumnMapping("number_dirty", "numberDirty")
-                .addColumnMapping("temp_high", "tempHigh")
-                .addColumnMapping("temp_low", "tempLow")
-                .executeAndFetchFirst(Integer.class);
-            if (latestClothes != null) {
-                this.clothesCounter = latestClothes.intValue() + 1;
-            }
-
-            // create default mapping of temperatures
-            // TODO: turn this into a static DB maybe?
-            lowTempMap = new HashMap<String, Double>();
-            highTempMap = new HashMap<String, Double>();
-            // shirts
-            lowTempMap.put("tank_top", new Double(80));
-            highTempMap.put("tank_top", new Double(TEMP_MAX));
-            lowTempMap.put("t_shirt", new Double(TEMP_MIN));
-            highTempMap.put("t_shirt", new Double(TEMP_MAX));
-            lowTempMap.put("long_sleeve", new Double(TEMP_MIN));
-            highTempMap.put("long_sleeve", new Double(80));
-            // pants
-            lowTempMap.put("shorts", new Double(60));
-            highTempMap.put("shorts", new Double(120));
-            lowTempMap.put("long_pants", new Double(TEMP_MIN));
-            highTempMap.put("long_pants", new Double(80));
-            // outerwear
-            lowTempMap.put("hoodie", new Double(50));
-            highTempMap.put("hoodie", new Double(80));
-            lowTempMap.put("windbreaker", new Double(50));
-            highTempMap.put("windbreaker", new Double(TEMP_MAX));
-            lowTempMap.put("sweater", new Double(50));
-            highTempMap.put("sweater", new Double(80));
-            lowTempMap.put("winter_coat", new Double(TEMP_MIN));
-            highTempMap.put("winter_coat", new Double(40));
-            // accessories
-            lowTempMap.put("umbrella", new Double(TEMP_MIN));
-            highTempMap.put("umbrella", new Double(TEMP_MAX));
-            lowTempMap.put("scarf", new Double(TEMP_MIN));
-            highTempMap.put("scarf", new Double(50));
-            // shoes
-            lowTempMap.put("boots", new Double(TEMP_MIN));
-            highTempMap.put("boots", new Double(40));
-            lowTempMap.put("sandals", new Double(80));
-            highTempMap.put("sandals", new Double(TEMP_MAX));
-            lowTempMap.put("shoes", new Double(TEMP_MIN));
-            highTempMap.put("shoes", new Double(TEMP_MAX));
         } catch(Sql2oException ex) {
             logger.error("Failed to create schema at startup", ex);
             throw new UserServiceException("Failed to create schema at startup", ex);
         }
     }
-    
-    // TODO: address the fact that we dont have default ranges for some values...
-    /// probably hardcode these in
-    public void addClothing(String type, String specificType [], int currUserId) throws UserServiceException {
-        String sqlClothes = "INSERT INTO clothes (clothes_id, user_id, type, specific_type, number_owned, number_dirty, temp_high, temp_low)" + 
-                "                   VALUES (:clothesId, :userId, :type, :specificType, :numberOwned, :numberDirty, :tempHigh, :tempLow) ";
 
-        for(String s : specificType) {
-            try (Connection conn = db.open()) {
-                conn.createQuery(sqlClothes)
-                        .addColumnMapping("user_id", "userId")
-                        .addColumnMapping("clothes_id", "clothesId")
-                        .addColumnMapping("type", "type")
-                        .addColumnMapping("specific_type", "specificType")
-                        .addColumnMapping("number_owned", "numberOwned")
-                        .addColumnMapping("number_dirty", "numberDirty")
-                        .addColumnMapping("temp_high", "tempHigh")
-                        .addColumnMapping("temp_low", "tempLow")
-                        .addParameter("userId", currUserId)
-                        .addParameter("clothesId", this.clothesCounter++)
-                        .addParameter("type", type)
-                        .addParameter("specificType", s)
-                        .addParameter("numberOwned", 10) //TODO change later to 0
-                        .addParameter("numberDirty", 0)
-                        .addParameter("tempHigh", highTempMap.containsKey(s) ? highTempMap.get(s) : TEMP_MAX)
-                        .addParameter("tempLow", lowTempMap.containsKey(s) ? lowTempMap.get(s) : TEMP_MIN)
-                    .executeUpdate();
-            } catch (Sql2oException ex) {
-                logger.error("UserService.addClothing: Failed to add new clothing entry", ex);
-                throw new UserServiceException("UserService.addClothing: Failed to add new clothing entry", ex);
-            }
-        }
-    }
-
-    public User createNewUser(String body) throws UserServiceException {
+    /**
+    * Creates a new user, and adds it to the db. Also calls LocationService and ClothesService to
+    * add defaults values into the location and clothes db.
+    * @param body the json request form to create a user, {email: x, password: y}.
+    * @return the java User object created.
+    */
+    public User createNewUser(String body) throws UserServiceException, LocationService.LocationServiceException,
+            ClothesService.ClothesServiceException {
         User user = new Gson().fromJson(body, User.class);
 	
     	// If no username was entered
@@ -204,8 +75,10 @@ public class UserService {
     	}
 	
         int currUserId = this.userCounter++;
-        int currLocationId = this.locationCounter++;
         user.setUserId(currUserId);
+
+        LocationService.createNewLocation(currUserId);
+        ClothesService.createNewClothes(currUserId);
 
         // TODO password encryption/token authentication
         JsonParser parser = new JsonParser();
@@ -213,23 +86,10 @@ public class UserService {
         String currEmail = obj.get("email").getAsString();
         String currPassword = obj.get("password").getAsString();
 
-        // give default location of baltimore
-        // TODO change this
-        double longitude = BALTIMORE_LONGITUDE;
-        double latitude = BALTIMORE_LATITUDE;
-
-        // now populate default clothing
-        addClothing("top", allTops, currUserId);
-        addClothing("pants", allPants, currUserId);
-        addClothing("outerwear", allOuterwear, currUserId);
-        addClothing("footwear", allFootwear, currUserId);
-        addClothing("accessory", allAccessories, currUserId);
-
         // add user to database
         String sqlUser = "INSERT INTO users (user_id, email, password)" +
 	        "                  VALUES (:userId, :email, :password)";
-        String sqlLocation = "INSERT INTO locations (location_id, user_id, latitude, longitude)" +
-                "                  VALUES (:locationId, :userId, :latitude, :longitude)";
+
         try (Connection conn = db.open()) {
             conn.createQuery(sqlUser)
                 .addColumnMapping("user_id", "userId")
@@ -239,163 +99,28 @@ public class UserService {
                 .addParameter("email", currEmail)
                 .addParameter("password", currPassword)
                 .executeUpdate();
-
-            conn.createQuery(sqlLocation)
-                .addColumnMapping("location_id", "locationId")
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("latitude", "latitude")
-                .addColumnMapping("longitude", "longitude")
-                .addParameter("userId", currUserId)
-                .addParameter("locationId", currLocationId)
-                .addParameter("longitude", longitude)
-                .addParameter("latitude", latitude)
-                .executeUpdate();
-            } catch (Sql2oException ex) {
+        } catch (Sql2oException ex) {
 	        logger.error("UserService.createNewUser: Failed to add new user entry", ex);
-                throw new UserServiceException("UserService.createNewUser: Failed to add new user entry", ex);
-            }
+            throw new UserServiceException("UserService.createNewUser: Failed to add new user entry", ex);
+        }
         return user;
     }
 
-    public List<Clothes> getClothesList(int id) throws UserServiceException {
-        String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
-        try (Connection conn = db.open()) {
-            List<Clothes> allClothes = 
-                conn.createQuery(sqlClothes)
-                    .addColumnMapping("user_id", "userId")
-                    .addColumnMapping("clothes_id", "clothesId")
-                    .addColumnMapping("type", "type")
-                    .addColumnMapping("specific_type", "specificType")
-                    .addColumnMapping("number_owned", "numberOwned")
-                    .addColumnMapping("number_dirty", "numberDirty")
-                    .addColumnMapping("temp_high", "tempHigh")
-                    .addColumnMapping("temp_low", "tempLow")
-                    .addParameter("userId", id)
-                    .executeAndFetch(Clothes.class);
-            return allClothes;
-        } catch (Sql2oException ex) {
-            logger.error("UserService.getClothesMap: Failed to get clothes map", ex);
-            throw new UserServiceException("UserService.getClothesMap: Failed to get clothes map", ex);
-        }
-    }
-
-    // returns a map of item : number_owned
-    public HashMap<String, Integer> getClothesMap(int id) throws UserServiceException {
-        String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
-
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
-        try (Connection conn = db.open()) {
-            List<Clothes> allClothes = 
-                conn.createQuery(sqlClothes)
-                    .addColumnMapping("user_id", "userId")
-                    .addColumnMapping("clothes_id", "clothesId")
-                    .addColumnMapping("type", "type")
-                    .addColumnMapping("specific_type", "specificType")
-                    .addColumnMapping("number_owned", "numberOwned")
-                    .addColumnMapping("number_dirty", "numberDirty")
-                    .addColumnMapping("temp_high", "tempHigh")
-                    .addColumnMapping("temp_low", "tempLow")
-                    .addParameter("userId", id)
-                    .executeAndFetch(Clothes.class);
-
-            for (Clothes c : allClothes) {
-                map.put(c.getSpecificType(), c.getNumberOwned());
-            }
-
-        } catch (Sql2oException ex) {
-            logger.error("UserService.getClothesMap: Failed to get clothes map", ex);
-            throw new UserServiceException("UserService.getClothesMap: Failed to get clothes map", ex);
-        }
-        return map;
-    }
-
-    public Location getLocation(int userId) throws UserServiceException {
-        String sqlLocation = "SELECT * FROM locations WHERE user_id = :userId";
-        try (Connection conn = db.open()) {
-            Location currLocation = 
-                conn.createQuery(sqlLocation)
-                    .addColumnMapping("user_id", "userId")
-                    .addColumnMapping("location_id", "locationId")
-                    .addColumnMapping("latitude", "latitude")
-                    .addColumnMapping("longitude", "longitude")
-                    .addParameter("userId", userId)
-                    .executeAndFetchFirst(Location.class);
-            return currLocation;
-        } catch (Sql2oException ex) {
-                logger.error("UserService.getLocation: Failed to get location", ex);
-            throw new UserServiceException("UserService.getLocation: Failed to get location", ex);
-        }
-    }
-
-    public Location updateLocation(String id, String body) throws UserServiceException {
-        // grab params
-        int currId = Integer.parseInt(id);
-        JsonParser parser = new JsonParser();
-        JsonObject obj = parser.parse(body).getAsJsonObject();
-        double latitude = obj.get("latitude").getAsDouble();
-        double longitude = obj.get("longitude").getAsDouble();
-
-        // update location in table
-        String sqlUpdateLocation = "UPDATE locations SET latitude = :latitude, longitude = :longitude WHERE user_id = :userId";
-        try (Connection conn = db.open()) {
-            conn.createQuery(sqlUpdateLocation)
-                .addColumnMapping("location_id", "locationId")
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("latitude", "latitude")
-                .addColumnMapping("longitude", "longitude")
-                .addParameter("userId", currId)
-                .addParameter("latitude", latitude)
-                .addParameter("longitude", longitude)
-                .executeUpdate();
-        } catch (Sql2oException ex) {
-            logger.error("UserService.updateLocation: Failed to update location", ex);
-            throw new UserServiceException("UserService.updateLocation: Failed to update location", ex);
-        }
-
-        return getLocation(currId);
-    }
-
-    public HashMap<String, Integer> updateClothes(String id, String body) throws UserServiceException {
-        // grab params
-        int currId = Integer.parseInt(id);
-        JsonParser parser = new JsonParser();
-        JsonObject obj = parser.parse(body).getAsJsonObject();
-        String clothesType = obj.get("type").getAsString();
-        int number = obj.get("number").getAsInt();
-        // update specific item
-        String updateItem = "UPDATE clothes SET number_owned = :numberOwned WHERE (user_id = :userId AND specific_type = :specificType)";
-
-        try (Connection conn = db.open()) {
-            conn.createQuery(updateItem)
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("clothes_id", "clothesId")
-                .addColumnMapping("type", "type")
-                .addColumnMapping("specific_type", "specificType")
-                .addColumnMapping("number_owned", "numberOwned")
-                .addColumnMapping("number_dirty", "numberDirty")
-                .addColumnMapping("temp_high", "tempHigh")
-                .addColumnMapping("temp_low", "tempLow")
-                .addParameter("specificType", clothesType)
-                .addParameter("numberOwned", number)
-                .addParameter("userId", currId)
-                .executeUpdate();
-        } catch (Sql2oException ex) {
-            logger.error("UserService.updateClothes: Failed to update clothes", ex);
-            throw new UserServiceException("UserService.updateClothes: Failed to update clothes", ex);
-        }
-
-        return getClothesMap(currId);
-    }
-
-    public HashMap<String, Recommendation> getRecommendation(int currId) throws UserServiceException {
+    /**
+    * Creates a map of 3 recommendations based on a user's location and closet.
+    * @param currId, the id of the user.
+    * @return a map of FirstRecommendation, SecondRecommendation, and ThirdRecommendation to the respective recommendations.
+    */
+    public HashMap<String, Recommendation> getRecommendation(int currId) throws UserServiceException, LocationService.LocationServiceException,
+            ClothesService.ClothesServiceException {
         // get the location lat and long
-        Location currLocation = getLocation(currId);
+        Location currLocation = LocationService.getLocation(currId);
 
         // get the weather based on the location
         Weather currWeather = new Weather(currLocation.getLatitude(), currLocation.getLongitude());
 
         // recreate clothes map for this user
-        List<Clothes> currClothes = getClothesList(currId);
+        List<Clothes> currClothes = ClothesService.getClothesList(currId);
         HashMap<String, Double> highMap = new HashMap<String, Double>();
         HashMap<String, Double> lowMap = new HashMap<String, Double>();
         HashMap<String, Integer> ownedMap = new HashMap<String, Integer>();
@@ -448,7 +173,7 @@ public class UserService {
         }
 
         // set shirt.
-        //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
+            //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
         if (currWeather.getMaxApparentTemp() > lowMap.get("tank_top")) {
             // want to prefer tank
             if (ownedMap.get("tank_top") - dirtyMap.get("tank_top") > 0) {
@@ -634,99 +359,6 @@ public class UserService {
         return toReturn;
     }
 
-    public boolean markDirty(int currId, String body) throws UserServiceException {
-        JsonParser parser = new JsonParser();
-        JsonObject obj = parser.parse(body).getAsJsonObject();
-        String top = obj.get("top").getAsString();
-        String pants = obj.get("pants").getAsString();
-        String footwear = obj.get("footwear").getAsString();
-        String accessory = obj.get("accessory").getAsString();
-        String outerwear = obj.get("outerwear").getAsString();
-
-        // obtain the current count of dirty items
-        String sqlTops = "SELECT * FROM clothes WHERE (user_id = :userId AND type = :type)";
-        HashMap<String, Integer> dirtyMap = new HashMap<String, Integer>();
-        try (Connection conn = db.open()) {
-            List<Clothes> allClothes = 
-                conn.createQuery(sqlTops)
-                    .addColumnMapping("user_id", "userId")
-                    .addColumnMapping("clothes_id", "clothesId")
-                    .addColumnMapping("type", "type")
-                    .addColumnMapping("specific_type", "specificType")
-                    .addColumnMapping("number_owned", "numberOwned")
-                    .addColumnMapping("number_dirty", "numberDirty")
-                    .addColumnMapping("temp_high", "tempHigh")
-                    .addColumnMapping("temp_low", "tempLow")
-                    .addParameter("userId", currId)
-                    .addParameter("type", "top")
-                    .executeAndFetch(Clothes.class);
-            for (Clothes c : allClothes) {
-                dirtyMap.put(c.getSpecificType(), c.getNumberDirty());
-            }
-
-        } catch (Sql2oException ex) {
-            logger.error("UserService.markDirty: Failed to get clothes map", ex);
-            throw new UserServiceException("UserService.markDirty: Failed to get clothes map", ex);
-        }
-
-        // update in the local map
-        dirtyMap.put(top, (dirtyMap.get(top) + 1)); 
-        // update the top we need to
-        String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty WHERE (user_id = :userId AND specific_type = :specificType)";
-
-        try (Connection conn = db.open()) {
-            conn.createQuery(updateDirty)
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("clothes_id", "clothesId")
-                .addColumnMapping("type", "type")
-                .addColumnMapping("specific_type", "specificType")
-                .addColumnMapping("number_owned", "numberOwned")
-                .addColumnMapping("number_dirty", "numberDirty")
-                .addColumnMapping("temp_high", "tempHigh")
-                .addColumnMapping("temp_low", "tempLow")
-                .addParameter("specificType", top)
-                .addParameter("numberDirty", dirtyMap.get(top))
-                .addParameter("userId", currId)
-                .executeUpdate();
-        } catch (Sql2oException ex) {
-            logger.error("UserService.markDirty: Failed to update clothes", ex);
-            throw new UserServiceException("UserService.markDirty: Failed to update clothes", ex);
-        }
-
-        // then check for each item, if there is less than 30% clean, return true, to signal should do laundry
-        HashMap<String, Integer> ownedMap = getClothesMap(currId);
-        for (HashMap.Entry<String, Integer> entry : dirtyMap.entrySet()) {
-            // if we have more than 70% dirty, then we return true
-            if (entry.getValue() > (0.7) * ownedMap.get(entry.getKey())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void markClean(int currId) throws UserServiceException {
-        // set all dirty fields to be 0
-        String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty WHERE user_id = :userId";
-        
-        try (Connection conn = db.open()) {
-            conn.createQuery(updateDirty)
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("clothes_id", "clothesId")
-                .addColumnMapping("type", "type")
-                .addColumnMapping("specific_type", "specificType")
-                .addColumnMapping("number_owned", "numberOwned")
-                .addColumnMapping("number_dirty", "numberDirty")
-                .addColumnMapping("temp_high", "tempHigh")
-                .addColumnMapping("temp_low", "tempLow")
-                .addParameter("numberDirty", 0)
-                .addParameter("userId", currId)
-                .executeUpdate();
-        } catch (Sql2oException ex) {
-            logger.error("UserService.markClean: Failed to update clean clothes", ex);
-            throw new UserServiceException("UserService.markClean: Failed to update clean clothes", ex);
-        }
-    }
-
     //-----------------------------------------------------------------------------//
     // Helper Classes and Methods
     //-----------------------------------------------------------------------------//
@@ -738,8 +370,8 @@ public class UserService {
     }
 
     public static class NewUserException extends UserServiceException {
-	public NewUserException(String message) {
-	    super(message, null);
-	}
+    	public NewUserException(String message) {
+    	    super(message, null);
+    	}
     }
 }

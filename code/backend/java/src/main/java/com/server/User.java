@@ -32,6 +32,9 @@ public class User {
         this.password = password;
     }
 
+    public void print() {
+        System.out.println("uid: " + this.userId + ", email: " + this.email + ", pass: " + this.password);
+    }
     /**
     *   Sets the user's Id
     *   @param id, the user's id

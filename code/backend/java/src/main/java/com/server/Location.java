@@ -36,6 +36,10 @@ public class Location{
         return this.locationId;
     }
 
+    public void print() {
+        System.out.println("uid: " + this.userId + ", lid: " + this.locationId + ", lat: " + this.latitude + ", lon: " + this.longitude);
+    }
+
     /**
     *   Gets the user Latitude.
     *   @return user Latitude.
@@ -66,5 +70,29 @@ public class Location{
     */
     public void setLongitude(double y){
         this.longitude = y;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!Location.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+        final Location other = (Location) obj;
+        if (this.getUserId() != other.getUserId()) {
+            return false;
+        }
+        if (this.getLocationId() != other.getLocationId()) {
+            return false;
+        }
+        if (this.getLatitude() != other.getLatitude()) {
+            return false;
+        }
+        if (this.getLongitude() != other.getLongitude()) {
+            return false;
+        }
+        return true;
     }
 }
