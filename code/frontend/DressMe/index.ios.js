@@ -16,6 +16,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import RecommendationScreen from './app/screens/RecommendationScreen'
 import ClosetScreen from './app/screens/ClosetScreen'
+import LaundryScreen from './app/screens/LaundryScreen'
 
 export default class DressMe extends Component {
   constructor(props) {
@@ -67,7 +68,7 @@ export default class DressMe extends Component {
             });
           }}>
 
-          {this._renderContent("green")}
+          <LaundryScreen/>
 
         </TabBarIOS.Item>
 

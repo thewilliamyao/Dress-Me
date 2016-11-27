@@ -1,78 +1,121 @@
-'use strict'
-import React, { Component, Text, View, ListView, TouchableOpacity, Navigator } from 'react-native'
+import React, { Component } from 'react';
+//var RootNav = require('./laundry.ios');
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View,
+  NavigatorIOS,
+  TouchableHighlight,
+  ScrollView,
+  TextInput
+} from 'react-native';
 
+var ClosetItem = require('./components/closet-item')
 
-const people = [
-  {firstName: "jordan", lastName: "leigh", roomNumber: 30},
-  {firstName: "will", lastName: "piers", roomNumber: 14},
-  {firstName: "berkeley", lastName: "wanner", roomNumber: 8}
-]
+//var itemTypes = ['Tank Top', 'T Shirt', 'Long Sleeve', 'Shorts', 'Long Pants', 'Hoodie', "Windbreaker", "Sweater", "Winter Coat", "Rain Jacket" ]
 
-class LaundryScreen extends Component {
+var itemTypes = ['Umbrella', 'Long Pants', 'Scarf', 'Long Sleeve', 'Tank Top', 'Sandals', 'Rain Jacket', 'Shoes', 'Hoodie', 'Windbreaker', 'Boots', 'Sweater', 'Shorts', 'Winter Coat', 'T-Shirt']
+
+var itemNum = []
+
+// var ClosetScreen = React.createClass({
+//  render: function() {
+//    return <View style={styles.container}>
+//      <Text style={styles.title}>
+//        Closet
+//      </Text>
+//      <View style={styles.closetItems}>
+//        {this.closet()}
+//      </View>
+//    </View>
+//  },
+class LaundryScreen extends Component{
   constructor(props) {
-    super(props)
-    this.state = {
+      super(props)
+      this.state = {
+        ClosetList: null,
+        text: '0'
+      };
     }
+
+  render(){
+    return <ScrollView style={styles.container}>
+      <View style={styles.title}>
+        <Text style={styles.titleText}>
+          Laundry
+        </Text>
+      </View>
+      <View style={styles.closetItems}>
+        {this.getCloset()}
+        {this.closet()}
+      </View>
+    </ScrollView>
   }
 
-  render() {
+  closet() {
+    var closetItems = [];
+
+    for (var i = 0; i < 15; i++){
+      var itemType = itemTypes[i];
+      var number = itemNum[i];
+      console.log({itemNum});
+      closetItems.push(
+        <ClosetItem key={i} type={itemType} amount={this.textBoxInput()}/>
+      )
+    }
+    return closetItems;
+  }
+
+  textBoxInput() {
     return (
-      <ViewContainer>
-        <StatusBarBackground style={{backgroundColor: "mistyrose"}} />
-        <ListView
-          style={{marginTop: 100}}
-          initialListSize={10}
-          dataSource={this.state.peopleDataSource}
-          renderRow={(person) => { return this._renderPersonRow(person) }} />
-      </ViewContainer>
-    )
+      <TextInput
+        style={{height:40, width: 40, borderColor: 'gray', color:'white', borderWidth: 1}}
+        onChangeText={(text) => this.setState({text})}
+        value={this.state.text}/> 
+    );
   }
 
-  _renderPersonRow(person) {
-    return (
-      <TouchableOpacity style={styles.personRow} onPress={(event) => this._navigateToPersonShow(person) }>
-        <Text style={styles.personName}>{`${_.capitalize(person.firstName)} ${_.capitalize(person.lastName)}`}</Text>
-        <View style={{flex: 1}} />
-        <Icon name="chevron-right" size={10} style={styles.personMoreIcon} />
-      </TouchableOpacity>
-    )
+  getCloset() {
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/user/closet/0', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+        
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          this.recommendationJson = responseJson;
+          this.choiceInt = 1;
+          this.setState({ClosetList: recommendationJson});
+          //{this.getNums()}
+        })
   }
 
-  _navigateToPersonShow(person) {
-    this.props.navigator.push({
-      ident: "PersonShow",
-      person
-    })
+  getNums(){
+    for(var j = 0; j < 15; j++) {
+            var num = this.state.ClosetList[j];
+            itemNum.push(
+              num
+            )
+        }
   }
+};
 
-}
-
-const styles = React.StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  title: {
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+      alignItems: 'center'
   },
-
-  personRow: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    height: 50
+  titleText: {
+    fontSize: 36,
   },
-
-  personName: {
-    marginLeft: 25
-  },
-
-  personMoreIcon: {
-    color: "green",
-    height: 10,
-    width: 10,
-    marginRight: 25
+  closetItems: {
+    marginTop: 30
   }
+})
 
-});
-
-module.exports = PeopleIndexScreen
+module.exports = LaundryScreen;
