@@ -7,7 +7,8 @@ import {
   View,
   NavigatorIOS,
   TouchableHighlight,
-  ScrollView
+  ScrollView,
+  TextInput
 } from 'react-native';
 
 var ClosetItem = require('./components/closet-item')
@@ -33,8 +34,9 @@ class ClosetScreen extends Component{
 	constructor(props) {
 	    super(props)
 	    this.state = {
-	      ClosetList: null
-	    }
+	      ClosetList: null,
+	      text: '0'
+	    };
   	}
 
 	render(){
@@ -59,11 +61,20 @@ class ClosetScreen extends Component{
 			var number = itemNum[i];
 			console.log({itemNum});
 			closetItems.push(
-				<ClosetItem key={i} type={itemType} amount={itemNum}/>
+				<ClosetItem key={i} type={itemType} amount={this.textBoxInput()}/>
 			)
 		}
 		return closetItems;
 	}
+
+	textBoxInput() {
+    return (
+      <TextInput
+        style={{height:40, width: 40, borderColor: 'gray', color:'white', borderWidth: 1}}
+        onChangeText={(text) => this.setState({text})}
+        value={this.state.text}/> 
+    );
+  }
 
 	getCloset() {
       	fetch('https://dry-beyond-51182.herokuapp.com/api/v1/user/closet/0', {
