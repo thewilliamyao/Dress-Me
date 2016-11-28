@@ -38,6 +38,18 @@ public class ClothesController {
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
 
+        // get a user's closet
+        get(API_CONTEXT + "/laundry/:userId", "application/json", (request, response) -> {
+            try {
+                response.status(200);
+                return clothesService.getLaundryMap(Integer.parseInt(request.params(":userId")));
+            } catch (ClothesService.ClothesServiceException ex) {
+                logger.error("Failed to create new user");
+                response.status(410);
+            }
+            return Collections.EMPTY_MAP;
+        }, new JsonTransformer());
+
         // update a user's clothes counts
         put(API_CONTEXT + "/closet/:userId", "application/json", (request, response) -> {
             try {

@@ -210,6 +210,40 @@ public class ClothesService {
     }
 
     /**
+    * Returns a map of clothes items to the number of items that are dirty.
+    * @param id the id of the user.
+    * @return a map of the clothes item specific types to the number dirty.
+    */
+    public static HashMap<String, Integer> getLaundryMap(int id) throws ClothesServiceException {
+        String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
+
+        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        try (Connection conn = db.open()) {
+            List<Clothes> allClothes = 
+                conn.createQuery(sqlClothes)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("clothes_id", "clothesId")
+                    .addColumnMapping("type", "type")
+                    .addColumnMapping("specific_type", "specificType")
+                    .addColumnMapping("number_owned", "numberOwned")
+                    .addColumnMapping("number_dirty", "numberDirty")
+                    .addColumnMapping("temp_high", "tempHigh")
+                    .addColumnMapping("temp_low", "tempLow")
+                    .addParameter("userId", id)
+                    .executeAndFetch(Clothes.class);
+
+            for (Clothes c : allClothes) {
+                map.put(c.getSpecificType(), c.getNumberDirty());
+            }
+
+        } catch (Sql2oException ex) {
+            logger.error("ClothesService.getLaundryMap: Failed to get laundry map", ex);
+            throw new ClothesServiceException("ClothesService.getLaundryMap: Failed to get laundry map", ex);
+        }
+        return map;
+    }
+
+    /**
     * Updates the number of items owned for a specific user.
     * @param id the id of the user.
     * @body the json form containing the clothes type and number, {type: x, number: y}.
