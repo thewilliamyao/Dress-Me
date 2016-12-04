@@ -71,7 +71,7 @@ public class TestServer {
         assertEquals(201, radd.httpStatus);
         assertEquals(expectedJson, radd.content);
     }
-
+/*
     @Test
     public void testDefaultCloset() throws Exception {
         // create new user
@@ -240,7 +240,7 @@ public class TestServer {
             assertEquals(expectedLaundry, actualLaundry);
         }
     }
-
+*/
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes
     //------------------------------------------------------------------------//

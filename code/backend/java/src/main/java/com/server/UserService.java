@@ -15,12 +15,33 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+// imports for encrypting password
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
 public class UserService {
 
     private Sql2o db;
     private static int userCounter = 0; // counter for free value of the id
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
+    /*
+        global vars for encrypting password:
+    */
+    private static final byte[] SALT = {
+        (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
+        (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
+    };
+    private static final char[] SECRET_KEY = "skhafiluasdhfuihasd".toCharArray();
+    private static final String PBE_STRING = "PBEWithMD5AndDES";
     /**
     * Construct the model with a pre-defined datasource. The current implementation
     * also ensures that the DB schema is created if necessary.
@@ -54,6 +75,33 @@ public class UserService {
         }
     }
 
+
+    private static String base64Encode(byte[] bytes) {
+        return new BASE64Encoder().encode(bytes);
+    }
+    private static byte[] base64Decode(String input) throws IOException {
+        return new BASE64Decoder().decodeBuffer(input);
+    }
+
+    /**
+
+    */
+    public String encrypt(String input) throws GeneralSecurityException, UnsupportedEncodingException {
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBE_STRING);
+        SecretKey key = keyFactory.generateSecret(new PBEKeySpec(SECRET_KEY));
+        Cipher pbeCipher = Cipher.getInstance(PBE_STRING);
+        pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
+        return base64Encode(pbeCipher.doFinal(input.getBytes("UTF-8")));
+    }
+
+    public String decrypt(String input) throws GeneralSecurityException, IOException{
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBE_STRING);
+        SecretKey key = keyFactory.generateSecret(new PBEKeySpec(SECRET_KEY));
+        Cipher pbeCipher = Cipher.getInstance(PBE_STRING);
+        pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
+        return new String(pbeCipher.doFinal(base64Decode(input)), "UTF-8");
+    }
+    
     /**
     * Creates a new user, and adds it to the db. Also calls LocationService and ClothesService to
     * add defaults values into the location and clothes db.
@@ -61,9 +109,14 @@ public class UserService {
     * @return the java User object created.
     */
     public User createNewUser(String body) throws UserServiceException, LocationService.LocationServiceException,
-            ClothesService.ClothesServiceException {
+            ClothesService.ClothesServiceException, GeneralSecurityException, IOException {
         User user = new Gson().fromJson(body, User.class);
-	
+	    String tmp = encrypt(user.getPassword());
+        System.out.println("----------------------------------");
+        System.out.printf("Expected: %s\n", user.getPassword());
+        System.out.printf("Encrypted: %s\n", tmp);
+        System.out.printf("Decrypted: %s\n", decrypt(tmp));
+        System.out.println("----------------------------------");
     	// If no username was entered
     	if(user.getEmail().equals("")) {
     	    logger.error("UserService.createNewUser: No username specified.");
