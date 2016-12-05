@@ -108,37 +108,30 @@ public class UserService {
     * @param body the json request form to create a user, {email: x, password: y}.
     * @return the java User object created.
     */
-    public User createNewUser(String body, String header) throws UserServiceException, LocationService.LocationServiceException,
-            ClothesService.ClothesServiceException, GeneralSecurityException, IOException {
+    public LoginToken createNewUser(String body) throws UserServiceException, LocationService.LocationServiceException,
+            ClothesService.ClothesServiceException, GeneralSecurityException, IOException, Exception {
         User user = new Gson().fromJson(body, User.class);
-	    String tmp = encrypt(user.getPassword());
-        System.out.println("----------------------------------");
-        System.out.printf("Expected: %s\n", user.getPassword());
-        System.out.printf("Encrypted: %s\n", tmp);
-        System.out.printf("Decrypted: %s\n", decrypt(tmp));
-        System.out.printf("Token: %s\n", header);
-        System.out.println("----------------------------------");
-    	// If no username was entered
-    	if(user.getEmail().equals("")) {
-    	    logger.error("UserService.createNewUser: No username specified.");
-    	    throw new NewUserException("UserService.createNewUser: No username specified.");
-    	} // If no password was entered
-    	else if(user.getPassword().equals("")) {
-    	    logger.error("UserService.createNewUser: No password specified.");
-    	    throw new NewUserException("UserService.createNewUser: No password specified.");
-    	}
+
+        if(user.getEmail().equals("")) {
+            logger.error("UserService.createNewUser: No username specified.");
+            throw new NewUserException("UserService.createNewUser: No username specified.");
+        } else if(user.getPassword().equals("")) {
+            logger.error("UserService.createNewUser: No password specified.");
+            throw new NewUserException("UserService.createNewUser: No password specified.");
+        }
 	
+        // TODO error check that this username doesn't already exist
         int currUserId = this.userCounter++;
         user.setUserId(currUserId);
 
         LocationService.createNewLocation(currUserId);
         ClothesService.createNewClothes(currUserId);
 
-        // TODO password encryption/token authentication
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
         String currEmail = obj.get("email").getAsString();
         String currPassword = obj.get("password").getAsString();
+        String encryptedPass  = encrypt(currPassword);
 
         // add user to database
         String sqlUser = "INSERT INTO users (user_id, email, password)" +
@@ -151,14 +144,49 @@ public class UserService {
                 .addColumnMapping("password", "password")
                 .addParameter("userId", currUserId)
                 .addParameter("email", currEmail)
-                .addParameter("password", currPassword)
+                .addParameter("password", encryptedPass)
                 .executeUpdate();
         } catch (Sql2oException ex) {
 	        logger.error("UserService.createNewUser: Failed to add new user entry", ex);
             throw new UserServiceException("UserService.createNewUser: Failed to add new user entry", ex);
         }
-        return user;
+        return new LoginToken(user.getUserId());
     }
+
+    public LoginToken getLoginToken(String body) throws UserServiceException, Exception { 
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(body).getAsJsonObject();
+        String currEmail = obj.get("email").getAsString();
+        String currPassword = obj.get("password").getAsString();
+
+        // get encrypted password
+        String sqlUser = "SELECT * FROM users WHERE (email = :email)";
+        User currUser;
+        try (Connection conn = db.open()) {
+            currUser =
+                conn.createQuery(sqlUser)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("email", "email")
+                    .addColumnMapping("password", "password")
+                    .addParameter("email", currEmail)
+                    .executeAndFetchFirst(User.class);
+        } catch (Sql2oException ex) {
+	        logger.error("UserService.createLoginToken: Failed to find user entry", ex);
+            throw new UserServiceException("UserService.createLoginToken: Failed to find user entry", ex);
+        }
+        // now verify password
+        try {
+            if (currPassword.equals(decrypt(currUser.getPassword()))) {
+                // good, generate token
+                return new LoginToken(currUser.getUserId());
+            }
+        } catch (Exception ex) {
+            logger.error("UserServer.createLoginToken: Invalid password", ex);
+            throw new UserServiceException("UserService.createLoginToken: Invalid password", ex);
+        }
+        throw new UserServiceException("UserService.createLoginToken: Invalid password");
+    }
+
 
     /**
     * Creates a map of 3 recommendations based on a user's location and closet.
@@ -420,6 +448,9 @@ public class UserService {
     public static class UserServiceException extends Exception {
         public UserServiceException(String message, Throwable cause) {
             super(message, cause);
+        }
+        public UserServiceException(String message) {
+            super(message, null);
         }
     }
 

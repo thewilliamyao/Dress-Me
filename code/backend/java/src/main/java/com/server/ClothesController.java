@@ -28,12 +28,19 @@ public class ClothesController {
     private void setupEndpoints() {
         // get a user's closet
         get(API_CONTEXT + "/closet/:userId", "application/json", (request, response) -> {
-            try {
+            try {                
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(401);
+                    return Collections.EMPTY_MAP;
+                }
                 response.status(200);
-                return clothesService.getClothesMap(Integer.parseInt(request.params(":userId")));
+                return clothesService.getClothesMap(currId);
             } catch (ClothesService.ClothesServiceException ex) {
                 logger.error("Failed to create new user");
                 response.status(410);
+            } catch (Exception ex) {
+                response.status(600);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
@@ -41,6 +48,11 @@ public class ClothesController {
         // get a user's closet
         get(API_CONTEXT + "/laundry/:userId", "application/json", (request, response) -> {
             try {
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(401);
+                    return Collections.EMPTY_MAP;
+                }
                 response.status(200);
                 return clothesService.getLaundryMap(Integer.parseInt(request.params(":userId")));
             } catch (ClothesService.ClothesServiceException ex) {
@@ -53,6 +65,11 @@ public class ClothesController {
         // update a user's clothes counts
         put(API_CONTEXT + "/closet/:userId", "application/json", (request, response) -> {
             try {
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(401);
+                    return Collections.EMPTY_MAP;
+                }
                 response.status(200);
                 return clothesService.updateClothes(request.params(":userId"), request.body());
             } catch (ClothesService.ClothesServiceException ex) {
@@ -65,6 +82,11 @@ public class ClothesController {
         // mark items as choosen (which in turn makes them dirty)
         put(API_CONTEXT + "/dirty/:userId", "application/json", (request, response) -> {
             try {
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(401);
+                    return Collections.EMPTY_MAP;
+                }
                 response.status(200);
                 return clothesService.markDirty(Integer.parseInt(request.params("userId")), request.body());
             } catch (ClothesService.ClothesServiceException ex) {
@@ -78,6 +100,11 @@ public class ClothesController {
         // reset laundry, set all dirty counts to 0
         put(API_CONTEXT + "/clean/:userId", "application/json", (request, response) -> {
             try {
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(401);
+                    return Collections.EMPTY_MAP;
+                }
                 response.status(200);
                 clothesService.markClean(Integer.parseInt(request.params("userId")));
             } catch (ClothesService.ClothesServiceException ex) {

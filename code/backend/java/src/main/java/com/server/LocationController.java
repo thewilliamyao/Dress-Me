@@ -29,6 +29,11 @@ public class LocationController {
         // update a user's location
         put(API_CONTEXT + "/location/:userId", "application/json", (request, response) -> {
             try {
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(401);
+                    return Collections.EMPTY_MAP;
+                }
                 response.status(200);
                 return locationService.updateLocation(request.params(":userId"), request.body());
             } catch (LocationService.LocationServiceException ex) {

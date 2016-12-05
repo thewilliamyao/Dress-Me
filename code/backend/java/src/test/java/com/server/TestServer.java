@@ -35,6 +35,7 @@ public class TestServer {
     private static String dbName_test = "d6fvfp446bnac1";
     private static String dbUsername_test = "zramgenmiqkrmg";
     private static String dbPassword_test = "2E7ZBZHu1bERfmGuYLzIwJAiWa";
+    private String currToken = "";
 
     //------------------------------------------------------------------------//
     // Setup
@@ -65,13 +66,13 @@ public class TestServer {
     public void testAddUser() throws Exception {
         UserJson firstUser = new UserJson("test", "testpassword");
         Response radd = request("POST", API_PREFIX + "user", firstUser);
-        User expectedFirstUser = new User(0, "test", "testpassword");
-        String expectedJson = new Gson().toJson(expectedFirstUser);
-        User resultUser = new Gson().fromJson(radd.content, User.class);
+        LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
         assertEquals(201, radd.httpStatus);
-        assertEquals(expectedJson, radd.content);
+        assertEquals(token.getId(), 0);
+        assertNotEquals(token.getToken(), "");
+        currToken = token.getToken();
     }
-/*
+
     @Test
     public void testDefaultCloset() throws Exception {
         // create new user
@@ -81,7 +82,6 @@ public class TestServer {
         String expectedJson = new Gson().toJson(expectedCloset);
         Response radd = request("GET", API_PREFIX + "closet/0", null);
         ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
-
         assertEquals(200, radd.httpStatus);
         assertEquals(expectedCloset, resultCloset);
     }
@@ -97,7 +97,6 @@ public class TestServer {
         String expectedJson = new Gson().toJson(expectedCloset);
         Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
         ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
-        
         assertEquals(200, radd.httpStatus);
         assertEquals(expectedCloset, resultCloset);
         // another update
@@ -116,7 +115,6 @@ public class TestServer {
     public void testUpdateLocation() throws Exception {
         // create new user
         testAddUser();
-
         // change location
         LocationUpdateJson locationUpdate = new LocationUpdateJson(21.2718, -157.7738);
         Response radd = request("PUT", API_PREFIX + "location/0", locationUpdate);
@@ -131,10 +129,10 @@ public class TestServer {
         for (int i = 0; i < 10; i++) {
             UserJson firstUser = new UserJson("test", "testpassword");
             Response radd = request("POST", API_PREFIX + "user", firstUser);
-            User expectedFirstUser = new User(i, "test", "testpassword");
-            String expectedJson = new Gson().toJson(expectedFirstUser);
+            LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
             assertEquals(201, radd.httpStatus);
-            assertEquals(expectedJson, radd.content);
+            assertEquals(token.getId(), i);
+            assertNotEquals(token.getToken(), "");
         }
     }
     
@@ -240,7 +238,7 @@ public class TestServer {
             assertEquals(expectedLaundry, actualLaundry);
         }
     }
-*/
+
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes
     //------------------------------------------------------------------------//
@@ -253,6 +251,7 @@ public class TestServer {
         try {
             http.setRequestMethod(method);
             http.setDoInput(true);
+            http.setRequestProperty("token", currToken);
             if (content != null) {
                 String contentAsJson = new Gson().toJson(content);
                 http.setDoOutput(true);

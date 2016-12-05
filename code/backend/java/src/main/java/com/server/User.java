@@ -43,6 +43,13 @@ public class User {
         this.userId = id;
     }
 
+    /**
+    * Gets the user id
+    * @return the id of the user
+    */
+    public int getUserId() {
+        return this.userId;
+    }
 
     /**
     *   Get the user's email.
@@ -65,7 +72,7 @@ public class User {
     *   @return the user's password.
     */
     public String getPassword(){
-	return password;
+	    return password;
     }
     
     /**
