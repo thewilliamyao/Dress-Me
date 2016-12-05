@@ -13,92 +13,128 @@ import {
 
 var ClosetItem = require('./components/closet-item')
 
-//var itemTypes = ['Tank Top', 'T Shirt', 'Long Sleeve', 'Shorts', 'Long Pants', 'Hoodie', "Windbreaker", "Sweater", "Winter Coat", "Rain Jacket" ]
+var itemTypes = ['boots', 'hoodie', 'long_pants', 'long_sleeve', 'rain_jacket', 'sandals', 'scarf', 'shoes', 'shorts', 'sweater', 't_shirt', 'tank_top', 'umbrella', 'windbreaker', 'winter_coat']
 
-var itemTypes = ['Umbrella', 'Long Pants', 'Scarf', 'Long Sleeve', 'Tank Top', 'Sandals', 'Rain Jacket', 'Shoes', 'Hoodie', 'Windbreaker', 'Boots', 'Sweater', 'Shorts', 'Winter Coat', 'T-Shirt']
-
-var itemNum = []
-
-// var ClosetScreen = React.createClass({
-//  render: function() {
-//    return <View style={styles.container}>
-//      <Text style={styles.title}>
-//        Closet
-//      </Text>
-//      <View style={styles.closetItems}>
-//        {this.closet()}
-//      </View>
-//    </View>
-//  },
 class LaundryScreen extends Component{
   constructor(props) {
       super(props)
       this.state = {
-        ClosetList: null,
+        LaundryList: null,
+        itemNum: ['...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...'],
         text: '0'
       };
     }
+
+    // componentWillMount() {
+    //  this.getCloset();
+    // }
 
   render(){
     return <ScrollView style={styles.container}>
       <View style={styles.title}>
         <Text style={styles.titleText}>
-          Laundry
+          Laundry Basket
         </Text>
       </View>
       <View style={styles.closetItems}>
-        {this.getCloset()}
         {this.closet()}
+      </View>
+      <View style={styles.reset}>
+        {this.resetLaundryButton()}
       </View>
     </ScrollView>
   }
 
   closet() {
+    this.getCloset();
     var closetItems = [];
 
     for (var i = 0; i < 15; i++){
       var itemType = itemTypes[i];
-      var number = itemNum[i];
-      console.log({itemNum});
+      var number = this.state.itemNum[i];
+      // console.log(number);
+      console.log(this.state.itemNum[i]);
       closetItems.push(
-        <ClosetItem key={i} type={itemType} amount={this.textBoxInput()}/>
+        <ClosetItem key={i} type={itemType} amount={this.state.itemNum[i]}/>
       )
     }
     return closetItems;
   }
 
-  textBoxInput() {
-    return (
-      <TextInput
-        style={{height:40, width: 40, borderColor: 'gray', color:'white', borderWidth: 1}}
-        onChangeText={(text) => this.setState({text})}
-        value={this.state.text}/> 
-    );
-  }
+  // textBoxInput(number) {
+  //  var value;
+  //  if (!this.state.itemNum[number]) {
+  //    value = "..."
+  //    return (
+  //          <TextInput
+  //          style={styles.amount}
+  //          onChangeText={(text) => this.setState({text})};
+  //          value={value}/> 
+  //         );
+  //  } else {
+  //    value = this.state.itemNum[number] + "";
+  //      return (
+  //        <TextInput
+  //          style={styles.amount}
+  //          onChangeText={(value) => this.setState({value})}
+  //          value={value}/> 
+  //      );
+  //  }
+  //   }
 
   getCloset() {
-        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/user/closet/0', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-        
-      }).then((response) => response.json())
-        .then((responseJson) => {
-          this.recommendationJson = responseJson;
-          this.choiceInt = 1;
-          this.setState({ClosetList: recommendationJson});
-          //{this.getNums()}
-        })
+    if (this.state.LaundryList == null) {
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/laundry/0', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+          
+          }).then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson.boots);
+                this.setState({LaundryList: responseJson});
+                console.log(this.state.LaundryList.boots);
+                console.log(this.state.LaundryList);
+                // console.log(itemTypes[0]);
+                // parseClosetJson()
+                // console.log(closetJson);
+                {this.getNums()}
+                // var tempArray = this.closet();
+                // console.log("time to print");
+                // return tempArray;
+            })
+        } 
   }
 
   getNums(){
-    for(var j = 0; j < 15; j++) {
-            var num = this.state.ClosetList[j];
-            itemNum.push(
-              num
-            )
+    for (var i = 0; i < 15; i++) {
+      var itemNum = this.state.itemNum.slice();
+      itemNum[i] = (this.state.LaundryList[itemTypes[i]]);
+      this.setState({ itemNum: itemNum });
         }
+  }
+  
+  handleResetLaundryPress() {
+    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/0', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  }
+
+  resetLaundryButton() {
+    return <TouchableHighlight
+      underlayColor="gray"
+      onPress={() => this.handleResetLaundryPress()}
+      style={styles.resetButton}
+      >
+        <Text>
+          Reset Laundry!
+        </Text>
+
+    </TouchableHighlight>
   }
 };
 
@@ -108,14 +144,36 @@ var styles = StyleSheet.create({
   },
   title: {
     justifyContent: 'center',
-      alignItems: 'center'
+    alignItems: 'center'
   },
   titleText: {
     fontSize: 36,
   },
   closetItems: {
-    marginTop: 30
-  }
+    marginTop: 30,
+  },
+  amount: {
+    height:40, 
+    width: 40, 
+    borderColor: 'gray', 
+    color:'white', 
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reset: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  resetButton: {
+    width: 200,
+    height: 50,
+    borderWidth: 2,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
 })
 
 module.exports = LaundryScreen;

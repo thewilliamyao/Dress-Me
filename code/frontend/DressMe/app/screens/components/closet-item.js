@@ -28,10 +28,10 @@ class ClosetItem extends Component{
   	}
 
 	render() {
-		// const {text} = this.state;
+		const {text} = this.state;
 		//same as const text = this.state.text
-		// const {amount} = this.props;
-		
+		const {amount} = this.props;
+
 		return <View style={styles.container}>
 			<View style={styles.icon}>
 				<Image style={styles.iconImage} source={require('../../../img/clothes_icon/shirt-2.png')}/>
