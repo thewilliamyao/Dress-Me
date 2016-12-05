@@ -216,7 +216,7 @@ class RecommendationScreen extends Component {
 
   handleDressMePress() {
     console.log('Dress Me was pressed');
-      let response = fetch('https://dry-beyond-51182.herokuapp.com/user/dirty/:userid', {
+      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/dirty/0', {
         method: 'PUT',
         headers: {
           'Accept': 'application/json',
@@ -224,13 +224,15 @@ class RecommendationScreen extends Component {
         },
         body: JSON.stringify({
             top: this.state.Rec.top,
-            bottom:  this.state.Rec.pants,
+            pants:  this.state.Rec.pants,
             footwear:  this.state.Rec.footwear,
             accessory: this.state.Rec.accessory,
             outerwear: this.state.Rec.outerwear
         })
-      })
-      console.log(response);
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          console.log(responseJson);
+        })
   }
 
   tempRender(){
