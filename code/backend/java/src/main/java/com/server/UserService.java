@@ -108,7 +108,7 @@ public class UserService {
     * @param body the json request form to create a user, {email: x, password: y}.
     * @return the java User object created.
     */
-    public User createNewUser(String body) throws UserServiceException, LocationService.LocationServiceException,
+    public User createNewUser(String body, String header) throws UserServiceException, LocationService.LocationServiceException,
             ClothesService.ClothesServiceException, GeneralSecurityException, IOException {
         User user = new Gson().fromJson(body, User.class);
 	    String tmp = encrypt(user.getPassword());
@@ -116,6 +116,7 @@ public class UserService {
         System.out.printf("Expected: %s\n", user.getPassword());
         System.out.printf("Encrypted: %s\n", tmp);
         System.out.printf("Decrypted: %s\n", decrypt(tmp));
+        System.out.printf("Token: %s\n", header);
         System.out.println("----------------------------------");
     	// If no username was entered
     	if(user.getEmail().equals("")) {

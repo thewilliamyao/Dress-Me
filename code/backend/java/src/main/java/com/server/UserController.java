@@ -29,7 +29,17 @@ public class UserController {
         // create a new user
         post(API_CONTEXT + "/user", "application/json", (request, response) -> {
             try {
-                User u = userService.createNewUser(request.body());
+                /*
+                System.out.println("-----------------------------------");
+                System.out.printf("Header: [%s]\n", request.headers("TOKEN"));
+                System.out.println("-----------------------------------");i
+                */
+                String token = request.headers("TOKEN");
+                if (!token.equals("TSAFDOJSDFJ")) {
+                    response.status(411);
+                    return Collections.EMPTY_MAP;
+                }
+                User u = userService.createNewUser(request.body(), request.headers("TOKEN"));
                 response.status(201);
                 return u;
             } catch (UserService.UserServiceException ex) {
