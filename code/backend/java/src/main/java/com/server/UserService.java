@@ -263,49 +263,49 @@ public class UserService {
             // check precip. if very cold, recommend winter jacket. else if rainig, recommend rain jacket. if clear but somewhat cold, recommend hoodie.
         if (currWeather.getMaxApparentTemp() < highMap.get("winter_coat") || currWeather.getPrecipType().equals("snow")) {
             // recommend winter coat
-            if (ownedMap.get("winter_coat") - dirtyMap.get("winter_coat") > 0) {
+            if (hasClean("winter_coat", ownedMap, dirtyMap)) {
                 outwearRecommendation = "winter_coat";
-            } else if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
+            } else if (hasClean("hoodie", ownedMap, dirtyMap)) {
                 outwearRecommendation = "hoodie";
-            } else if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
+            } else if (hasClean("sweater", ownedMap, dirtyMap)) {
                 outwearRecommendation = "sweater";
-            } else if (ownedMap.get("windbreaker") - dirtyMap.get("windbreaker") > 0) {
+            } else if (hasClean("windbreaker", ownedMap, dirtyMap)) {
                 outwearRecommendation = "windbreaker";
-            } else if (ownedMap.get("rain_jacket") - dirtyMap.get("rain_jacket") > 0) {
+            } else if (hasClean("rain_jacket", ownedMap, dirtyMap)) {
                 outwearRecommendation = "rain_jacket";
             }
         } else if (currWeather.getWindSpeed() > 20) {
             // if windy, recommend windbreaker
-            if (ownedMap.get("windbreaker") - dirtyMap.get("windbreaker") > 0) {
+            if (hasClean("windbreaker", ownedMap, dirtyMap)) {
                 outwearRecommendation = "windbreaker";
-            } else if (ownedMap.get("rain_jacket") - dirtyMap.get("rain_jacket") > 0) {
+            } else if (hasClean("rain_jacket", ownedMap, dirtyMap)) {
                 outwearRecommendation = "rain_jacket";
-            } else if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
+            } else if (hasClean("hoodie", ownedMap, dirtyMap)) {
                 outwearRecommendation = "hoodie";
-            } else if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
+            } else if (hasClean("sweater", ownedMap, dirtyMap)) {
                 outwearRecommendation = "sweater";
             }
         } else if (currWeather.getPrecipType().equals("rain")) {
             // if rainy, recommend rain jacket
-            if (ownedMap.get("rain_jacket") - dirtyMap.get("rain_jacket") > 0) {
+            if (hasClean("rain_jacket", ownedMap, dirtyMap)) {
                 outwearRecommendation = "rain_jacket";
-            } else if (ownedMap.get("windbreaker") - dirtyMap.get("windbreaker") > 0) {
+            } else if (hasClean("windbreaker", ownedMap, dirtyMap)) {
                 outwearRecommendation = "windbreaker";
-            } else if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
+            } else if (hasClean("hoodie", ownedMap, dirtyMap)) {
                 outwearRecommendation = "hoodie";
-            } else if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
+            } else if (hasClean("sweater", ownedMap, dirtyMap)) {
                 outwearRecommendation = "sweater";
             }
         } else if (currWeather.getMaxApparentTemp() < highMap.get("hoodie")) {
             // recommend hoodie/sweater
-            if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
+            if (hasClean("hoodie", ownedMap, dirtyMap)) {
                 outwearRecommendation = "hoodie";
-                if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
+                if (hasClean("sweater", ownedMap, dirtyMap)) {
                     backupOuterwear = "sweater";
                 }
-            } else if (ownedMap.get("sweater") - dirtyMap.get("sweater") > 0) {
+            } else if (hasClean("sweater", ownedMap, dirtyMap)) {
                 outwearRecommendation = "sweater";
-                if (ownedMap.get("hoodie") - dirtyMap.get("hoodie") > 0) {
+                if (hasClean("hoodie", ownedMap, dirtyMap)) {
                     backupOuterwear = "hoodie";
                 }
             }
