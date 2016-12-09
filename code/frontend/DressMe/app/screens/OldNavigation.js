@@ -22,33 +22,35 @@ import LaundryScreen from './app/screens/LaundryScreen'
 import LoginScreen from './app/screens/LoginScreen'
 
 export default class DressMe extends Component {
-  _renderScene(route, navigator) {
-    var globalProps = {navigator}
-
-    switch(route.ident) {
-      case "Login" :
-        return (
-          <LoginScreen
-            {...globalProps}/>
-        )
-      case "Recommendation" :
-        return(
-          <RecommendationScreen
-            {...globalProps}/>
-        )
-    }
-  }
-
   render() {
     const routes = [
       {title: 'LoginScreen', index: 0},
-      {title: 'Recommendation', index: 1},
+      {title: 'Second Scene', index: 1},
     ];
     return (
       <Navigator
-        initialRoute={{ident: "Login"}}
-        renderScene={this._renderScene}
-        configureScene={this._configureScene}/>
+        initialRoute={{title: 'My Initial Scene', index: 0}}
+        renderScene={(route, navigator) => 
+           <LoginScreen 
+            title={route.title}
+
+            onForward={() => {
+              const nextIndex = route.index + 1;
+              navigator.push({
+                title:'Scene ' + nextIndex,
+                component: RecommendationScreen,
+                index: nextIndex,
+              });
+            }}
+
+            onBack={() => {
+              if (route.index > 0) {
+                navigator.pop();
+              }
+            }}
+          />
+        }
+      />
     )
   } 
 }
