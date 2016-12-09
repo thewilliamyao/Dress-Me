@@ -38,7 +38,7 @@ public class ClothesController {
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
 
-        // get a user's closet
+        // get a user's laundry
         get(API_CONTEXT + "/laundry/:userId", "application/json", (request, response) -> {
             try {
                 response.status(200);
