@@ -20,6 +20,7 @@ import RecommendationScreen from './app/screens/RecommendationScreen'
 import ClosetScreen from './app/screens/ClosetScreen'
 import LaundryScreen from './app/screens/LaundryScreen'
 import LoginScreen from './app/screens/LoginScreen'
+import TabScreen from './TabScreen'
 
 export default class DressMe extends Component {
   _renderScene(route, navigator) {
@@ -33,7 +34,7 @@ export default class DressMe extends Component {
         )
       case "Recommendation" :
         return(
-          <RecommendationScreen
+          <TabScreen
             {...globalProps}/>
         )
     }
