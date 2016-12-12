@@ -20,6 +20,8 @@ import RecommendationScreen from './app/screens/RecommendationScreen'
 import ClosetScreen from './app/screens/ClosetScreen'
 import LaundryScreen from './app/screens/LaundryScreen'
 import LoginScreen from './app/screens/LoginScreen'
+import RegisterScreen from './app/screens/RegisterScreen'
+import SettingsScreen from './app/screens/SettingsScreen'
 import TabScreen from './TabScreen'
 
 export default class DressMe extends Component {
@@ -35,6 +37,16 @@ export default class DressMe extends Component {
       case "Recommendation" :
         return(
           <TabScreen
+            {...globalProps}/>
+        )
+      case "Register" :
+        return(
+            <RegisterScreen
+              {...globalProps}/>
+        )
+      case "Settings" :
+        return(
+          <SettingsScreen
             {...globalProps}/>
         )
     }

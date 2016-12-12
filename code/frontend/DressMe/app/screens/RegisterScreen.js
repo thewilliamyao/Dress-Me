@@ -11,16 +11,15 @@ import {
   Navigator
 } from 'react-native';
 
-export default class LoginScreen extends Component{
+class RegisterScreen extends Component{
     constructor(props){
         super(props);
-        this.state = {text: 'blah', text1: 'MEERP'}
+        this.state = {text: 'Email', text1: 'Password'}
     }
     render() {
-
         return (<View style = {styles.container}>
             <View style={styles.titleContainer}>
-                <Text> DresMe </Text>
+                <Text> Registration </Text>
             </View>
             <View style={styles.loginContainer}>
                 <TextInput
@@ -35,18 +34,18 @@ export default class LoginScreen extends Component{
             <View style={styles.buttonContainer}>
                 <TouchableHighlight
                   underlayColor="gray"
-                  onPress={() => this.handleLoginPress()}
+                  onPress={() => this.handleBackPress()}
                   style={styles.loginButton}>
                     <Text>
-                      Login
+                      Back 
                     </Text>
                 </TouchableHighlight>
                 <TouchableHighlight
                   underlayColor="gray"
-                  onPress={() => this.handleRegisterPress()}
+                  onPress={() => this.handleSubmitPress()}
                   style={styles.loginButton}>
                     <Text>
-                      Register
+                      Submit 
                     </Text>
                 </TouchableHighlight>
             </View>
@@ -55,22 +54,24 @@ export default class LoginScreen extends Component{
         );
     }
 
-    handleLoginPress() {
+    handleSubmitPress() {
         this.props.navigator.push({
             ident: "Recommendation"
         })
     }
 
-    handleRegisterPress() {
-       this.props.navigator.push({
-            ident: "Register"
-        }) 
+    handleBackPress() {
+        this.props.navigator.pop()
     }
+}
 
-
-
-}{/*This is the end of class brack*/}
-
+{/*}
+LoginScreen.propTypes = {
+    title: PropTypes.string.isRequired,
+    onForward: PropTypes.func.isRequired,
+    onBack: PropTypes.func.isRequired
+};
+*/}
 
 var styles = StyleSheet.create({
     container: {
@@ -102,7 +103,7 @@ var styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'space-around',
         alignItems: 'center',
-        flexDirection: 'row',
+        flexDirection: 'row'
     },
     buttonWrapper: {
         flexDirection: 'row',
@@ -126,4 +127,4 @@ var styles = StyleSheet.create({
 
 })
 
-module.exports = LoginScreen;
+module.exports = RegisterScreen;

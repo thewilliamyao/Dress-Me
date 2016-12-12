@@ -40,7 +40,7 @@ class TabScreen extends Component {
             });
           }}>
 
-          <RecommendationScreen/>
+          <RecommendationScreen navigator={this.props.navigator}/>
           {/*<AppNavigator initialRoute={{ident: "Recommendation", index: 0}} />*/}
           {/*this._renderContent("blue")*/}
 

@@ -12,8 +12,10 @@ import {
   StyleSheet,
   Text,
   View,
-  NavigatorIOS,
-  TouchableHighlight
+  TouchableHighlight,
+  ScrollView,
+  TextInput,
+  Navigator
 } from 'react-native';
 // var Rec = null
 class RecommendationScreen extends Component {
@@ -60,7 +62,7 @@ class RecommendationScreen extends Component {
   settingsButton() {
     return <TouchableHighlight
       underlayColor="gray"
-      onPress={() => this.handleSettingsPress}
+      onPress={() => this.handleSettingsPress()}
       style={styles.settingsButtonS}
       >
         <Text>
@@ -71,13 +73,10 @@ class RecommendationScreen extends Component {
   }
 
   handleSettingsPress(){
-    return (
-      <NavigatorIOS
-      initialRoute={{
-        title: 'My Root',
-        component: RootNav
-      }}/>
-    );  
+    console.log("Pressed Settings")
+    this.props.navigator.push({
+            ident: "Settings"
+    }) 
   }
 
   middleDisplay() {
