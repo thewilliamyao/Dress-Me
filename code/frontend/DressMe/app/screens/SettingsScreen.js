@@ -18,15 +18,43 @@ class SettingsScreen extends Component{
     }
     render() {
         return (<View style = {styles.container}>
-            <Text> Hello </Text>
-        
+            <View style={styles.buttonContainer}>
+                <TouchableHighlight
+                  underlayColor="gray"
+                  onPress={() => this.handleDoLaundryPress()}
+                  style={styles.loginButton}>
+                    <Text>
+                      Do Laundry
+                    </Text>
+                </TouchableHighlight>
+                <TouchableHighlight
+                  underlayColor="gray"
+                  onPress={() => this.handleLogOutPress()}
+                  style={styles.loginButton}>
+                    <Text>
+                      Logout
+                    </Text>
+                </TouchableHighlight>
+                <TouchableHighlight
+                  underlayColor="gray"
+                  onPress={() => this.handleBackPress()}
+                  style={styles.loginButton}>
+                    <Text>
+                      Back
+                    </Text>
+                </TouchableHighlight>
+            </View>
         </View>
         );
     }
 
-    handleSubmitPress() {
+    handleDoLaundryPress() {
+
+    }
+
+    handleLogOutPress() {
         this.props.navigator.push({
-            ident: "Recommendation"
+            ident: "Login"
         })
     }
 
@@ -73,7 +101,7 @@ var styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'space-around',
         alignItems: 'center',
-        flexDirection: 'row'
+        flexDirection: 'column'
     },
     buttonWrapper: {
         flexDirection: 'row',
