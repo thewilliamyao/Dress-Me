@@ -10,12 +10,6 @@ public class User {
     /**User account password.*/
     private String password;
 
-    /**User's list of cloethes in closet*/
-    // private Closet closet;
-    /**User's list of clothes in laundry*/
-    // private Laundry laundry;
-    /**Generated recommendation for the weather*/
-    // private Recommendation recommendation;
     /**User's current location*/
     // private Location currrentLocation;
 
@@ -84,24 +78,6 @@ public class User {
     }
 
     /**
-    *   Lets user update their current closet.
-    *   @param c the closet to update.
-    *   @return the updated closet.
-    */
-    public Closet updateCloset(Closet c){
-        return null;
-    }
-
-    /**
-    *   Lets user update their current laundry.
-    *   @param l the laundry to update.
-    *   @return the updated laundry.
-    */
-    public Laundry updateLaundry(Laundry l){
-        return null;
-    }
-
-    /**
     *   Lets user update their current location.
     *   @param x the user longitude.
     *   @param y the user latitude.
@@ -115,17 +91,6 @@ public class User {
     *   @return the user's location.
     */
     public Location getLocation(){
-        return null;
-    }
-
-    /**
-    *   Provides the daily recommendation.
-    *   @param c the closet to choose from.
-    *   @param l the laundry to avoid.
-    *   @param loc the location of the user.
-    *   @return the recommended daily outfit.
-    */
-    public Recommendation getRecommendation(Closet c, Laundry l, Location loc){
         return null;
     }
 }

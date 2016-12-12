@@ -240,9 +240,6 @@ public class ClothesService {
             logger.error("ClothesService.getLaundryMap: Failed to get laundry map", ex);
             throw new ClothesServiceException("ClothesService.getLaundryMap: Failed to get laundry map", ex);
         }
-        System.out.println("-------------------");
-        System.out.println("CREATED MAP");
-        System.out.println("--------------------");
         return map;
     }
 

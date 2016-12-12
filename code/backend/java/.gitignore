@@ -1,2 +1,4 @@
 dependency-reduced-pom.xml
 *.swp
+local_test.py
+sandbox
