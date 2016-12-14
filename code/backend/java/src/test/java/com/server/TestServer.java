@@ -74,6 +74,96 @@ public class TestServer {
     }
 
     @Test
+    public void testLogin() throws Exception {
+        testAddUser();
+        UserJson firstUser = new UserJson("test", "testpassword");
+        Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(token.getId(), 0);
+        assertNotEquals(token.getToken(), "");
+        currToken = token.getToken();
+    }
+
+    @Test
+    public void testInvalidToken() throws Exception {
+        testLogin();
+        currToken = "ASDHJFA";
+        Response radd = request("GET", API_PREFIX + "closet/0", null);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    @Test
+    public void testLoginWrongPasswordFail() throws Exception {
+        testAddUser();
+        UserJson firstUser = new UserJson("test", "wrongpassword");
+        Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    @Test
+    public void testLoginWrongUsernameFail() throws Exception {
+        testAddUser();
+        UserJson firstUser = new UserJson("other", "testpassword");
+        Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    @Test
+    public void testLoginNoUsernameFail() throws Exception {
+        testAddUser();
+        UserJson firstUser = new UserJson("", "testpassword");
+        Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        assertEquals(403, radd.httpStatus);
+    }
+    
+    @Test
+    public void testLoginNoPasswordFail() throws Exception {
+        testAddUser();
+        UserJson firstUser = new UserJson("other", "");
+        Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    @Test
+    public void testCreateMultipleUsers() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            UserJson firstUser = new UserJson("test" + Integer.toString(i), "testpassword");
+            Response radd = request("POST", API_PREFIX + "user", firstUser);
+            LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
+            assertEquals(201, radd.httpStatus);
+            assertEquals(token.getId(), i);
+            assertNotEquals(token.getToken(), "");
+        }
+    }
+
+    @Test
+    public void testCreateUserNoEmailFail() throws Exception {
+        UserJson emptyUser = new UserJson("", "test");
+        Response badd = request("POST", API_PREFIX + "user", emptyUser);
+        assertEquals(403, badd.httpStatus);
+    }
+
+    @Test
+    public void testCreateUserNoPasswordFail() throws Exception {
+        UserJson emptyPassword = new UserJson("test", "");
+        Response badd = request("POST", API_PREFIX + "user", emptyPassword);
+        assertEquals(403, badd.httpStatus);
+    }
+
+    @Test
+    public void testCreateSameUserFail() throws Exception {
+        UserJson first = new UserJson("first", "password");
+        Response radd = request("POST", API_PREFIX + "user", first);
+        assertEquals(201, radd.httpStatus);
+        radd = request("POST", API_PREFIX + "user", first);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    //------------------------------------------------------------------------//
+    // Tests for Closet
+    //------------------------------------------------------------------------//
+    @Test
     public void testDefaultCloset() throws Exception {
         // create new user
         testAddUser();
@@ -89,7 +179,7 @@ public class TestServer {
     @Test
     public void testUpdateClosetItem() throws Exception {
         // create new user
-        testAddUser();
+        testLogin();
         ClosetJson expectedCloset = new ClosetJson();
         // update a few closet items
         ClosetUpdateJson closetUpdate = new ClosetUpdateJson("long_pants", 6);
@@ -112,9 +202,32 @@ public class TestServer {
     }
 
     @Test
-    public void testUpdateLocation() throws Exception {
+    public void testGetClosetNoTokenFail() throws Exception {
         // create new user
         testAddUser();
+        // set empty token and send request
+        currToken = "";
+        Response radd = request("GET", API_PREFIX + "closet/0", null);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    @Test
+    public void testUpdateClosetNoTokenFail() throws Exception {
+        // create new user
+        testLogin();
+        currToken = "";
+        // update a few closet items
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("long_pants", 6);
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        assertEquals(403, radd.httpStatus);
+    }
+    //------------------------------------------------------------------------//
+    // Tests for Location
+    //------------------------------------------------------------------------//
+    @Test
+    public void testUpdateLocation() throws Exception {
+        // create new user
+        testLogin();
         // change location
         LocationUpdateJson locationUpdate = new LocationUpdateJson(21.2718, -157.7738);
         Response radd = request("PUT", API_PREFIX + "location/0", locationUpdate);
@@ -125,41 +238,27 @@ public class TestServer {
     }
 
     @Test
-    public void testCreateMultipleUsers() throws Exception {
-        for (int i = 0; i < 10; i++) {
-            UserJson firstUser = new UserJson("test", "testpassword");
-            Response radd = request("POST", API_PREFIX + "user", firstUser);
-            LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
-            assertEquals(201, radd.httpStatus);
-            assertEquals(token.getId(), i);
-            assertNotEquals(token.getToken(), "");
-        }
-    }
-    
-    @Test
-    public void testCreateUserNoEmailFail() throws Exception {
-        UserJson emptyUser = new UserJson("", "test");
-        Response badd = request("POST", API_PREFIX + "user", emptyUser);
-        assertEquals(411, badd.httpStatus);
-        assertEquals("{}", badd.content);
+    public void testUpdateLocationNoTokenFail() throws Exception {
+        // create new user
+        testLogin();
+        currToken = "ASDOFUJASDH";
+        // change location
+        LocationUpdateJson locationUpdate = new LocationUpdateJson(21.2718, -157.7738);
+        Response radd = request("PUT", API_PREFIX + "location/0", locationUpdate);
+        assertEquals(403, radd.httpStatus);
     }
 
+    //------------------------------------------------------------------------//
+    // Tests for Laundry
+    //------------------------------------------------------------------------//
     @Test
-    public void testCreateUserNoPasswordFail() throws Exception {
-        UserJson emptyUser = new UserJson("test", "");
-        Response badd = request("POST", API_PREFIX + "user", emptyUser);
-        assertEquals(411, badd.httpStatus);
-        assertEquals("{}", badd.content);
-    }
-
-    @Test
-    public void testMarkDirty() throws Exception {
+    public void testMarkShirtsDirty() throws Exception {
         // create a new user
-        testAddUser();
+        testLogin();
         // mark an item as dirty
-        DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "long_pants", "shoes", "NONE", "NONE");
+        DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "NONE", "NONE", "NONE", "NONE");
 
-        // mark an item dirty until we expect it to return true
+        // mark a shirt dirty until we expect it to return true
         Response radd;
         for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
             radd = request("PUT", API_PREFIX + "dirty/0", dirty);
@@ -174,9 +273,66 @@ public class TestServer {
     }
 
     @Test
+    public void testMarkPantsDirty() throws Exception {
+        // create a new user
+        testLogin();
+        // mark an item as dirty
+        DirtyClothesJson dirty = new DirtyClothesJson("NONE", "long_pants", "NONE", "NONE", "NONE");
+
+        // mark pants dirty until we expect it to return true
+        Response radd;
+        for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
+            for (int j = 0; j < 3; j++) {
+                radd = request("PUT", API_PREFIX + "dirty/0", dirty);
+                assertEquals(200, radd.httpStatus);
+                assertEquals("false", radd.content);
+            }
+        }
+
+        // one more time, should return true this time
+        for (int j = 0; j < 2; j++) {
+            radd = request("PUT", API_PREFIX + "dirty/0", dirty);
+            assertEquals(200, radd.httpStatus);
+            assertEquals("false", radd.content);
+        }
+        radd = request("PUT", API_PREFIX + "dirty/0", dirty);
+        assertEquals(200, radd.httpStatus);
+        assertEquals("true", radd.content);
+    }
+
+    @Test
+    public void testMarkOtherDirty() throws Exception {
+        // create a new user
+        testLogin();
+        // mark an item as dirty
+        DirtyClothesJson dirty = new DirtyClothesJson("NONE", "NONE", "hoodie", "shoes", "umbrella");
+
+        // These items should never return dirty.
+        Response radd;
+        for (int i = 0; i < 25; i++) {
+            radd = request("PUT", API_PREFIX + "dirty/0", dirty);
+            assertEquals(200, radd.httpStatus);
+            assertEquals("false", radd.content);
+        }
+    }
+
+    @Test
+    public void testMarkDirtyNoTokenFail() throws Exception {
+        // create a new user
+        testLogin();
+        currToken = "";
+        // mark an item as dirty
+        DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "long_pants", "shoes", "NONE", "NONE");
+
+        // mark an item dirty until we expect it to return true
+        Response radd = request("PUT", API_PREFIX + "dirty/0", dirty);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    @Test
     public void testMoreDirty() throws Exception {
         // other stuff is already past the limit
-        testMarkDirty();
+        testMarkShirtsDirty();
 
         // mark items as dirty, should all continue to return true
         DirtyClothesJson dirty = new DirtyClothesJson("long_sleeve", "long_pants", "shoes", "NONE", "NONE");
@@ -197,7 +353,7 @@ public class TestServer {
 
     @Test
     public void testMarkClean() throws Exception {
-        testMarkDirty();
+        testMarkShirtsDirty();
         // now lets mark clean
         Response radd = request("PUT", API_PREFIX + "clean/0", null);
         assertEquals(200, radd.httpStatus);
@@ -218,11 +374,20 @@ public class TestServer {
     }
 
     @Test
+    public void testMarkCleanNoTokenFail() throws Exception {
+        testLogin();
+        currToken = "ASDFASD";
+        // now lets mark clean
+        Response radd = request("PUT", API_PREFIX + "clean/0", null);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    @Test
     public void testGetLaundry() throws Exception {
         // create a new user
-        testAddUser();
+        testLogin();
         // mark an item as dirty
-        DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "long_pants", "shoes", "NONE", "NONE");
+        DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "long_pants", "NONE", "NONE", "NONE");
 
         ClosetJson expectedLaundry = new ClosetJson();
         expectedLaundry.setToZero();
@@ -233,11 +398,28 @@ public class TestServer {
             radd = request("PUT", API_PREFIX + "dirty/0", dirty);
             radd = request("GET", API_PREFIX + "laundry/0", null);
             expectedLaundry.t_shirt += 1;
+            if ((i+1)%3 == 0) {
+                expectedLaundry.long_pants += 1;
+            }
             actualLaundry = new Gson().fromJson(radd.content, ClosetJson.class);
             assertEquals(200, radd.httpStatus);
             assertEquals(expectedLaundry, actualLaundry);
         }
     }
+
+    @Test
+    public void testGetLaundryNoTokenFail() throws Exception {
+        testLogin();
+        currToken = "";
+        Response radd = request("GET", API_PREFIX + "laundry/0", null);
+        assertEquals(403, radd.httpStatus);
+    }
+
+    //------------------------------------------------------------------------//
+    // Tests for Recommendation
+    //------------------------------------------------------------------------//
+
+    // TODO
 
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes

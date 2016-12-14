@@ -93,7 +93,7 @@ public class ClothesService {
             timesWornMap.put("sweater", new Integer(-1));
             lowTempMap.put("winter_coat", new Double(TEMP_MIN));
             highTempMap.put("winter_coat", new Double(40));
-            timesWornMap.put("winter_coat", new Integer(-1));
+            timesWornMap.put("winter_coaat", new Integer(-1));
             // accessories
             lowTempMap.put("umbrella", new Double(TEMP_MIN));
             highTempMap.put("umbrella", new Double(TEMP_MAX));
@@ -149,6 +149,8 @@ public class ClothesService {
                         .addColumnMapping("number_dirty", "numberDirty")
                         .addColumnMapping("temp_high", "tempHigh")
                         .addColumnMapping("temp_low", "tempLow")
+                        .addColumnMapping("times_worn", "timesWorn")
+                        .addColumnMapping("max_times_worn", "maxTimesWorn")
                         .addParameter("userId", currUserId)
                         .addParameter("clothesId", clothesCounter++)
                         .addParameter("type", type)
@@ -309,6 +311,45 @@ public class ClothesService {
     }
 
     /**
+    * Updates the number of items dirty for a specific user.
+    * @param id the id of the user.
+    * @body the json form containing the clothes type and number, {type: x, number: y}.
+    * @return a map of the new counts of dirty items for all items.
+    */
+    public HashMap<String, Integer> updateLaundry(String id, String body) throws ClothesServiceException {
+        // grab params
+        int currId = Integer.parseInt(id);
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(body).getAsJsonObject();
+        String clothesType = obj.get("type").getAsString();
+        int number = obj.get("number").getAsInt();
+        // update specific item
+        String updateItem = "UPDATE clothes SET number_dirty = :numberDirty WHERE (user_id = :userId AND specific_type = :specificType)";
+
+        try (Connection conn = db.open()) {
+            conn.createQuery(updateItem)
+                .addColumnMapping("user_id", "userId")
+                .addColumnMapping("clothes_id", "clothesId")
+                .addColumnMapping("type", "type")
+                .addColumnMapping("specific_type", "specificType")
+                .addColumnMapping("number_owned", "numberOwned")
+                .addColumnMapping("number_dirty", "numberDirty")
+                .addColumnMapping("temp_high", "tempHigh")
+                .addColumnMapping("temp_low", "tempLow")
+                .addColumnMapping("times_worn", "timesWorn")
+                .addColumnMapping("max_times_worn", "maxTimesWorn")
+                .addParameter("specificType", clothesType)
+                .addParameter("numberDirty", number)
+                .addParameter("userId", currId)
+                .executeUpdate();
+        } catch (Sql2oException ex) {
+            logger.error("ClothesService.updateClothes: Failed to update clothes", ex);
+            throw new ClothesServiceException("ClothesService.updateClothes: Failed to update clothes", ex);
+        }
+
+        return getClothesMap(currId);
+    }
+    /**
     * Helper function to evaluate if an item should be marked dirty. Does the appropriate updates as necessary.
     * Also updates the db.
     * @param dirtyMap a reference to a hashmap with the number of dirty items
@@ -327,7 +368,7 @@ public class ClothesService {
             timesWornMap.put(item, timesWornMap.get(item) + 1);
         }
 
-        // regardless of the outcome, update the dirty map
+        // regardless of the outcome, update the map
         String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty, times_worn = :timesWorn WHERE (user_id = :userId AND specific_type = :specificType)";
         try (Connection conn = db.open()) {
             conn.createQuery(updateDirty)
@@ -368,7 +409,7 @@ public class ClothesService {
         String outerwear = obj.get("outerwear").getAsString();
 
         // obtain the current count of dirty items
-        String sqlTops = "SELECT * FROM clothes WHERE (user_id = :userId AND type = :type)";
+        String sqlTops = "SELECT * FROM clothes WHERE (user_id = :userId)";
         HashMap<String, Integer> dirtyMap = new HashMap<String, Integer>();
         HashMap<String, Integer> timesWornMap = new HashMap<String, Integer>();
         HashMap<String, Integer> maxTimesWornMap = new HashMap<String, Integer>();
@@ -386,7 +427,6 @@ public class ClothesService {
                     .addColumnMapping("times_worn", "timesWorn")
                     .addColumnMapping("max_times_worn", "maxTimesWorn")
                     .addParameter("userId", currId)
-                    .addParameter("type", "top")
                     .executeAndFetch(Clothes.class);
             for (Clothes c : allClothes) {
                 dirtyMap.put(c.getSpecificType(), c.getNumberDirty());

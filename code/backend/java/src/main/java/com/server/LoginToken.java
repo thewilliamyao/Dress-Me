@@ -37,8 +37,6 @@ public class LoginToken {
         } catch (JWTVerifyException e) {
             return false;
         } catch (Exception e) {
-            System.out.println(e.toString());
-            System.out.println(tok);
             return false;
         }
     }

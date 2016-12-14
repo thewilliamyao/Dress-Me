@@ -31,14 +31,14 @@ public class LocationController {
             try {
                 int currId = Integer.parseInt(request.params(":userId"));
                 if (!LoginToken.verify(request.headers("token"), currId)) {
-                    response.status(401);
+                    response.status(403);
                     return Collections.EMPTY_MAP;
                 }
                 response.status(200);
                 return locationService.updateLocation(request.params(":userId"), request.body());
             } catch (LocationService.LocationServiceException ex) {
                 logger.error("Failed to update location");
-                response.status(410);
+                response.status(420);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());

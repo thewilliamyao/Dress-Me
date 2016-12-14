@@ -31,7 +31,7 @@ public class ClothesController {
             try {                
                 int currId = Integer.parseInt(request.params(":userId"));
                 if (!LoginToken.verify(request.headers("token"), currId)) {
-                    response.status(401);
+                    response.status(403);
                     return Collections.EMPTY_MAP;
                 }
                 response.status(200);
@@ -39,25 +39,23 @@ public class ClothesController {
             } catch (ClothesService.ClothesServiceException ex) {
                 logger.error("Failed to create new user");
                 response.status(410);
-            } catch (Exception ex) {
-                response.status(600);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
 
-        // get a user's closet
+        // get a user's laundry
         get(API_CONTEXT + "/laundry/:userId", "application/json", (request, response) -> {
             try {
                 int currId = Integer.parseInt(request.params(":userId"));
                 if (!LoginToken.verify(request.headers("token"), currId)) {
-                    response.status(401);
+                    response.status(403);
                     return Collections.EMPTY_MAP;
                 }
                 response.status(200);
                 return clothesService.getLaundryMap(Integer.parseInt(request.params(":userId")));
             } catch (ClothesService.ClothesServiceException ex) {
                 logger.error("Failed to create new user");
-                response.status(410);
+                response.status(420);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
@@ -67,14 +65,31 @@ public class ClothesController {
             try {
                 int currId = Integer.parseInt(request.params(":userId"));
                 if (!LoginToken.verify(request.headers("token"), currId)) {
-                    response.status(401);
+                    response.status(403);
                     return Collections.EMPTY_MAP;
                 }
                 response.status(200);
                 return clothesService.updateClothes(request.params(":userId"), request.body());
             } catch (ClothesService.ClothesServiceException ex) {
                 logger.error("Failed to update closet");
-                response.status(410);
+                response.status(420);
+            }
+            return Collections.EMPTY_MAP;
+        }, new JsonTransformer());
+
+        // update a user's clothes counts
+        put(API_CONTEXT + "/laundry/:userId", "application/json", (request, response) -> {
+            try {
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(403);
+                    return Collections.EMPTY_MAP;
+                }
+                response.status(200);
+                return clothesService.updateLaundry(request.params(":userId"), request.body());
+            } catch (ClothesService.ClothesServiceException ex) {
+                logger.error("Failed to update closet");
+                response.status(420);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
@@ -84,14 +99,14 @@ public class ClothesController {
             try {
                 int currId = Integer.parseInt(request.params(":userId"));
                 if (!LoginToken.verify(request.headers("token"), currId)) {
-                    response.status(401);
+                    response.status(403);
                     return Collections.EMPTY_MAP;
                 }
                 response.status(200);
                 return clothesService.markDirty(Integer.parseInt(request.params("userId")), request.body());
             } catch (ClothesService.ClothesServiceException ex) {
-                logger.error("Failed to generate recommendation");
-                response.status(410);
+                logger.error("Failed to mark items as dirty", ex);
+                response.status(420);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
@@ -102,14 +117,14 @@ public class ClothesController {
             try {
                 int currId = Integer.parseInt(request.params(":userId"));
                 if (!LoginToken.verify(request.headers("token"), currId)) {
-                    response.status(401);
+                    response.status(403);
                     return Collections.EMPTY_MAP;
                 }
                 response.status(200);
                 clothesService.markClean(Integer.parseInt(request.params("userId")));
             } catch (ClothesService.ClothesServiceException ex) {
-                logger.error("Failed to generate recommendation");
-                response.status(410);
+                logger.error("Failed to mark items as clean", ex);
+                response.status(420);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());

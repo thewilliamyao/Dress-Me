@@ -27,37 +27,31 @@ public class UserController {
     */
     private void setupEndpoints() {
         // create a new user
-        // TODO some error checking on invalid username (i.e already in use)
         post(API_CONTEXT + "/user", "application/json", (request, response) -> {
             try {
-                /*
-                String token = request.headers("TOKEN");
-                if (!token.equals("TSAFDOJSDFJ")) {
-                    response.status(411);
-                    return Collections.EMPTY_MAP;
-                }*/
                 LoginToken l = userService.createNewUser(request.body());
                 response.status(201);
                 return l;
             } catch (UserService.UserServiceException ex) {
-                logger.error("Failed to create new user");
-        if(ex instanceof UserService.NewUserException) {
-            response.status(411);
-        } else {
-            response.status(410);
-        }
+                logger.error("Failed to create new user", ex);
+                response.status(420);
+            } catch (UserService.NewUserException ex) {
+                logger.error("Invalid credentials for new user", ex);
+                response.status(403);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
 
         //logs in for a user
-        get(API_CONTEXT + "/login", "application/json", (request, response) -> {
+        put(API_CONTEXT + "/login", "application/json", (request, response) -> {
             try {
                 response.status(200);
                 return userService.getLoginToken(request.body());
             } catch (UserService.UserServiceException ex) {
                 logger.error("Invalid credentials");
-                response.status(410);
+                response.status(403);
+            } catch (Exception ex) {
+                response.status(600);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
@@ -67,14 +61,14 @@ public class UserController {
             try {
                 int currId = Integer.parseInt(request.params(":userId"));
                 if (!LoginToken.verify(request.headers("token"), currId)) {
-                    response.status(401);
+                    response.status(403);
                     return Collections.EMPTY_MAP;
                 }
                 response.status(200);
                 return userService.getRecommendation(Integer.parseInt(request.params(":userId")));
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to generate recommendation");
-                response.status(410);
+                response.status(420);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
