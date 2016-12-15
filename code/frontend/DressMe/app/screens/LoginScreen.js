@@ -20,7 +20,7 @@ export default class LoginScreen extends Component{
 
         return (<View style = {styles.container}>
             <View style={styles.titleContainer}>
-                <Text> DresMe </Text>
+                <Text> DressMe </Text>
             </View>
             <View style={styles.loginContainer}>
                 <TextInput
@@ -57,7 +57,8 @@ export default class LoginScreen extends Component{
 
     handleLoginPress() {
         this.props.navigator.push({
-            ident: "Recommendation"
+            ident: "Recommendation",
+            tabbing: "tab1"
         })
     }
 

@@ -62,26 +62,6 @@ class ClosetScreen extends Component{
 		return closetItems;
 	}
 
-	// textBoxInput(number) {
-	// 	var value;
-	// 	if (!this.state.itemNum[number]) {
-	// 		value = "..."
-	// 		return (
-	//       		<TextInput
-	// 	        style={styles.amount}
-	// 	        onChangeText={(text) => this.setState({text})};
-	// 	        value={value}/> 
-	//         );
-	// 	} else {
-	// 		value = this.state.itemNum[number] + "";
-	// 	    return (
-	// 	      <TextInput
-	// 	        style={styles.amount}
-	// 	        onChangeText={(value) => this.setState({value})}
-	// 	        value={value}/> 
-	// 	    );
-	// 	}
-	//   }
 
 	getCloset() {
 		if (this.state.ClosetList == null) {

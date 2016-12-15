@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   View,
-  NavigatorIOS,
   TouchableHighlight,
   ScrollView,
   TextInput,
@@ -56,7 +55,8 @@ class RegisterScreen extends Component{
 
     handleSubmitPress() {
         this.props.navigator.push({
-            ident: "Recommendation"
+            ident: "Recommendation",
+            tabbing: "tab2"
         })
     }
 

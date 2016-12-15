@@ -11,7 +11,7 @@ import {
   Navigator
 } from 'react-native';
 
-class SettingsScreen extends Component{
+class FeedbackScreen extends Component{
     constructor(props){
         super(props);
         this.state = {text: 'Email', text1: 'Password'}
@@ -24,18 +24,26 @@ class SettingsScreen extends Component{
             <View style={styles.buttonContainer}>
                 <TouchableHighlight
                   underlayColor="gray"
-                  onPress={() => this.handleDoLaundryPress()}
+                  onPress={() => this.handleRatings(-10)}
                   style={styles.loginButton}>
                     <Text>
-                      Do Laundry
+                      Too Cold
                     </Text>
                 </TouchableHighlight>
                 <TouchableHighlight
                   underlayColor="gray"
-                  onPress={() => this.handleLogOutPress()}
+                  onPress={() => this.handleRatings(0)}
                   style={styles.loginButton}>
                     <Text>
-                      Logout
+                      Perfect
+                    </Text>
+                </TouchableHighlight>
+                <TouchableHighlight
+                  underlayColor="gray"
+                  onPress={() => this.handleRatings(10)}
+                  style={styles.loginButton}>
+                    <Text>
+                      Too Hot
                     </Text>
                 </TouchableHighlight>
             </View>
@@ -57,6 +65,21 @@ class SettingsScreen extends Component{
 
     }
 
+    handleRatings(rate) {
+        console.log(rate)
+        {/*
+        fetch('https://mywebsite.com/endpoint/', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstParam: {rate}
+          })
+        })*/}
+    }
+
     handleLogOutPress() {
         this.props.navigator.push({
             ident: "Login"
@@ -68,13 +91,6 @@ class SettingsScreen extends Component{
     }
 }
 
-{/*}
-LoginScreen.propTypes = {
-    title: PropTypes.string.isRequired,
-    onForward: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired
-};
-*/}
 
 var styles = StyleSheet.create({
     container: {
@@ -144,4 +160,4 @@ var styles = StyleSheet.create({
 
 })
 
-module.exports = SettingsScreen;
+module.exports = FeedbackScreen;
