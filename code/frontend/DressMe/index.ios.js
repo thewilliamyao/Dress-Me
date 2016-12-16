@@ -59,10 +59,6 @@ export default class DressMe extends Component {
   }
 
   render() {
-    const routes = [
-      {title: 'LoginScreen', index: 0},
-      {title: 'Recommendation', index: 1},
-    ];
     return (
       <Navigator
         initialRoute={{ident: "Login"}}

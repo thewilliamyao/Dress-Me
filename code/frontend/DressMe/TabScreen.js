@@ -22,7 +22,7 @@ class TabScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      selectedTab: "tab1"
+      selectedTab: this.props.tabbing
     }
   }
 

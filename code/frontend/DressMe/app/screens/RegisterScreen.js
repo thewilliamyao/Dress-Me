@@ -54,10 +54,25 @@ class RegisterScreen extends Component{
     }
 
     handleSubmitPress() {
+
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/user', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: this.state.text,
+            password: this.state.text1,
+          })
+        })
+
+        {/*
         this.props.navigator.push({
             ident: "Recommendation",
             tabbing: "tab2"
         })
+        */}
     }
 
     handleBackPress() {

@@ -201,6 +201,7 @@ class RecommendationScreen extends Component {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+
         }
         
       }).then((response) => response.json())
