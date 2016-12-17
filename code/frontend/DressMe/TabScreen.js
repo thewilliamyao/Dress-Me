@@ -21,9 +21,7 @@ import LaundryScreen from './app/screens/LaundryScreen'
 class TabScreen extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      selectedTab: this.props.tabbing
-    }
+    this.state = {  selectedTab: this.props.tabbing, userId: this.props.id, token: this.props.token}
   }
 
   render() {
@@ -40,9 +38,7 @@ class TabScreen extends Component {
             });
           }}>
 
-          <RecommendationScreen navigator={this.props.navigator}/>
-          {/*<AppNavigator initialRoute={{ident: "Recommendation", index: 0}} />*/}
-          {/*this._renderContent("blue")*/}
+          <RecommendationScreen id = {this.state.userId} token = {this.state.token} navigator={this.props.navigator}/>
 
         </TabBarIOS.Item>
 
@@ -55,7 +51,7 @@ class TabScreen extends Component {
             });
           }}>
 
-          <ClosetScreen/>
+          <ClosetScreen id = {this.state.userId} token = {this.state.token}/>
 
         </TabBarIOS.Item>
 
@@ -68,7 +64,7 @@ class TabScreen extends Component {
             });
           }}>
 
-          <LaundryScreen/>
+          <LaundryScreen id = {this.state.userId} token = {this.state.token}/>
 
         </TabBarIOS.Item>
 
@@ -80,13 +76,6 @@ class TabScreen extends Component {
     console.log(this.state.selectedTab);
   }
 
-  _renderContent = (color: string) => {
-    return(
-      <View style = {[{flex: 1}, {backgroundColor: color}]}>
-            <Text> "Tab 2" </Text>
-      </View>
-    );
-  };
 }
 
 const styles = StyleSheet.create({
@@ -109,4 +98,3 @@ const styles = StyleSheet.create({
 });
 
 module.exports = TabScreen;
-{/*AppRegistry.registerComponent('DressMe', () => DressMe);*/}

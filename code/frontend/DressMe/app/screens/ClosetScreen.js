@@ -65,10 +65,11 @@ class ClosetScreen extends Component{
 
 	getCloset() {
 		if (this.state.ClosetList == null) {
-	  		fetch('https://dry-beyond-51182.herokuapp.com/api/v1/closet/0', {
+	  		fetch('https://dry-beyond-51182.herokuapp.com/api/v1/closet/' + this.props.id, {
 	        	method: 'GET',
 	        	headers: {
 	          		'Content-Type': 'application/json',
+	          		'token': this.props.token
 	        	}
 	        
 	      	}).then((response) => response.json())

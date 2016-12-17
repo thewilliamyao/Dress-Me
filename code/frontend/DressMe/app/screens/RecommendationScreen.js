@@ -31,7 +31,7 @@ class RecommendationScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {Rec: null};
+    this.state = {Rec: null, id: this.props.id, token: this.props.token};
   }
   
   componentDidMount() {
@@ -75,10 +75,14 @@ class RecommendationScreen extends Component {
   handleSettingsPress(){
     console.log("Pressed Settings")
     this.props.navigator.push({
-            ident: "Recommendation"
+            ident: "Recommendation",
+            id: this.state.id,
+            token: this.state.token
         })
     this.props.navigator.push({
-            ident: "Settings"
+            ident: "Settings",
+            id: this.state.id,
+            token: this.state.token
     }) 
   }
 
@@ -196,12 +200,13 @@ class RecommendationScreen extends Component {
   }
   
   requestClothing(option) {
+    console.log(this.state.id);
     if (this.recommendationJson == null) {
-      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/0', {
+      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/' + this.state.id, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-
+          'token': this.state.token
         }
         
       }).then((response) => response.json())
@@ -226,11 +231,12 @@ class RecommendationScreen extends Component {
 
   handleDressMePress() {
     console.log('Dress Me was pressed');
-      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/dirty/0', {
+      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/dirty/' + this.state.id, {
         method: 'PUT',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'token': this.state.token
         },
         body: JSON.stringify({
             top: this.state.Rec.top,
