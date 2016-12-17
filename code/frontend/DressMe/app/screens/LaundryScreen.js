@@ -8,7 +8,8 @@ import {
   NavigatorIOS,
   TouchableHighlight,
   ScrollView,
-  TextInput
+  TextInput,
+  Image
 } from 'react-native';
 
 var ClosetItem = require('./components/closet-item')
@@ -30,19 +31,25 @@ class LaundryScreen extends Component{
     // }
 
   render(){
-    return <ScrollView style={styles.container}>
-      <View style={styles.title}>
-        <Text style={styles.titleText}>
-          Laundry Basket
-        </Text>
-      </View>
-      <View style={styles.closetItems}>
-        {this.closet()}
-      </View>
-      <View style={styles.reset}>
-        {this.resetLaundryButton()}
-      </View>
-    </ScrollView>
+    return (
+      <Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
+        <View style={styles.title}>
+          <Text style={styles.titleText}>
+            D i r t y   B a s k e t
+          </Text>
+        </View>
+        <View style={styles.container}>
+          <ScrollView>
+            <View style={styles.closetItems}>
+              {this.closet()}
+            </View>
+          </ScrollView>
+        </View>
+        <View style={styles.reset}>
+          {this.resetLaundryButton()}
+        </View>
+    </Image>
+    )
   }
 
   closet() {
@@ -131,8 +138,8 @@ class LaundryScreen extends Component{
       onPress={() => this.handleResetLaundryPress()}
       style={styles.resetButton}
       >
-        <Text>
-          Reset Laundry!
+        <Text style={styles.resetButtonText}>
+          RESET LAUNDRY
         </Text>
 
     </TouchableHighlight>
@@ -141,40 +148,57 @@ class LaundryScreen extends Component{
 
 var styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  title: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  titleText: {
-    fontSize: 36,
-  },
-  closetItems: {
-    marginTop: 30,
-  },
-  amount: {
-    height:40, 
-    width: 40, 
-    borderColor: 'gray', 
-    color:'white', 
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+		height: 460
+	},
+	backgroundImage: {
+        flex: 1,
+        height: null,
+        width: null,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+		flexDirection: 'column'
+		
+        //resizeMode: 'cover', // or 'stretch'
+    },
+	title: {
+		paddingTop: 20,
+		paddingBottom: 20,
+		justifyContent: 'center',
+    	alignItems: 'center'
+	},
+	titleText: {
+		fontSize: 36,
+		fontWeight: '700',
+		color: '#FFFFFF'
+	},
+	closetItems: {
+		width: 300,
+	},
   reset: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  resetButton: {
-    width: 200,
-    height: 50,
-    borderWidth: 2,
-    borderColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
+		marginTop: 20,
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	resetButton: {
+		width: 150,
+		height: 40,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'black',
+		shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+		borderWidth: 2,
+		borderColor: '#FFFFFF'
+	},
+	resetButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+		color: '#FFFFFF'
+  }
 })
 
 module.exports = LaundryScreen;

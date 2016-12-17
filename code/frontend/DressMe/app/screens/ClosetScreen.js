@@ -172,17 +172,20 @@ var styles = StyleSheet.create({
 		height: 40,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: 'white',
+		backgroundColor: 'black',
 		shadowOffset:{
             width: 2,
             height: 2,
         },
         shadowColor: 'black',
         shadowOpacity: 0.5,
+		borderWidth: 2,
+		borderColor: '#FFFFFF'
 	},
 	updateButtonText: {
         fontSize: 12,
         fontWeight: '600',
+		color: '#FFFFFF'
     },
 })
 
