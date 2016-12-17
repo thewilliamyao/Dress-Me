@@ -148,14 +148,14 @@ class LaundryScreen extends Component{
 
 var styles = StyleSheet.create({
   container: {
-		height: 460
+		height: 440
 	},
 	backgroundImage: {
-        flex: 1,
-        height: null,
-        width: null,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
+    flex: 1,
+    height: null,
+    width: null,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
 		flexDirection: 'column'
 		
         //resizeMode: 'cover', // or 'stretch'
@@ -175,7 +175,7 @@ var styles = StyleSheet.create({
 		width: 300,
 	},
   reset: {
-		marginTop: 20,
+		marginTop: 30,
 		justifyContent: 'center',
 		alignItems: 'center'
 	},

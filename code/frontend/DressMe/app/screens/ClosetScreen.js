@@ -9,12 +9,26 @@ import {
   TouchableHighlight,
   ScrollView,
   TextInput,
-  Image
+  Image,
+  LayoutAnimation
 } from 'react-native';
 
 var ClosetItem = require('./components/closet-item')
 
 var itemTypes = ['boots', 'hoodie', 'long_pants', 'long_sleeve', 'rain_jacket', 'sandals', 'scarf', 'shoes', 'shorts', 'sweater', 't_shirt', 'tank_top', 'umbrella', 'windbreaker', 'winter_coat']
+
+var CustomLayoutSpring = {
+    duration: 50,
+    create: {
+        type: LayoutAnimation.Types.spring,
+        property: LayoutAnimation.Properties.scaleXY,
+        springDamping: 0.5,
+    },
+    update: {
+        type: LayoutAnimation.Types.spring,
+        springDamping: 0.5,
+    },
+};
 
 // var this.state.itemNum = []
 
@@ -26,7 +40,11 @@ class ClosetScreen extends Component{
 	    this.state = {
 	      ClosetList: null,
 	      itemNum: ['...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...'],
-	      text: '0'
+	      text: '0',
+		  buttonWidth: 140,
+		  buttonHeight: 40,
+		  buttonMarginTop: 0,
+		  buttonMarginLeft: 0,
 	    };
   	}
 
@@ -120,7 +138,13 @@ class ClosetScreen extends Component{
 		return <TouchableHighlight
 		underlayColor="gray"
 		onPress={() => this.handleUpdatePress()}
-		style={styles.updateButton}
+		//onPressIn={() => this.closetButtonAnimation()}
+		//onPressOut={() => this.closetButtonReturnAnimation()}
+		style={[styles.updateButton,
+			 {width: this.state.buttonWidth, 
+				 height: this.state.buttonHeight, 
+				 marginTop: this.state.buttonMarginTop, 
+				 marginLeft: this.state.buttonMarginLeft}]}
 		>
 			<Text style={styles.updateButtonText}>
 			UPDATE CLOSET
@@ -129,14 +153,26 @@ class ClosetScreen extends Component{
 		</TouchableHighlight>
 	}
 
-	handleUpdatePress() {
+	//Animation needs a little work, might take out
 
-	}
+	// closetButtonAnimation() {
+	// 	LayoutAnimation.configureNext(CustomLayoutSpring);
+	// 	this.setState({buttonMarginLeft: -2.5, buttonMarginTop: -2.5, buttonWidth: 145, buttonHeight: 45})
+	// }
+
+	// closetButtonReturnAnimation() {
+	// 	LayoutAnimation.configureNext(CustomLayoutSpring);
+	// 	this.setState({buttonMarginLeft: 0, buttonMarginTop: 0, buttonWidth: 140, buttonHeight: 40})
+	// }
+
+	 handleUpdatePress() {
+	// 	this.closetButtonAnimation();
+	 }
 };
 
 var styles = StyleSheet.create({
 	container: {
-		height: 460
+		height: 440
 	},
 	backgroundImage: {
         flex: 1,
@@ -163,13 +199,11 @@ var styles = StyleSheet.create({
 		width: 300,
 	},
 	update: {
-		marginTop: 20,
+		marginTop: 30,
 		justifyContent: 'center',
 		alignItems: 'center'
 	},
 	updateButton: {
-		width: 150,
-		height: 40,
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: 'black',
