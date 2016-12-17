@@ -3,6 +3,8 @@ package com.server;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonElement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sql2o.Connection;
@@ -14,6 +16,8 @@ import com.github.dvdme.ForecastIOLib.*;
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.Map;
 
 public class ClothesService {
     private static Sql2o db;
@@ -193,8 +197,8 @@ public class ClothesService {
                     .executeAndFetch(Clothes.class);
             return allClothes;
         } catch (Sql2oException ex) {
-            logger.error("ClothesService.getClothesMap: Failed to get clothes map", ex);
-            throw new ClothesServiceException("ClothesService.getClothesMap: Failed to get clothes map", ex);
+            logger.error("ClothesService.getClothesList: Failed to get clothes map", ex);
+            throw new ClothesServiceException("ClothesService.getClothesList: Failed to get clothes map", ex);
         }
     }
 
@@ -273,7 +277,7 @@ public class ClothesService {
     /**
     * Updates the number of items owned for a specific user.
     * @param id the id of the user.
-    * @body the json form containing the clothes type and number, {type: x, number: y}.
+    * @param body the json form containing all clothes and their counts, {type: x, number: y}.
     * @return a map of the new counts for all items.
     */
     public HashMap<String, Integer> updateClothes(String id, String body) throws ClothesServiceException {
@@ -281,39 +285,38 @@ public class ClothesService {
         int currId = Integer.parseInt(id);
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
-        String clothesType = obj.get("type").getAsString();
-        int number = obj.get("number").getAsInt();
-        // update specific item
+        Set<Map.Entry<String, JsonElement>> s = obj.entrySet();
+        // update all items
         String updateItem = "UPDATE clothes SET number_owned = :numberOwned WHERE (user_id = :userId AND specific_type = :specificType)";
-
         try (Connection conn = db.open()) {
-            conn.createQuery(updateItem)
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("clothes_id", "clothesId")
-                .addColumnMapping("type", "type")
-                .addColumnMapping("specific_type", "specificType")
-                .addColumnMapping("number_owned", "numberOwned")
-                .addColumnMapping("number_dirty", "numberDirty")
-                .addColumnMapping("temp_high", "tempHigh")
-                .addColumnMapping("temp_low", "tempLow")
-                .addColumnMapping("times_worn", "timesWorn")
-                .addColumnMapping("max_times_worn", "maxTimesWorn")
-                .addParameter("specificType", clothesType)
-                .addParameter("numberOwned", number)
-                .addParameter("userId", currId)
-                .executeUpdate();
+            for (Map.Entry<String, JsonElement> item : s) {
+                conn.createQuery(updateItem)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("clothes_id", "clothesId")
+                    .addColumnMapping("type", "type")
+                    .addColumnMapping("specific_type", "specificType")
+                    .addColumnMapping("number_owned", "numberOwned")
+                    .addColumnMapping("number_dirty", "numberDirty")
+                    .addColumnMapping("temp_high", "tempHigh")
+                    .addColumnMapping("temp_low", "tempLow")
+                    .addColumnMapping("times_worn", "timesWorn")
+                    .addColumnMapping("max_times_worn", "maxTimesWorn")
+                    .addParameter("specificType", item.getKey())
+                    .addParameter("numberOwned", item.getValue().getAsInt())
+                    .addParameter("userId", currId)
+                    .executeUpdate();
+            }
         } catch (Sql2oException ex) {
             logger.error("ClothesService.updateClothes: Failed to update clothes", ex);
             throw new ClothesServiceException("ClothesService.updateClothes: Failed to update clothes", ex);
         }
-
         return getClothesMap(currId);
     }
 
     /**
     * Updates the number of items dirty for a specific user.
     * @param id the id of the user.
-    * @body the json form containing the clothes type and number, {type: x, number: y}.
+    * @param body the json form containing all clothes and their updates.
     * @return a map of the new counts of dirty items for all items.
     */
     public HashMap<String, Integer> updateLaundry(String id, String body) throws ClothesServiceException {
@@ -321,33 +324,34 @@ public class ClothesService {
         int currId = Integer.parseInt(id);
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
-        String clothesType = obj.get("type").getAsString();
-        int number = obj.get("number").getAsInt();
+        Set<Map.Entry<String, JsonElement>> s = obj.entrySet();
         // update specific item
         String updateItem = "UPDATE clothes SET number_dirty = :numberDirty WHERE (user_id = :userId AND specific_type = :specificType)";
 
         try (Connection conn = db.open()) {
-            conn.createQuery(updateItem)
-                .addColumnMapping("user_id", "userId")
-                .addColumnMapping("clothes_id", "clothesId")
-                .addColumnMapping("type", "type")
-                .addColumnMapping("specific_type", "specificType")
-                .addColumnMapping("number_owned", "numberOwned")
-                .addColumnMapping("number_dirty", "numberDirty")
-                .addColumnMapping("temp_high", "tempHigh")
-                .addColumnMapping("temp_low", "tempLow")
-                .addColumnMapping("times_worn", "timesWorn")
-                .addColumnMapping("max_times_worn", "maxTimesWorn")
-                .addParameter("specificType", clothesType)
-                .addParameter("numberDirty", number)
-                .addParameter("userId", currId)
-                .executeUpdate();
+            for (Map.Entry<String, JsonElement> item : s) {
+                conn.createQuery(updateItem)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("clothes_id", "clothesId")
+                    .addColumnMapping("type", "type")
+                    .addColumnMapping("specific_type", "specificType")
+                    .addColumnMapping("number_owned", "numberOwned")
+                    .addColumnMapping("number_dirty", "numberDirty")
+                    .addColumnMapping("temp_high", "tempHigh")
+                    .addColumnMapping("temp_low", "tempLow")
+                    .addColumnMapping("times_worn", "timesWorn")
+                    .addColumnMapping("max_times_worn", "maxTimesWorn")
+                    .addParameter("specificType", item.getKey())
+                    .addParameter("numberDirty", item.getValue().getAsInt())
+                    .addParameter("userId", currId)
+                    .executeUpdate();
+            }
         } catch (Sql2oException ex) {
             logger.error("ClothesService.updateClothes: Failed to update clothes", ex);
             throw new ClothesServiceException("ClothesService.updateClothes: Failed to update clothes", ex);
         }
 
-        return getClothesMap(currId);
+        return getLaundryMap(currId);
     }
     /**
     * Helper function to evaluate if an item should be marked dirty. Does the appropriate updates as necessary.

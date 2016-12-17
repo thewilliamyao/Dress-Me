@@ -77,7 +77,7 @@ public class ClothesController {
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
 
-        // update a user's clothes counts
+        // update a user's laundry counts
         put(API_CONTEXT + "/laundry/:userId", "application/json", (request, response) -> {
             try {
                 int currId = Integer.parseInt(request.params(":userId"));

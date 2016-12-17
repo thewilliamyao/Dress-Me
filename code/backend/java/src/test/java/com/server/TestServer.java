@@ -195,22 +195,12 @@ public class TestServer {
         // create new user
         testLogin();
         ClosetJson expectedCloset = new ClosetJson();
-        // update a few closet items
-        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("long_pants", 6);
-        expectedCloset.long_pants = 6;
+        expectedCloset.umbrella = 5;
+        expectedCloset.boots = 7;
+        expectedCloset.t_shirt = 23;
         String expectedJson = new Gson().toJson(expectedCloset);
-        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        Response radd = request("PUT", API_PREFIX + "/closet/0", expectedCloset);
         ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
-        assertEquals(200, radd.httpStatus);
-        assertEquals(expectedCloset, resultCloset);
-        // another update
-        closetUpdate.type = "t_shirt";
-        closetUpdate.number = 15;
-        expectedCloset.t_shirt = 15;
-        expectedJson = new Gson().toJson(expectedCloset);
-        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
-        resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
-
         assertEquals(200, radd.httpStatus);
         assertEquals(expectedCloset, resultCloset);
     }
@@ -429,6 +419,21 @@ public class TestServer {
         assertEquals(403, radd.httpStatus);
     }
 
+    @Test
+    public void testUpdateLaundry() throws Exception {
+        // create new user
+        testLogin();
+        ClosetJson expectedCloset = new ClosetJson();
+        expectedCloset.setToZero();
+        expectedCloset.umbrella = 5;
+        expectedCloset.boots = 7;
+        expectedCloset.t_shirt = 23;
+        String expectedJson = new Gson().toJson(expectedCloset);
+        Response radd = request("PUT", API_PREFIX + "/laundry/0", expectedCloset);
+        ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, resultCloset);
+    }
     //------------------------------------------------------------------------//
     // Tests for Recommendation
     //------------------------------------------------------------------------//
