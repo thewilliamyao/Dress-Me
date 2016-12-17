@@ -14,6 +14,32 @@ import {
   LayoutAnimation,
 } from 'react-native';
 
+var CustomLayoutSpring = {
+    duration: 180,
+    create: {
+      type: LayoutAnimation.Types.spring,
+      property: LayoutAnimation.Properties.scaleXY,
+      springDamping: 0.5,
+    },
+    update: {
+      type: LayoutAnimation.Types.spring,
+      springDamping: 0.5,
+    },
+  };
+
+var CustomReturnSpring = {
+    duration: 150,
+    create: {
+        type: LayoutAnimation.Types.spring,
+        property: LayoutAnimation.Properties.scaleXY,
+        springDamping: 0.3,
+    },
+    update: {
+        type: LayoutAnimation.Types.spring,
+        springDamping: 0.3,
+    },
+};
+
 class RegisterScreen extends Component{
     constructor(props){
         super(props);

@@ -8,16 +8,57 @@ import {
   NavigatorIOS,
   Image,
   TouchableHighlight,
-  TextInput
+  TextInput,
+  Animated,
+  LayoutAnimation,
+  Easing
 } from 'react-native';
+
+var CustomLayoutSpring = {
+    duration: 150,
+    create: {
+      type: LayoutAnimation.Types.spring,
+      property: LayoutAnimation.Properties.scaleXY,
+      springDamping: 0.3,
+    },
+    update: {
+      type: LayoutAnimation.Types.spring,
+      springDamping: 0.3,
+    },
+  };
+
+var CustomReturnSpring = {
+    duration: 150,
+    create: {
+        type: LayoutAnimation.Types.spring,
+        property: LayoutAnimation.Properties.scaleXY,
+        springDamping: 0.3,
+    },
+    update: {
+        type: LayoutAnimation.Types.spring,
+        springDamping: 0.3,
+    },
+};
 
 class ClosetItem extends Component{
 	constructor(props) {
 	    super(props)
 	    this.state = {
-	      text: this.props.amount
+	      text: this.props.amount,
+		  amountLeft: 0,
+		  amountRight: 0,
 	    };
   	}
+
+	_onFocus() {
+        LayoutAnimation.configureNext(CustomLayoutSpring);
+        this.setState({amountLeft: 10, amountRight: 20})
+    }
+
+    _onBlur() {
+        LayoutAnimation.configureNext(CustomReturnSpring);
+        this.setState({amountLeft: 0, amountRight: 0})
+    }
 
   	componentWillReceiveProps(nextProps) {
   		if(this.state.text != nextProps.amount) {
@@ -41,11 +82,19 @@ class ClosetItem extends Component{
 					{this.props.type}
 				</Text>
 			</View>
-			<View style={styles.amount}>
+			<View style={{
+				flex: 1,
+				backgroundColor: '#000000',
+				justifyContent: 'center',
+    			alignItems: 'center',
+				paddingLeft: this.state.amountLeft,
+				paddingRight: this.state.amountRight}}>
 				<TextInput
-		        style={styles.amountText}
-		        onChangeText={(text) => this.setState({text})}
-		        value={text + ''}/>
+					onFocus = {() => this._onFocus()}
+					onBlur = {() => this._onBlur()}
+					style={styles.amountText}
+					onChangeText={(text) => this.setState({text})}
+					value={text + ''}/>
 			</View>
 		</View>
 	}
