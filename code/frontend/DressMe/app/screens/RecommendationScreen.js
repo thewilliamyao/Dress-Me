@@ -45,9 +45,7 @@ class RecommendationScreen extends Component {
         {this.settingsButton()}
       </View>
     {/*View Below is Time Bar*/}
-      <View style= {[styles.timeContainer,styles.buttonWrapper, this.border('red')]}>
-          {this.selectButton()}
-      </View>
+        {this.ratingButtons()}
     {/*View Below is Dress up Guy*/}
       <View style= {[styles.displayContainer, this.border('lime')]}>
         {this.middleDisplay()}
@@ -179,17 +177,49 @@ class RecommendationScreen extends Component {
     </TouchableHighlight>
   }
 
-  selectButton() {
-    return <TouchableHighlight
-      underlayColor="gray"
-      onPress={() => this.handleRateMePress()}
-      style={styles.dressMeButton}
-      >
-        <Text>
-          Rate
-        </Text>
+  // <TouchableHighlight
+      //   underlayColor="gray"
+      //   onPress={() => this.handleRateMePress()}
+      //   style={styles.dressMeButton}
+      //   >
+      //     <Text>
+      //       Rate
+      //     </Text>
+      // </TouchableHighlight>
 
-    </TouchableHighlight>
+  ratingButtons() {
+    return (
+      <View style= {[styles.timeContainer,styles.buttonWrapper, this.border('red')]}>
+        <TouchableHighlight
+        underlayColor="gray"
+        onPress={() => this.handleRatings(-10)}
+        style={styles.ratingButton}>
+          <Text>
+            Too Cold
+          </Text>
+      </TouchableHighlight>
+      <TouchableHighlight
+        underlayColor="gray"
+        onPress={() => this.handleRatings(0)}
+        style={styles.ratingButton}>
+          <Text>
+            Perfect
+          </Text>
+      </TouchableHighlight>
+      <TouchableHighlight
+        underlayColor="gray"
+        onPress={() => this.handleRatings(10)}
+        style={styles.ratingButton}>
+          <Text>
+            Too Hot
+          </Text>
+      </TouchableHighlight>
+    </View>
+    )
+  }
+
+  handleRatings(rate) {
+
   }
 
   handleRateMePress(){
@@ -370,6 +400,13 @@ var styles = StyleSheet.create({
   },
   contentTextLeft: {
      textAlign: 'right',
+  },
+  ratingButton: {
+    width: 100,
+    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: '#000000'
   }
 });
 
