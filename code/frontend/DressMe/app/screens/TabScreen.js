@@ -32,6 +32,7 @@ class TabScreen extends Component {
         <TabBarIOS.Item
           title="Recommendation"
           selected={this.state.selectedTab === "tab1"}
+          icon={require('../../img/icon/rec.png')}
           onPress={() => {
             this.setState({
               selectedTab: "tab1",
@@ -45,6 +46,7 @@ class TabScreen extends Component {
         <TabBarIOS.Item
           title="Closet"
           selected={this.state.selectedTab === "tab2"}
+          icon={require('../../img/icon/hanger.png')}
           onPress={() => {
             this.setState({
               selectedTab: "tab2",
@@ -58,6 +60,7 @@ class TabScreen extends Component {
         <TabBarIOS.Item
           title="Laundry"
           selected={this.state.selectedTab === "tab3"}
+          icon={require('../../img/icon/laundry-basket.png')}
           onPress={() => {
             this.setState({
               selectedTab: "tab3",
@@ -67,7 +70,6 @@ class TabScreen extends Component {
           <LaundryScreen id = {this.state.userId} token = {this.state.token}/>
 
         </TabBarIOS.Item>
-
       </TabBarIOS>
     )
   }

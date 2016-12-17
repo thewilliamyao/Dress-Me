@@ -8,7 +8,8 @@ import {
   NavigatorIOS,
   TouchableHighlight,
   ScrollView,
-  TextInput
+  TextInput,
+  Image
 } from 'react-native';
 
 var ClosetItem = require('./components/closet-item')
@@ -34,16 +35,25 @@ class ClosetScreen extends Component{
   	// }
 
 	render(){
-		return <ScrollView style={styles.container}>
+		return (
+		<Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
 			<View style={styles.title}>
 				<Text style={styles.titleText}>
-					Closet
+					C l o s e t
 				</Text>
 			</View>
-			<View style={styles.closetItems}>
-				{this.closet()}
+			<View style={styles.container}>
+				<ScrollView>
+					<View style={styles.closetItems}>
+						{this.closet()}
+					</View>
+				</ScrollView>
 			</View>
-		</ScrollView>
+			<View style={styles.update}>
+				{this.resetLaundryButton()}
+			</View>
+		</Image>
+		)
 	}
 
 	closet() {
@@ -56,7 +66,7 @@ class ClosetScreen extends Component{
 			// console.log(number);
 			console.log(this.state.itemNum[i]);
 			closetItems.push(
-				<ClosetItem key={i} type={itemType} amount={this.state.itemNum[i]}/>
+				<ClosetItem style={styles.closetElement} key={i} type={itemType} amount={this.state.itemNum[i]}/>
 			)
 		}
 		return closetItems;
@@ -105,31 +115,75 @@ class ClosetScreen extends Component{
 			this.setState({ itemNum: itemNum });
         }
 	}
+
+	resetLaundryButton() {
+		return <TouchableHighlight
+		underlayColor="gray"
+		onPress={() => this.handleUpdatePress()}
+		style={styles.updateButton}
+		>
+			<Text style={styles.updateButtonText}>
+			UPDATE CLOSET
+			</Text>
+
+		</TouchableHighlight>
+	}
+
+	handleUpdatePress() {
+
+	}
 };
 
 var styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		height: 460
 	},
+	backgroundImage: {
+        flex: 1,
+        height: null,
+        width: null,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+		flexDirection: 'column'
+		
+        //resizeMode: 'cover', // or 'stretch'
+    },
 	title: {
+		paddingTop: 20,
+		paddingBottom: 20,
 		justifyContent: 'center',
     	alignItems: 'center'
 	},
 	titleText: {
 		fontSize: 36,
+		fontWeight: '700',
+		color: '#FFFFFF'
 	},
 	closetItems: {
-		marginTop: 30,
+		width: 300,
 	},
-	amount: {
-		height:40, 
-		width: 40, 
-		borderColor: 'gray', 
-		color:'white', 
-		borderWidth: 1,
+	update: {
+		marginTop: 20,
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	updateButton: {
+		width: 150,
+		height: 40,
 		justifyContent: 'center',
 		alignItems: 'center',
-	}
+		backgroundColor: 'white',
+		shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+	},
+	updateButtonText: {
+        fontSize: 12,
+        fontWeight: '600',
+    },
 })
 
 module.exports = ClosetScreen;

@@ -57,8 +57,12 @@ var styles = StyleSheet.create({
 		height: 80,
 		marginTop: 5,
 		marginBottom: 5,
-		borderColor: '#000000',
-		borderWidth: 1
+		shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
 	},
 	clothes: {
 		fontSize: 18,
@@ -66,19 +70,19 @@ var styles = StyleSheet.create({
 	},
 	icon: {
 		flex: 1,
-		backgroundColor: '#000000',
+		backgroundColor: '#FFFFFF',
 		justifyContent: 'center',
     	alignItems: 'center'
 	},
 	iconImage: {
-		tintColor: '#FFFFFF',
 		height: 50,
 		width: 50
 	},
 	type: {
 		flex: 2,
 		justifyContent: 'center',
-    	alignItems: 'center'
+    	alignItems: 'center',
+		backgroundColor: '#FFFFFF'
 	},
 	amount: {
 		flex: 1,
@@ -87,12 +91,11 @@ var styles = StyleSheet.create({
     	alignItems: 'center'
 	},
 	amountText: {
+		marginLeft: 20,
 		fontSize: 36,
 		color: '#FFFFFF',
-		height:40, 
+		height: 40, 
 		width: 40, 
-		borderColor: 'gray', 
-		borderWidth: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
 	}
