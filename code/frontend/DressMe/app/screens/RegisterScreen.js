@@ -7,49 +7,93 @@ import {
   TouchableHighlight,
   ScrollView,
   TextInput,
-  Navigator
+  Navigator,
+  Image,
+  Animated,
+  Easing,
+  LayoutAnimation,
 } from 'react-native';
 
 class RegisterScreen extends Component{
     constructor(props){
         super(props);
-        this.state = {text: 'Email', text1: 'Password', id: -1, token: 'stringthing'}
+        this.state = {text: 'Email', text1: 'Password', id: -1, token: 'stringthing', userBoxWidth: 280, userBoxHeight: 70, userZ: 0, passBoxWidth: 280, passBoxHeight: 70, passZ: -10}
     }
+
+    _onFocusUser() {
+        LayoutAnimation.configureNext(CustomLayoutSpring);
+        this.setState({userBoxHeight: 90, userBoxWidth: 300, userOffset: -10, userZ: 3})
+    }
+
+    _onBlurUser() {
+        LayoutAnimation.configureNext(CustomReturnSpring);
+        this.setState({userBoxHeight: 70, userBoxWidth: 280, userOffset: 0, userZ: 0})
+    }
+
+    _onFocusPass() {
+        LayoutAnimation.configureNext(CustomLayoutSpring);
+        this.setState({passBoxHeight: 90, passBoxWidth: 300, passOffset: -10, passZ: 3})
+    }
+
+    _onBlurPass() {
+        LayoutAnimation.configureNext(CustomReturnSpring);
+        this.setState({passBoxHeight: 70, passBoxWidth: 280, passOffset: 0, passZ: 0})
+    }
+
     render() {
-        return (<View style = {styles.container}>
+        return (<Image source={require('../../img/background/bg.jpg')} style = {styles.backgroundImage}>
             <View style={styles.titleContainer}>
-                <Text> Registration </Text>
+                <Image style={styles.registerImage} source={require('../../img/clothes_icon/shirt-2.png')}/>
+                <Text style={styles.register}> R e g i s t r a t i o n </Text>
             </View>
-            <View style={styles.loginContainer}>
+            <View style={[styles.loginContainer, {zIndex: this.state.userZ}]}>
                 <TextInput
-                    style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                    onFocus = {() => this._onFocusUser()}
+                    onBlur = {() => this._onBlurUser()}
+                    style={{
+                            paddingLeft: 20,
+                            marginLeft: this.state.userOffset,
+                            fontSize: 12,
+                            fontWeight: '600',
+                            height: this.state.userBoxHeight,
+                            width: this.state.userBoxWidth, 
+                            backgroundColor: '#FFFFFF'}}
                     onChangeText={(text) => this.setState({text})}
                     value={this.state.text}/>
+            </View>
+            <View style={[styles.loginContainer, {zIndex: this.state.passZ}]}>
                 <TextInput
-                    style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                    onFocus = {() => this._onFocusPass()}
+                    onBlur = {() => this._onBlurPass()}
+                    style={{
+                            paddingLeft: 20,
+                            marginLeft: this.state.passOffset,
+                            fontSize: 12,
+                            fontWeight: '600',
+                            height: this.state.passBoxHeight,
+                            width: this.state.passBoxWidth, 
+                            zIndex: this.state.passZ,
+                            backgroundColor: '#FFFFFF'}}
                     onChangeText={(text1) => this.setState({text1})}
                     value={this.state.text1}/>
             </View>
             <View style={styles.buttonContainer}>
                 <TouchableHighlight
                   underlayColor="gray"
-                  onPress={() => this.handleBackPress()}
-                  style={styles.loginButton}>
-                    <Text>
-                      Back 
-                    </Text>
-                </TouchableHighlight>
-                <TouchableHighlight
-                  underlayColor="gray"
                   onPress={() => this.handleSubmitPress()}
                   style={styles.loginButton}>
-                    <Text>
-                      Submit 
+                    <Text style={styles.loginButtonText}>
+                      SUBMIT
                     </Text>
                 </TouchableHighlight>
+                <Text 
+                    style={styles.createAccount}
+                    onPress={() => this.handleBackPress()}>
+                    Cancel
+                </Text>
             </View>
         
-        </View>
+        </Image>
         );
     }
 
@@ -101,57 +145,77 @@ LoginScreen.propTypes = {
 */}
 
 var styles = StyleSheet.create({
-    container: {
+    backgroundImage: {
         flex: 1,
-        backgroundColor: 'blue'
+        height: null,
+        width: null,
+        justifyContent: 'center',
+        alignItems: 'center'
+        //resizeMode: 'cover', // or 'stretch'
+    },
+    registerImage: {
+        height: 80,
+		width: 80,
+        marginBottom: 30,
+    },
+    register: {
+        fontSize: 24,
+        fontWeight: '700'
     },
     titleContainer: {
         flex: 1,
-        backgroundColor: 'yellow',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    loginContainer: {
-        flex: 1,
-        backgroundColor: 'red',
         justifyContent: 'center',
         alignItems: 'center'
     },
     loginButton: {
-        width: 100,
-        height: 50,
-        borderWidth: 2,
+        width: 280,
+        height: 70,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'red'
+        backgroundColor: '#FFFFFF',
+        shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+        marginBottom: 20
+    },
+    loginButtonText: {
+        fontSize: 12,
+        fontWeight: '600',
+    },
+    loginContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 70,
+        width: 280,
+        shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+        // backgroundColor: '#FFFFFF' 
     },
     buttonContainer: {
         flex: 1,
-        backgroundColor: 'white',
-        justifyContent: 'space-around',
         alignItems: 'center',
-        flexDirection: 'row'
-    },
-    buttonWrapper: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center'
-    },
-    textColor: {
-        color: 'white'
-    },
-    input: {
-        flex: 1,
-        color: '#FFFFFF',
-        height:40, 
-        width: 40, 
-        borderColor: 'gray', 
-        color:'white', 
-        borderWidth: 1,
         justifyContent: 'center',
-        alignItems: 'center'
-    }
-
+        flexDirection: 'column',
+    },
+    loginField: {
+        marginLeft: 20,
+        fontSize: 12,
+        fontWeight: '600',
+        height: 70,
+        width: 280, 
+        backgroundColor: '#FFFFFF'
+    },
+    createAccount: {
+        color: '#DDDDDD',
+        textDecorationLine: 'underline',
+    },
 })
 
 module.exports = RegisterScreen;

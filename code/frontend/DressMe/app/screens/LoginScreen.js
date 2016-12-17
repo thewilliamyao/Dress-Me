@@ -56,7 +56,7 @@ export default class LoginScreen extends Component{
 
     componentWillMount() {
         // Animate creation
-        LayoutAnimation.configureNext(CustomReturnSpring);
+        //LayoutAnimation.configureNext(CustomReturnSpring);
     }
 
     _onFocusUser() {
@@ -98,8 +98,6 @@ export default class LoginScreen extends Component{
                 <TextInput
                     onFocus = {() => this._onFocusUser()}
                     onBlur = {() => this._onBlurUser()}
-                    //onFocus= {() => this.setState({text : '', userBoxWidth: 300, userBoxHeight: 90, userZ: 3, userOffset: -10})}
-                    //onBlur= {() => this.setState({userBoxWidth: 280, userBoxHeight: 70, userZ: 1, userOffset: 0})}
                     style={{
                             paddingLeft: 20,
                             marginLeft: this.state.userOffset,
@@ -115,8 +113,6 @@ export default class LoginScreen extends Component{
                 <TextInput
                     onFocus = {() => this._onFocusPass()}
                     onBlur = {() => this._onBlurPass()}
-                    //onFocus= {() => this.setState({passBoxWidth: 300, passBoxHeight: 90, passZ: 3, passOffset: -10})}
-                    //onBlur= {() => this.setState({passBoxWidth: 280, passBoxHeight: 70, passZ: 1, passOffset: 0})}
                     style={{
                             paddingLeft: 20,
                             marginLeft: this.state.passOffset,
