@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   View,
-  NavigatorIOS,
   TouchableHighlight,
   ScrollView,
   TextInput,
@@ -55,9 +54,25 @@ class RegisterScreen extends Component{
     }
 
     handleSubmitPress() {
-        this.props.navigator.push({
-            ident: "Recommendation"
+
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/user', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: this.state.text,
+            password: this.state.text1,
+          })
         })
+
+        {/*
+        this.props.navigator.push({
+            ident: "Recommendation",
+            tabbing: "tab2"
+        })
+        */}
     }
 
     handleBackPress() {

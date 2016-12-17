@@ -75,6 +75,9 @@ class RecommendationScreen extends Component {
   handleSettingsPress(){
     console.log("Pressed Settings")
     this.props.navigator.push({
+            ident: "Recommendation"
+        })
+    this.props.navigator.push({
             ident: "Settings"
     }) 
   }
@@ -175,14 +178,21 @@ class RecommendationScreen extends Component {
   selectButton() {
     return <TouchableHighlight
       underlayColor="gray"
-      onPress={() => this.handleDressMePress()}
+      onPress={() => this.handleRateMePress()}
       style={styles.dressMeButton}
       >
         <Text>
-          Choose
+          Rate
         </Text>
 
     </TouchableHighlight>
+  }
+
+  handleRateMePress(){
+    console.log("Pressed Rate")
+    this.props.navigator.push({
+            ident: "Rate"
+        })
   }
   
   requestClothing(option) {
@@ -191,6 +201,7 @@ class RecommendationScreen extends Component {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+
         }
         
       }).then((response) => response.json())

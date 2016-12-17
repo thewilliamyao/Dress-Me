@@ -14,13 +14,13 @@ import {
 export default class LoginScreen extends Component{
     constructor(props){
         super(props);
-        this.state = {text: 'blah', text1: 'MEERP'}
+        this.state = {text: 'blah', text1: 'MEERP', id: -1, token: 'Blah'}
     }
     render() {
 
         return (<View style = {styles.container}>
             <View style={styles.titleContainer}>
-                <Text> DresMe </Text>
+                <Text> DressMe </Text>
             </View>
             <View style={styles.loginContainer}>
                 <TextInput
@@ -56,9 +56,36 @@ export default class LoginScreen extends Component{
     }
 
     handleLoginPress() {
-        this.props.navigator.push({
-            ident: "Recommendation"
+
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/login', {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: this.state.text,
+            password: this.state.text1,
+          })
+        }).then((response) => response.json())
+        .then((responseJson) => {
+          this.recommendationJson = responseJson;
+          this.choiceInt = 1;
+          this.setState({id: responseJson.id});
+          this.setState({token: responseJson.token});
         })
+
+        
+        if(this.state.id != -1) {
+            this.props.navigator.push({
+                ident: "Recommendation",
+                tabbing: "tab1"
+            })
+        }
+        else {
+            console.log("Failed Login")
+        }
+    
     }
 
     handleRegisterPress() {
