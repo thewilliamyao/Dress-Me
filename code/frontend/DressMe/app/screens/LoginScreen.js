@@ -9,28 +9,123 @@ import {
   TouchableHighlight,
   ScrollView,
   TextInput,
-  Navigator
+  Navigator,
+  Animated,
+  Easing,
+  LayoutAnimation,
 } from 'react-native';
+
+import dismissKeyboard from 'dismissKeyboard';
+
+var CustomLayoutSpring = {
+    duration: 180,
+    create: {
+      type: LayoutAnimation.Types.spring,
+      property: LayoutAnimation.Properties.scaleXY,
+      springDamping: 0.5,
+    },
+    update: {
+      type: LayoutAnimation.Types.spring,
+      springDamping: 0.5,
+    },
+  };
+
+var CustomReturnSpring = {
+    duration: 150,
+    create: {
+        type: LayoutAnimation.Types.spring,
+        property: LayoutAnimation.Properties.scaleXY,
+        springDamping: 0.3,
+    },
+    update: {
+        type: LayoutAnimation.Types.spring,
+        springDamping: 0.3,
+    },
+};
 
 export default class LoginScreen extends Component{
     constructor(props){
         super(props);
-        this.state = {text: 'Email', text1: 'Password', id: -1, token: 'Blah'}
+        this.state = {text: 'Email', text1: 'Password', id: -1, token: 'Blah', userBoxWidth: 280, userBoxHeight: 70, userZ: 0, passBoxWidth: 280, passBoxHeight: 70, passZ: -10}
     }
+
+    //Need to figure this out later
+    _onSomethingElse() {
+        dismissKeyboard();
+    }
+
+    componentWillMount() {
+        // Animate creation
+        LayoutAnimation.configureNext(CustomReturnSpring);
+    }
+
+    _onFocusUser() {
+        LayoutAnimation.configureNext(CustomLayoutSpring);
+        this.setState({userBoxHeight: 90, userBoxWidth: 300, userOffset: -10, userZ: 3})
+    }
+
+    _onBlurUser() {
+        LayoutAnimation.configureNext(CustomReturnSpring);
+        this.setState({userBoxHeight: 70, userBoxWidth: 280, userOffset: 0, userZ: 0})
+    }
+
+    _onFocusPass() {
+        LayoutAnimation.configureNext(CustomLayoutSpring);
+        this.setState({passBoxHeight: 90, passBoxWidth: 300, passOffset: -10, passZ: 3})
+    }
+
+    _onBlurPass() {
+        LayoutAnimation.configureNext(CustomReturnSpring);
+        this.setState({passBoxHeight: 70, passBoxWidth: 280, passOffset: 0, passZ: 0})
+    }
+
+    onFocus() {
+        this.setState({
+        userBoxWidth: 300,
+        userBoxHeight: 90,
+    })
+    }
+
     render() {
 
         return (<Image source={require('../../img/background/bg.jpg')} style = {styles.backgroundImage}>
             
             <View style={styles.titleContainer}>
-                <Text style={styles.dressMe}> Dress Me </Text>
+                <Image style={styles.dressMeImage} source={require('../../img/clothes_icon/shirt-2.png')}/>
+                <Text style={styles.dressMe}> D r e s s   M e </Text>
             </View>
-            <View style={styles.loginContainer}>
+            <View style={[styles.loginContainer, {zIndex: this.state.userZ}]}>
                 <TextInput
-                    style={styles.loginField}
+                    onFocus = {() => this._onFocusUser(user)}
+                    onBlur = {() => this._onBlurUser()}
+                    //onFocus= {() => this.setState({text : '', userBoxWidth: 300, userBoxHeight: 90, userZ: 3, userOffset: -10})}
+                    //onBlur= {() => this.setState({userBoxWidth: 280, userBoxHeight: 70, userZ: 1, userOffset: 0})}
+                    style={{
+                            paddingLeft: 20,
+                            marginLeft: this.state.userOffset,
+                            fontSize: 12,
+                            fontWeight: '600',
+                            height: this.state.userBoxHeight,
+                            width: this.state.userBoxWidth, 
+                            backgroundColor: '#FFFFFF'}}
                     onChangeText={(text) => this.setState({text})}
                     value={this.state.text}/>
+            </View>
+            <View style={[styles.loginContainer, {zIndex: this.state.passZ}]}>
                 <TextInput
-                    style={styles.loginField}
+                    onFocus = {() => this._onFocusPass()}
+                    onBlur = {() => this._onBlurPass()}
+                    //onFocus= {() => this.setState({passBoxWidth: 300, passBoxHeight: 90, passZ: 3, passOffset: -10})}
+                    //onBlur= {() => this.setState({passBoxWidth: 280, passBoxHeight: 70, passZ: 1, passOffset: 0})}
+                    style={{
+                            paddingLeft: 20,
+                            marginLeft: this.state.passOffset,
+                            fontSize: 12,
+                            fontWeight: '600',
+                            height: this.state.passBoxHeight,
+                            width: this.state.passBoxWidth, 
+                            zIndex: this.state.passZ,
+                            backgroundColor: '#FFFFFF'}}
                     onChangeText={(text1) => this.setState({text1})}
                     value={this.state.text1}/>
             </View>
@@ -103,26 +198,27 @@ var styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    dressMeImage: {
+        height: 80,
+		width: 80,
+        marginBottom: 30,
+    },
     dressMe: {
         fontSize: 24,
-        fontWeight: '800'
+        fontWeight: '700'
     },
     backgroundImage: {
         flex: 1,
         height: null,
         width: null,
+        justifyContent: 'center',
+        alignItems: 'center'
         //resizeMode: 'cover', // or 'stretch'
     },
     titleContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    loginContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column',
     },
     loginButton: {
         width: 280,
@@ -136,6 +232,7 @@ var styles = StyleSheet.create({
         },
         shadowColor: 'black',
         shadowOpacity: 0.5,
+        marginBottom: 20
     },
     loginButtonText: {
         fontSize: 12,
@@ -143,24 +240,35 @@ var styles = StyleSheet.create({
     },
     buttonContainer: {
         flex: 1,
-        justifyContent: 'space-around',
         alignItems: 'center',
+        justifyContent: 'center',
         flexDirection: 'column',
     },
-    loginField: {
+    loginContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
         height: 70,
-        width: 280, 
+        width: 280,
         shadowOffset:{
             width: 2,
             height: 2,
         },
         shadowColor: 'black',
         shadowOpacity: 0.5,
+        // backgroundColor: '#FFFFFF' 
+    },
+    loginField: {
+        marginLeft: 20,
+        fontSize: 12,
+        fontWeight: '600',
+        height: 70,
+        width: 280, 
+        backgroundColor: '#FFFFFF'
     },
     createAccount: {
         color: '#DDDDDD',
         textDecorationLine: 'underline',
-    }
+    },
 })
 
 module.exports = LoginScreen;

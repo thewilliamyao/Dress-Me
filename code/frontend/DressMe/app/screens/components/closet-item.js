@@ -92,7 +92,6 @@ var styles = StyleSheet.create({
 		height:40, 
 		width: 40, 
 		borderColor: 'gray', 
-		color:'white', 
 		borderWidth: 1,
 		justifyContent: 'center',
 		alignItems: 'center',

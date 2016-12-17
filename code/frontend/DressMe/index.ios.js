@@ -23,7 +23,7 @@ import LoginScreen from './app/screens/LoginScreen'
 import RegisterScreen from './app/screens/RegisterScreen'
 import SettingsScreen from './app/screens/SettingsScreen'
 import FeedbackScreen from './app/screens/FeedbackScreen'
-import TabScreen from './TabScreen'
+import TabScreen from './app/screens/TabScreen'
 
 export default class DressMe extends Component {
   _renderScene(route, navigator) {
