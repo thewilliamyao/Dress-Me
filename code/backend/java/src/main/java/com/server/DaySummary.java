@@ -1,4 +1,5 @@
 package com.server;
+import java.util.HashMap;
 
 /**
  * Class containing data for a day summarizing weather and clothes worn

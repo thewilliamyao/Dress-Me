@@ -133,7 +133,7 @@ public class UserService {
 	// TODO: replace this so it actually gets something from the database
 	//       also replace it with combined Weather + Clothing object that has similarity index
 	//       Create new class, use Pair<Weather, Outfit> (new Outfit class), or populate variables from database?
-	ArrayList<DaySummary> pastWeather = new ArrayList<>();
+	ArrayList<DaySummary> pastDays = new ArrayList<>();
 
 	// TODO: go through past weathers, populating a PriorityQueue of similarity indices (Doubles)
 	//       make 20 into private static final variable "MAX_KEPT" or something
