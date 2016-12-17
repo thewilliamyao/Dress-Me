@@ -15,7 +15,7 @@ import {
 export default class LoginScreen extends Component{
     constructor(props){
         super(props);
-        this.state = {text: 'blah', text1: 'MEERP', id: -1, token: 'Blah'}
+        this.state = {text: 'Email', text1: 'Password', id: -1, token: 'Blah'}
     }
     render() {
 
@@ -73,12 +73,13 @@ export default class LoginScreen extends Component{
           this.setState({id: responseJson.id});
           this.setState({token: responseJson.token});
         })
-
-        
+        console.log(this.state.id);
         if(this.state.id != -1) {
             this.props.navigator.push({
                 ident: "Recommendation",
-                tabbing: "tab1"
+                tabbing: "tab1",
+                id: this.state.id,
+                token: this.state.token
             })
         }
         else {
@@ -155,9 +156,6 @@ var styles = StyleSheet.create({
         },
         shadowColor: 'black',
         shadowOpacity: 0.5,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF',
     },
     createAccount: {
         color: '#DDDDDD',

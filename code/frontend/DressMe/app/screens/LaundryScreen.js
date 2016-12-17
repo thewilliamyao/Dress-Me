@@ -84,10 +84,11 @@ class LaundryScreen extends Component{
 
   getCloset() {
     if (this.state.LaundryList == null) {
-        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/laundry/0', {
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/laundry/' + this.props.id, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'token': this.props.token
             }
           
           }).then((response) => response.json())

@@ -14,6 +14,8 @@ import com.github.dvdme.ForecastIOLib.*;
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
+import java.util.Collections;
 
 public class UserService {
 
@@ -119,6 +121,30 @@ public class UserService {
         // get the weather based on the location
         Weather currWeather = new Weather(currLocation.getLatitude(), currLocation.getLongitude());
 
+	// Criteria to compare Weather objects by: temperature, apparentTemp, humidity
+	// Possibly windSpeed, precipIntensity?
+
+	// When user gives feedback at the end of the day, front end should send comparison critera
+	// to back end for storage in database.
+	
+	// Keep last 10, 20 days in database?	
+	// Don't want to compare with large number of past days if used for a long time
+
+	// TODO: replace this so it actually gets something from the database
+	//       also replace it with combined Weather + Clothing object that has similarity index
+	//       Create new class, use Pair<Weather, Outfit> (new Outfit class), or populate variables from database?
+	ArrayList<Weather> pastWeather = new ArrayList<Weather>();
+
+	// TODO: go through past weathers, populating a PriorityQueue of similarity indices (Doubles)
+	//       make 20 into private static final variable "MAX_KEPT" or something
+	PriorityQueue<Integer> similarityIndices = new PriorityQueue<>(20, Collections.reverseOrder());
+
+	for (Weather w : pastWeather) {
+	    // Compare to current weather
+	    Integer similarity = Integer.valueOf(currWeather.compareTo(w));
+	    similarityIndices.add(similarity);
+	}
+		
         // recreate clothes map for this user
         List<Clothes> currClothes = ClothesService.getClothesList(currId);
         HashMap<String, Double> highMap = new HashMap<String, Double>();
@@ -130,8 +156,8 @@ public class UserService {
             dirtyMap.put(c.getSpecificType(), new Integer(c.getNumberDirty()));
             highMap.put(c.getSpecificType(), new Double(c.getTempHigh()));
             lowMap.put(c.getSpecificType(), new Double(c.getTempLow()));
-        }
-
+        }		
+	
         String pantsRecommendation = "NONE";
         String backupPants = "";
         String shirtRecommendation = "NONE";
@@ -147,7 +173,7 @@ public class UserService {
             // recommend shorts if possible
             if (hasClean("shorts", ownedMap, dirtyMap)) {
                 pantsRecommendation = "shorts";
-                if (hasClean("long_pants")) {
+                if (hasClean("long_pants", ownedMap, dirtyMap)) {
                     // we can recommend long pants as a backup
                     backupPants = "long_pants";
                 }
@@ -163,7 +189,7 @@ public class UserService {
             // we prefer long pants
             if (hasClean("long_pants", ownedMap, dirtyMap)) {
                 pantsRecommendation = "long_pants";
-            } else if (hasClean("shorts")) {
+            } else if (hasClean("shorts", ownedMap, dirtyMap)) {
                 // if not recommend long pants if he owns it
                 pantsRecommendation = "shorts";
             } else {
