@@ -22,7 +22,9 @@ class LaundryScreen extends Component{
       this.state = {
         LaundryList: null,
         itemNum: ['...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...'],
-        text: '0'
+        text: '0',
+        id: this.props.id,
+        token: this.props.token
       };
     }
 
@@ -63,7 +65,7 @@ class LaundryScreen extends Component{
       // console.log(number);
       console.log(this.state.itemNum[i]);
       closetItems.push(
-        <ClosetItem key={i} type={itemType} amount={this.state.itemNum[i]}/>
+        <ClosetItem key={i} type={itemType} amount={this.state.itemNum[i]} id={this.state.id} token={this.state.token} which={'laundry/'}/>
       )
     }
     return closetItems;
@@ -105,7 +107,8 @@ class LaundryScreen extends Component{
   }
   
   handleResetLaundryPress() {
-    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/id', {
+
+    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/' + this.state.id, {
       method: 'PUT',
       headers: {
           'Accept': 'application/json',
@@ -134,7 +137,7 @@ class LaundryScreen extends Component{
     return <TouchableHighlight
     underlayColor="gray"
     onPress={() => this.handleBackPress()}
-    style={styles.updateButton}
+    style={styles.resetButton}
     >
       <Text style={styles.resetButtonText}>
       BACK

@@ -47,7 +47,9 @@ class ClosetItem extends Component{
           text: this.props.amount,
           amountLeft: 0,
           amountRight: 0,
-          key: this.props.key
+          type: this.props.type,
+          id: this.props.id,
+          token: this.props.token
         };
     }
 
@@ -95,14 +97,32 @@ class ClosetItem extends Component{
                     onBlur = {() => this._onBlur()}
                     style={styles.amountText}
                     onChangeText={(text) => this.setState({text})}
-                    value={text + ''}
-                    setParent={() => callback(text)}/>
+                    onSubmitEditing={() => this.update()}
+                    value={text + ''}/>
             </View>
         </View>
     }
 
-    callback(e) {
-        this.props.setParentState(this.state.key, e);
+    update() {
+        console.log('Successfully updated')
+        console.log(this.state.type)
+        console.log(this.state.text)
+        console.log(this.state.id)
+        console.log(this.state.token)
+        console.log(this.props.which)
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/'+ this.props.which + this.state.id, {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'token': this.state.token
+          },
+          body: JSON.stringify({
+            type: this.state.type,
+            number: this.state.text
+          })
+        })
+        console.log('Successfully updated')
     }
 };
 
