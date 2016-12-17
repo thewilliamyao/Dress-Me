@@ -26,34 +26,33 @@ public class UserController {
     * Sets up the endpoints for a user.
     */
     private void setupEndpoints() {
+        get(API_CONTEXT + "/reset", "application/json", (request, response) -> {
+            userService.reset();
+            return Collections.EMPTY_MAP;
+        }, new JsonTransformer());
+
         // create a new user
         post(API_CONTEXT + "/user", "application/json", (request, response) -> {
-            try {
-                LoginToken l = userService.createNewUser(request.body());
-                response.status(201);
-                return l;
-            } catch (UserService.UserServiceException ex) {
-                logger.error("Failed to create new user", ex);
-                response.status(420);
-            } catch (UserService.NewUserException ex) {
-                logger.error("Invalid credentials for new user", ex);
+            response.status(201);
+            LoginToken l = userService.createNewUser(request.body());
+            if (l.getId() == -1) {
                 response.status(403);
+            } else if (l.getId() == -2) {
+                response.status(420);
             }
-            return Collections.EMPTY_MAP;
+            return l;
         }, new JsonTransformer());
 
         //logs in for a user
         put(API_CONTEXT + "/login", "application/json", (request, response) -> {
-            try {
-                response.status(200);
-                return userService.getLoginToken(request.body());
-            } catch (UserService.UserServiceException ex) {
-                logger.error("Invalid credentials");
+            response.status(200);
+            LoginToken l = userService.getLoginToken(request.body());
+            if (l.getId() == -1) {
                 response.status(403);
-            } catch (Exception ex) {
-                response.status(600);
+            } else if (l.getId() == -2) {
+                response.status(420);
             }
-            return Collections.EMPTY_MAP;
+            return l;
         }, new JsonTransformer());
 
         // get a new recommendation

@@ -50,7 +50,6 @@ public class UserService {
     */
     public UserService(Sql2o currDb) throws UserServiceException {
         db = currDb;
-        
         //Create the schema for the database if necessary. This allows this
         //program to mostly self-contained. But this is not always what you want;
         //sometimes you want to create the schema externally via a script.
@@ -75,6 +74,16 @@ public class UserService {
         }
     }
 
+    public void reset() throws UserServiceException {
+        try (Connection conn = db.open()) {
+            String sql = "DROP TABLE IF EXISTS users";
+            conn.createQuery(sql).executeUpdate();
+            sql = "DROP TABLE IF EXISTS clothes";
+            conn.createQuery(sql).executeUpdate();
+            sql = "DROP TABLE IF EXISTS locations";
+            conn.createQuery(sql).executeUpdate();
+        }
+    }
 
     private static String base64Encode(byte[] bytes) {
         return new BASE64Encoder().encode(bytes);
@@ -124,10 +133,10 @@ public class UserService {
 
         if(currEmail.equals("")) {
             logger.error("UserService.createNewUser: No username specified.");
-            throw new NewUserException("UserService.createNewUser: No username specified.");
+            return new LoginToken(-1, "");
         } else if(currPassword.equals("")) {
             logger.error("UserService.createNewUser: No password specified.");
-            throw new NewUserException("UserService.createNewUser: No password specified.");
+            return new LoginToken(-1, "");
         }
 	
         // check that there are no users with the same email
@@ -143,11 +152,11 @@ public class UserService {
                     .executeAndFetchFirst(Integer.class);
         } catch (Sql2oException ex) {
 	        logger.error("UserService.createNewUser: Failed to query users", ex);
-            throw new UserServiceException("UserService.createNewUser: Failed to query users", ex);
+            return new LoginToken(-2, "");
         }
         if (numUsers > 0) {
             logger.error("UserServer.createNewUser: User already exists");
-            throw new NewUserException("UserServer.createNewUser: User already exists"); 
+            return new LoginToken(-1, "");
         }
         int currUserId = this.userCounter++;
         LocationService.createNewLocation(currUserId);
@@ -170,7 +179,7 @@ public class UserService {
                 .executeUpdate();
         } catch (Sql2oException ex) {
 	        logger.error("UserService.createNewUser: Failed to add new user entry", ex);
-            throw new UserServiceException("UserService.createNewUser: Failed to add new user entry", ex);
+            return new LoginToken(-2, "");
         }
         return new LoginToken(currUserId);
     }
@@ -181,6 +190,13 @@ public class UserService {
         String currEmail = obj.get("email").getAsString();
         String currPassword = obj.get("password").getAsString();
 
+        if(currEmail.equals("")) {
+            logger.error("UserService.createNewUser: No username specified.");
+            return new LoginToken(-1, "");
+        } else if(currPassword.equals("")) {
+            logger.error("UserService.createNewUser: No password specified.");
+            return new LoginToken(-1, "");
+        }
         // get encrypted password
         String sqlUser = "SELECT * FROM users WHERE (email = :email)";
         User currUser;
@@ -194,10 +210,10 @@ public class UserService {
                     .executeAndFetchFirst(User.class);
         } catch (Sql2oException ex) {
 	        logger.error("UserService.createLoginToken: Failed to find user entry", ex);
-            throw new UserServiceException("UserService.createLoginToken: Failed to find user entry", ex);
+            return new LoginToken(-2, "");
         }
         if (currUser == null) {
-            throw new UserServiceException("UserServer.createLoginToken: Invalid credentials");
+            return new LoginToken(-1, "");
         }
         // now verify password
         try {
@@ -207,9 +223,9 @@ public class UserService {
             }
         } catch (Exception ex) {
             logger.error("UserServer.createLoginToken: Invalid password", ex);
-            throw new UserServiceException("UserService.createLoginToken: Invalid password", ex);
+            return new LoginToken(-1, "");
         }
-        throw new UserServiceException("UserService.createLoginToken: Invalid password");
+        return new LoginToken(-1, "");
     }
 
 

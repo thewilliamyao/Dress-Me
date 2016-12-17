@@ -93,7 +93,7 @@ public class ClothesService {
             timesWornMap.put("sweater", new Integer(-1));
             lowTempMap.put("winter_coat", new Double(TEMP_MIN));
             highTempMap.put("winter_coat", new Double(40));
-            timesWornMap.put("winter_coaat", new Integer(-1));
+            timesWornMap.put("winter_coat", new Integer(-1));
             // accessories
             lowTempMap.put("umbrella", new Double(TEMP_MIN));
             highTempMap.put("umbrella", new Double(TEMP_MAX));

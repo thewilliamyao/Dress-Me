@@ -98,7 +98,9 @@ public class TestServer {
         testAddUser();
         UserJson firstUser = new UserJson("test", "wrongpassword");
         Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
         assertEquals(403, radd.httpStatus);
+        assertEquals(-1, token.getId());
     }
 
     @Test
@@ -106,7 +108,9 @@ public class TestServer {
         testAddUser();
         UserJson firstUser = new UserJson("other", "testpassword");
         Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
         assertEquals(403, radd.httpStatus);
+        assertEquals(-1, token.getId());
     }
 
     @Test
@@ -114,7 +118,9 @@ public class TestServer {
         testAddUser();
         UserJson firstUser = new UserJson("", "testpassword");
         Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
         assertEquals(403, radd.httpStatus);
+        assertEquals(-1, token.getId());
     }
     
     @Test
@@ -122,7 +128,9 @@ public class TestServer {
         testAddUser();
         UserJson firstUser = new UserJson("other", "");
         Response radd = request("PUT", API_PREFIX + "login", firstUser);
+        LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
         assertEquals(403, radd.httpStatus);
+        assertEquals(-1, token.getId());
     }
 
     @Test
@@ -141,14 +149,18 @@ public class TestServer {
     public void testCreateUserNoEmailFail() throws Exception {
         UserJson emptyUser = new UserJson("", "test");
         Response badd = request("POST", API_PREFIX + "user", emptyUser);
+        LoginToken token = new Gson().fromJson(badd.content, LoginToken.class);
         assertEquals(403, badd.httpStatus);
+        assertEquals(-1, token.getId());
     }
 
     @Test
     public void testCreateUserNoPasswordFail() throws Exception {
         UserJson emptyPassword = new UserJson("test", "");
         Response badd = request("POST", API_PREFIX + "user", emptyPassword);
+        LoginToken token = new Gson().fromJson(badd.content, LoginToken.class);
         assertEquals(403, badd.httpStatus);
+        assertEquals(-1, token.getId());
     }
 
     @Test
@@ -157,7 +169,9 @@ public class TestServer {
         Response radd = request("POST", API_PREFIX + "user", first);
         assertEquals(201, radd.httpStatus);
         radd = request("POST", API_PREFIX + "user", first);
+        LoginToken token = new Gson().fromJson(radd.content, LoginToken.class);
         assertEquals(403, radd.httpStatus);
+        assertEquals(-1, token.getId());
     }
 
     //------------------------------------------------------------------------//
@@ -425,7 +439,7 @@ public class TestServer {
     // Generic Helper Methods and classes
     //------------------------------------------------------------------------//
     private Response request(String method, String path, Object content) throws Exception {
-        String responseBody;
+        String responseBody = "";
         URL url = new URL("http", "localhost", 8080, path);
         // URL url = new URL("http", "https://dry-beyond-51182.herokuapp.com", path);
 
@@ -445,7 +459,9 @@ public class TestServer {
             }
             responseBody = IOUtils.toString(http.getInputStream());
         } catch (IOException e) {
-            responseBody = "{}";
+            if (responseBody == "") {
+                responseBody = IOUtils.toString(http.getErrorStream());
+            }
 		}
         return new Response(http.getResponseCode(), responseBody);
 

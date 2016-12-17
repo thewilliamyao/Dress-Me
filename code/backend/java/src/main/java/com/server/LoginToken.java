@@ -17,9 +17,14 @@ public class LoginToken {
         this.token = generateToken(this.id);
     }
     
+    public LoginToken(int id, String token) throws Exception {
+        this.id = id;
+        this.token = "";
+    }
+
     public static String generateToken(int id) throws Exception {
         long iat = System.currentTimeMillis() / 1000L;
-        long exp = iat + 360L; // expires in 60 min
+        long exp = iat + 36000L; // expires in 60 min
         String signature = prefix + Integer.toString(id);
         JWTSigner signer = new JWTSigner(signature);
         HashMap<String, Object> claims = new HashMap<String, Object>();
@@ -51,6 +56,12 @@ public class LoginToken {
 
     public String getToken() {
         return this.token;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public void setToken(String token) {
+        this.token = token;
     }
 
 }
