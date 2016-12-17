@@ -96,7 +96,7 @@ export default class LoginScreen extends Component{
             </View>
             <View style={[styles.loginContainer, {zIndex: this.state.userZ}]}>
                 <TextInput
-                    onFocus = {() => this._onFocusUser(user)}
+                    onFocus = {() => this._onFocusUser()}
                     onBlur = {() => this._onBlurUser()}
                     //onFocus= {() => this.setState({text : '', userBoxWidth: 300, userBoxHeight: 90, userZ: 3, userOffset: -10})}
                     //onBlur= {() => this.setState({userBoxWidth: 280, userBoxHeight: 70, userZ: 1, userOffset: 0})}
