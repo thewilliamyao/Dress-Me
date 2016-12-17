@@ -35,10 +35,15 @@ export default class DressMe extends Component {
           <LoginScreen
             {...globalProps}/>
         )
-      case "Recommendation" :
+      case "TabScreen" :
         return(
           <TabScreen
             id = {route.id} token = {route.token} tabbing = {route.tabbing} {...globalProps}/>
+        )
+      case "Recommendation" :
+        return(
+          <RecommendationScreen
+            id = {route.id} token = {route.token} {...globalProps}/>
         )
       case "Register" :
         return(
@@ -53,6 +58,16 @@ export default class DressMe extends Component {
       case "Rate" :
         return(
           <FeedbackScreen
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
+      case "Closet" :
+        return(
+          <ClosetScreen
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
+      case "Laundry" :
+        return(
+          <LaundryScreen
             id = {route.id} token = {route.token} {...globalProps}/>
         )
     }

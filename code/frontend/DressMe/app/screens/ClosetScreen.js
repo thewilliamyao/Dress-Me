@@ -9,26 +9,12 @@ import {
   TouchableHighlight,
   ScrollView,
   TextInput,
-  Image,
-  LayoutAnimation
+  Image
 } from 'react-native';
 
 var ClosetItem = require('./components/closet-item')
 
 var itemTypes = ['boots', 'hoodie', 'long_pants', 'long_sleeve', 'rain_jacket', 'sandals', 'scarf', 'shoes', 'shorts', 'sweater', 't_shirt', 'tank_top', 'umbrella', 'windbreaker', 'winter_coat']
-
-var CustomLayoutSpring = {
-    duration: 50,
-    create: {
-        type: LayoutAnimation.Types.spring,
-        property: LayoutAnimation.Properties.scaleXY,
-        springDamping: 0.5,
-    },
-    update: {
-        type: LayoutAnimation.Types.spring,
-        springDamping: 0.5,
-    },
-};
 
 // var this.state.itemNum = []
 
@@ -41,10 +27,8 @@ class ClosetScreen extends Component{
 	      ClosetList: null,
 	      itemNum: ['...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...'],
 	      text: '0',
-		  buttonWidth: 140,
-		  buttonHeight: 40,
-		  buttonMarginTop: 0,
-		  buttonMarginLeft: 0,
+	      id: this.props.id,
+	      token: this.props.token
 	    };
   	}
 
@@ -69,6 +53,7 @@ class ClosetScreen extends Component{
 			</View>
 			<View style={styles.update}>
 				{this.resetLaundryButton()}
+				{this.backButton()}
 			</View>
 		</Image>
 		)
@@ -90,6 +75,7 @@ class ClosetScreen extends Component{
 		return closetItems;
 	}
 
+	
 
 	getCloset() {
 		if (this.state.ClosetList == null) {
@@ -138,13 +124,7 @@ class ClosetScreen extends Component{
 		return <TouchableHighlight
 		underlayColor="gray"
 		onPress={() => this.handleUpdatePress()}
-		//onPressIn={() => this.closetButtonAnimation()}
-		//onPressOut={() => this.closetButtonReturnAnimation()}
-		style={[styles.updateButton,
-			 {width: this.state.buttonWidth, 
-				 height: this.state.buttonHeight, 
-				 marginTop: this.state.buttonMarginTop, 
-				 marginLeft: this.state.buttonMarginLeft}]}
+		style={styles.updateButton}
 		>
 			<Text style={styles.updateButtonText}>
 			UPDATE CLOSET
@@ -153,26 +133,56 @@ class ClosetScreen extends Component{
 		</TouchableHighlight>
 	}
 
-	//Animation needs a little work, might take out
+	backButton() {
+		return <TouchableHighlight
+		underlayColor="gray"
+		onPress={() => this.handleBackPress()}
+		style={styles.updateButton}
+		>
+			<Text style={styles.updateButtonText}>
+			BACK
+			</Text>
 
-	// closetButtonAnimation() {
-	// 	LayoutAnimation.configureNext(CustomLayoutSpring);
-	// 	this.setState({buttonMarginLeft: -2.5, buttonMarginTop: -2.5, buttonWidth: 145, buttonHeight: 45})
-	// }
+		</TouchableHighlight>
+	}
 
-	// closetButtonReturnAnimation() {
-	// 	LayoutAnimation.configureNext(CustomLayoutSpring);
-	// 	this.setState({buttonMarginLeft: 0, buttonMarginTop: 0, buttonWidth: 140, buttonHeight: 40})
-	// }
+	handleBackPress() {
+		this.props.navigator.pop()
+	}
 
-	 handleUpdatePress() {
-	// 	this.closetButtonAnimation();
-	 }
+	handleUpdatePress() {
+		console.log(this.state.itemNum[0]);
+		fetch('https://dry-beyond-51182.herokuapp.com/api/v1/closet/' + this.state.id, {
+		  method: 'PUT',
+		  headers: {
+		    'Accept': 'application/json',
+		    'Content-Type': 'application/json',
+		    'token': this.state.token
+		  },
+		  body: JSON.stringify({
+		    boots: this.state.itemNum[0],
+		    hoodie: this.state.itemNum[1],
+		    long_pants: this.state.itemNum[2],
+		    long_sleeve: this.state.itemNum[3],
+		    rain_jacket: this.state.itemNum[4],
+		    sandals: this.state.itemNum[5],
+		    scarf: this.state.itemNum[6],
+		    shoes: this.state.itemNum[7],
+		    shorts: this.state.itemNum[8],
+		    sweater: this.state.itemNum[9],
+		    t_shirt: this.state.itemNum[10],
+		    tank_top: this.state.itemNum[11],
+		    umbrella: this.state.itemNum[12],
+		    windbreaker: this.state.itemNum[13],
+		    winter_coat: this.state.itemNum[14]
+		  })
+		})
+	}
 };
 
 var styles = StyleSheet.create({
 	container: {
-		height: 440
+		height: 460
 	},
 	backgroundImage: {
         flex: 1,
@@ -199,11 +209,13 @@ var styles = StyleSheet.create({
 		width: 300,
 	},
 	update: {
-		marginTop: 30,
+		marginTop: 20,
 		justifyContent: 'center',
 		alignItems: 'center'
 	},
 	updateButton: {
+		width: 150,
+		height: 40,
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: 'black',
