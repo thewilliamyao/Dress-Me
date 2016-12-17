@@ -9,12 +9,26 @@ import {
   TouchableHighlight,
   ScrollView,
   TextInput,
-  Image
+  Image,
+  LayoutAnimation
 } from 'react-native';
 
 var ClosetItem = require('./components/closet-item')
 
 var itemTypes = ['boots', 'hoodie', 'long_pants', 'long_sleeve', 'rain_jacket', 'sandals', 'scarf', 'shoes', 'shorts', 'sweater', 't_shirt', 'tank_top', 'umbrella', 'windbreaker', 'winter_coat']
+
+var CustomLayoutSpring = {
+    duration: 50,
+    create: {
+        type: LayoutAnimation.Types.spring,
+        property: LayoutAnimation.Properties.scaleXY,
+        springDamping: 0.5,
+    },
+    update: {
+        type: LayoutAnimation.Types.spring,
+        springDamping: 0.5,
+    },
+};
 
 // var this.state.itemNum = []
 
@@ -28,7 +42,11 @@ class ClosetScreen extends Component{
 	      itemNum: ['...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...'],
 	      text: '0',
 	      id: this.props.id,
-	      token: this.props.token
+	      token: this.props.token,
+		  buttonWidth: 140,
+		  buttonHeight: 40,
+		  buttonMarginTop: 0,
+		  buttonMarginLeft: 0,
 	    };
   	}
 
@@ -40,6 +58,7 @@ class ClosetScreen extends Component{
 		return (
 		<Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
 			<View style={styles.title}>
+				{this.backButton()}
 				<Text style={styles.titleText}>
 					C l o s e t
 				</Text>
@@ -53,7 +72,6 @@ class ClosetScreen extends Component{
 			</View>
 			<View style={styles.update}>
 				{this.resetLaundryButton()}
-				{this.backButton()}
 			</View>
 		</Image>
 		)
@@ -124,7 +142,13 @@ class ClosetScreen extends Component{
 		return <TouchableHighlight
 		underlayColor="gray"
 		onPress={() => this.handleUpdatePress()}
-		style={styles.updateButton}
+		//onPressIn={() => this.closetButtonAnimation()}
+		//onPressOut={() => this.closetButtonReturnAnimation()}
+		style={[styles.updateButton,
+			 {width: this.state.buttonWidth, 
+				 height: this.state.buttonHeight, 
+				 marginTop: this.state.buttonMarginTop, 
+				 marginLeft: this.state.buttonMarginLeft}]}
 		>
 			<Text style={styles.updateButtonText}>
 			UPDATE CLOSET
@@ -133,11 +157,23 @@ class ClosetScreen extends Component{
 		</TouchableHighlight>
 	}
 
+	//Animation needs a little work, might take out
+
+	// closetButtonAnimation() {
+	// 	LayoutAnimation.configureNext(CustomLayoutSpring);
+	// 	this.setState({buttonMarginLeft: -2.5, buttonMarginTop: -2.5, buttonWidth: 145, buttonHeight: 45})
+	// }
+
+	// closetButtonReturnAnimation() {
+	// 	LayoutAnimation.configureNext(CustomLayoutSpring);
+	// 	this.setState({buttonMarginLeft: 0, buttonMarginTop: 0, buttonWidth: 140, buttonHeight: 40})
+	// }
+
 	backButton() {
 		return <TouchableHighlight
 		underlayColor="gray"
 		onPress={() => this.handleBackPress()}
-		style={styles.updateButton}
+		style={styles.backButton}
 		>
 			<Text style={styles.updateButtonText}>
 			BACK
@@ -197,8 +233,9 @@ var styles = StyleSheet.create({
 	title: {
 		paddingTop: 20,
 		paddingBottom: 20,
-		justifyContent: 'center',
-    	alignItems: 'center'
+		justifyContent: 'flex-start',
+    	alignItems: 'center',
+		flexDirection: 'row',
 	},
 	titleText: {
 		fontSize: 36,
@@ -209,13 +246,11 @@ var styles = StyleSheet.create({
 		width: 300,
 	},
 	update: {
-		marginTop: 20,
+		marginTop: 30,
 		justifyContent: 'center',
 		alignItems: 'center'
 	},
 	updateButton: {
-		width: 150,
-		height: 40,
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: 'black',
@@ -233,6 +268,13 @@ var styles = StyleSheet.create({
         fontWeight: '600',
 		color: '#FFFFFF'
     },
+	backButton: {
+		width: 50,
+		height: 30,
+		backgroundColor: '#000000',
+		justifyContent: 'center',
+		alignItems: 'center'
+	}
 })
 
 module.exports = ClosetScreen;

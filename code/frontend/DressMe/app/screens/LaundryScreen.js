@@ -177,7 +177,7 @@ var styles = StyleSheet.create({
 		width: 300,
 	},
   reset: {
-		marginTop: 20,
+		marginTop: 30,
 		justifyContent: 'center',
 		alignItems: 'center'
 	},
