@@ -69,13 +69,11 @@ class ClosetScreen extends Component{
 			// console.log(number);
 			console.log(this.state.itemNum[i]);
 			closetItems.push(
-				<ClosetItem style={styles.closetElement} key={i} type={itemType} amount={this.state.itemNum[i]}/>
+				<ClosetItem style={styles.closetElement} key={i} type={itemType} amount={this.state.itemNum[i]} id={this.state.id} token={this.state.token} which={'closet/'} />
 			)
 		}
 		return closetItems;
 	}
-
-	
 
 	getCloset() {
 		if (this.state.ClosetList == null) {
