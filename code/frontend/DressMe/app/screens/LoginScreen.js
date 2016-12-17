@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   NavigatorIOS,
   TouchableHighlight,
   ScrollView,
@@ -14,21 +15,22 @@ import {
 export default class LoginScreen extends Component{
     constructor(props){
         super(props);
-        this.state = {text: 'blah', text1: 'MEERP', id: -1, token: 'Blah'}
+        this.state = {text: 'Email', text1: 'Password', id: -1, token: 'Blah'}
     }
     render() {
 
-        return (<View style = {styles.container}>
+        return (<Image source={require('../../img/background/bg.jpg')} style = {styles.backgroundImage}>
+            
             <View style={styles.titleContainer}>
-                <Text> DressMe </Text>
+                <Text style={styles.dressMe}> Dress Me </Text>
             </View>
             <View style={styles.loginContainer}>
                 <TextInput
-                    style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                    style={styles.loginField}
                     onChangeText={(text) => this.setState({text})}
                     value={this.state.text}/>
                 <TextInput
-                    style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                    style={styles.loginField}
                     onChangeText={(text1) => this.setState({text1})}
                     value={this.state.text1}/>
             </View>
@@ -37,21 +39,18 @@ export default class LoginScreen extends Component{
                   underlayColor="gray"
                   onPress={() => this.handleLoginPress()}
                   style={styles.loginButton}>
-                    <Text>
-                      Login
+                    <Text style={styles.loginButtonText}>
+                      LOG IN
                     </Text>
                 </TouchableHighlight>
-                <TouchableHighlight
-                  underlayColor="gray"
-                  onPress={() => this.handleRegisterPress()}
-                  style={styles.loginButton}>
-                    <Text>
-                      Register
-                    </Text>
-                </TouchableHighlight>
+                <Text 
+                    style={styles.createAccount}
+                    onPress={() => this.handleRegisterPress()}>
+                    Create Account
+                </Text>
             </View>
         
-        </View>
+        </Image>
         );
     }
 
@@ -74,12 +73,13 @@ export default class LoginScreen extends Component{
           this.setState({id: responseJson.id});
           this.setState({token: responseJson.token});
         })
-
-        
+        console.log(this.state.id);
         if(this.state.id != -1) {
             this.props.navigator.push({
                 ident: "Recommendation",
-                tabbing: "tab1"
+                tabbing: "tab1",
+                id: this.state.id,
+                token: this.state.token
             })
         }
         else {
@@ -102,55 +102,65 @@ export default class LoginScreen extends Component{
 var styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'blue'
+    },
+    dressMe: {
+        fontSize: 24,
+        fontWeight: '800'
+    },
+    backgroundImage: {
+        flex: 1,
+        height: null,
+        width: null,
+        //resizeMode: 'cover', // or 'stretch'
     },
     titleContainer: {
         flex: 1,
-        backgroundColor: 'yellow',
         justifyContent: 'center',
         alignItems: 'center'
     },
     loginContainer: {
         flex: 1,
-        backgroundColor: 'red',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    loginButton: {
-        width: 100,
-        height: 50,
-        borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'red'
+        flexDirection: 'column',
+    },
+    loginButton: {
+        width: 280,
+        height: 70,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+    },
+    loginButtonText: {
+        fontSize: 12,
+        fontWeight: '600',
     },
     buttonContainer: {
         flex: 1,
-        backgroundColor: 'white',
         justifyContent: 'space-around',
         alignItems: 'center',
-        flexDirection: 'row',
+        flexDirection: 'column',
     },
-    buttonWrapper: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center'
+    loginField: {
+        height: 70,
+        width: 280, 
+        shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
     },
-    textColor: {
-        color: 'white'
-    },
-    input: {
-        flex: 1,
-        color: '#FFFFFF',
-        height:40, 
-        width: 40, 
-        borderColor: 'gray', 
-        color:'white', 
-        borderWidth: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+    createAccount: {
+        color: '#DDDDDD',
+        textDecorationLine: 'underline',
     }
-
 })
 
 module.exports = LoginScreen;

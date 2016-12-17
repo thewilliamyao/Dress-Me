@@ -14,7 +14,7 @@ import {
 class SettingsScreen extends Component{
     constructor(props){
         super(props);
-        this.state = {text: 'Email', text1: 'Password'}
+        this.state = {text: 'Email', text1: 'Password', id: this.props.id, token: this.props.token}
     }
     render() {
         return (<View style = {styles.container}>
@@ -54,7 +54,16 @@ class SettingsScreen extends Component{
     }
 
     handleDoLaundryPress() {
-
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/id', {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'token': this.state.token
+          },
+          body: JSON.stringify({
+          })
+        })
     }
 
     handleLogOutPress() {

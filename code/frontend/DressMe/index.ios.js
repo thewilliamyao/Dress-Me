@@ -38,7 +38,7 @@ export default class DressMe extends Component {
       case "Recommendation" :
         return(
           <TabScreen
-            tabbing = {route.tabbing} {...globalProps}/>
+            id = {route.id} token = {route.token} tabbing = {route.tabbing} {...globalProps}/>
         )
       case "Register" :
         return(
@@ -48,12 +48,12 @@ export default class DressMe extends Component {
       case "Settings" :
         return(
           <SettingsScreen
-            {...globalProps}/>
+            id = {route.id} token = {route.token} {...globalProps}/>
         )
       case "Rate" :
         return(
           <FeedbackScreen
-            {...globalProps}/>
+            id = {route.id} token = {route.token} {...globalProps}/>
         )
     }
   }

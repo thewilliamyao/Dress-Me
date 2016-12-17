@@ -13,7 +13,7 @@ import {
 class RegisterScreen extends Component{
     constructor(props){
         super(props);
-        this.state = {text: 'Email', text1: 'Password'}
+        this.state = {text: 'Email', text1: 'Password', id: -1, token: 'stringthing'}
     }
     render() {
         return (<View style = {styles.container}>
@@ -65,14 +65,26 @@ class RegisterScreen extends Component{
             email: this.state.text,
             password: this.state.text1,
           })
+        }).then((response) => response.json())
+        .then((responseJson) => {
+          this.recommendationJson = responseJson;
+          this.choiceInt = 1;
+          this.setState({id: responseJson.id});
+          this.setState({token: responseJson.token});
         })
 
-        {/*
-        this.props.navigator.push({
-            ident: "Recommendation",
-            tabbing: "tab2"
-        })
-        */}
+        if(this.state.id != -1) {
+            this.props.navigator.push({
+                ident: "Recommendation",
+                tabbing: "tab2",
+                id: this.state.id,
+                token: this.state.token
+            })
+        }
+        else {
+            console.log("Failed Registration")
+        }
+
     }
 
     handleBackPress() {
