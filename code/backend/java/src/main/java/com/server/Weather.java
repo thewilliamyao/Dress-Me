@@ -10,7 +10,7 @@ import com.github.dvdme.ForecastIOLib.*;
 
 import javax.sql.DataSource;
 import java.util.List;
-public class Weather implements Comparable<Weather> {
+public class Weather implements Comparable<DaySummary> {
     private Double windSpeed;              // windspeed in miles per hour
     private Double humidity;               // relative humidity, [0,1]
     private String precipType;             // "rain", "snow", "sleet", "no data"
@@ -76,12 +76,12 @@ public class Weather implements Comparable<Weather> {
         this.precipType = this.precipType.replace("\"", "");
     }
 
-    public int compareTo(Weather w) {
+    public int compareTo(DaySummary d) {
 	// Factors being compared: temperature, apparentTemp, humidity, windSpeed?, precipIntensity
 	// Take precipChance into consideration in algorithm, but not similarity index b/c it is due to chance
 
-	int tempDiff = (int) (Math.round(this.maxTemp - w.getMaxTemp()));
-	int apparentTempDiff = (int) (Math.round(this.maxApparentTemp - w.getMaxApparentTemp()));
+	int tempDiff = (int) (Math.round(this.maxTemp - d.getMaxTemp()));
+	int apparentTempDiff = (int) (Math.round(this.maxApparentTemp - d.getMaxApparentTemp()));
 
 	return tempDiff + apparentTempDiff;
 	//int maxFactor = Math.max(Math.abs(tempDiff), Math.abs(apparentTempDiff));

@@ -133,16 +133,18 @@ public class UserService {
 	// TODO: replace this so it actually gets something from the database
 	//       also replace it with combined Weather + Clothing object that has similarity index
 	//       Create new class, use Pair<Weather, Outfit> (new Outfit class), or populate variables from database?
-	ArrayList<Weather> pastWeather = new ArrayList<Weather>();
+	ArrayList<DaySummary> pastWeather = new ArrayList<>();
 
 	// TODO: go through past weathers, populating a PriorityQueue of similarity indices (Doubles)
 	//       make 20 into private static final variable "MAX_KEPT" or something
 	PriorityQueue<Integer> similarityIndices = new PriorityQueue<>(20, Collections.reverseOrder());
+	HashMap<Integer, DaySummary> similarList = new HashMap<>();
 
-	for (Weather w : pastWeather) {
+	for (DaySummary d : pastDays) {
 	    // Compare to current weather
-	    Integer similarity = Integer.valueOf(currWeather.compareTo(w));
+	    Integer similarity = Integer.valueOf(currWeather.compareTo(d));
 	    similarityIndices.add(similarity);
+	    similarList.put(similarity, d);
 	}
 		
         // recreate clothes map for this user
