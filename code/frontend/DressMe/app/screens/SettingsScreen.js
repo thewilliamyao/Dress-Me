@@ -24,12 +24,23 @@ class SettingsScreen extends Component{
             <View style={styles.buttonContainer}>
                 <TouchableHighlight
                   underlayColor="gray"
-                  onPress={() => this.handleDoLaundryPress()}
+                  onPress={() => this.handleClosetPress()}
                   style={styles.loginButton}>
                     <Text>
-                      Do Laundry
+                      Closet
                     </Text>
                 </TouchableHighlight>
+                <TouchableHighlight
+                  underlayColor="gray"
+                  onPress={() => this.handleLaundryPress()}
+                  style={styles.loginButton}>
+                    <Text>
+                      Laundry
+                    </Text>
+                </TouchableHighlight>
+            </View>
+
+            <View style={styles.backButtonContainer}>
                 <TouchableHighlight
                   underlayColor="gray"
                   onPress={() => this.handleLogOutPress()}
@@ -38,8 +49,8 @@ class SettingsScreen extends Component{
                       Logout
                     </Text>
                 </TouchableHighlight>
-            </View>
-            <View style={styles.backButtonContainer}>
+            
+            
                 <TouchableHighlight
                   underlayColor="gray"
                   onPress={() => this.handleBackPress()}
@@ -53,16 +64,19 @@ class SettingsScreen extends Component{
         );
     }
 
-    handleDoLaundryPress() {
-        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/id', {
-          method: 'PUT',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'token': this.state.token
-          },
-          body: JSON.stringify({
-          })
+    handleLaundryPress() {
+        this.props.navigator.push({
+            ident: "Laundry",
+            id: this.state.id,
+            token: this.state.token
+        })
+    }
+
+    handleClosetPress() {
+        this.props.navigator.push({
+            ident: "Closet",
+            id: this.state.id,
+            token: this.state.token
         })
     }
 

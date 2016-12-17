@@ -168,7 +168,6 @@ export default class LoginScreen extends Component{
         if(this.state.id != -1) {
             this.props.navigator.push({
                 ident: "Recommendation",
-                tabbing: "tab1",
                 id: this.state.id,
                 token: this.state.token
             })

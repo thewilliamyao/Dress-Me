@@ -26,7 +26,9 @@ class ClosetScreen extends Component{
 	    this.state = {
 	      ClosetList: null,
 	      itemNum: ['...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...'],
-	      text: '0'
+	      text: '0',
+	      id: this.props.id,
+	      token: this.props.token
 	    };
   	}
 
@@ -51,6 +53,7 @@ class ClosetScreen extends Component{
 			</View>
 			<View style={styles.update}>
 				{this.resetLaundryButton()}
+				{this.backButton()}
 			</View>
 		</Image>
 		)
@@ -72,6 +75,7 @@ class ClosetScreen extends Component{
 		return closetItems;
 	}
 
+	
 
 	getCloset() {
 		if (this.state.ClosetList == null) {
@@ -129,8 +133,50 @@ class ClosetScreen extends Component{
 		</TouchableHighlight>
 	}
 
-	handleUpdatePress() {
+	backButton() {
+		return <TouchableHighlight
+		underlayColor="gray"
+		onPress={() => this.handleBackPress()}
+		style={styles.updateButton}
+		>
+			<Text style={styles.updateButtonText}>
+			BACK
+			</Text>
 
+		</TouchableHighlight>
+	}
+
+	handleBackPress() {
+		this.props.navigator.pop()
+	}
+
+	handleUpdatePress() {
+		console.log(this.state.itemNum[0]);
+		fetch('https://dry-beyond-51182.herokuapp.com/api/v1/closet/' + this.state.id, {
+		  method: 'PUT',
+		  headers: {
+		    'Accept': 'application/json',
+		    'Content-Type': 'application/json',
+		    'token': this.state.token
+		  },
+		  body: JSON.stringify({
+		    boots: this.state.itemNum[0],
+		    hoodie: this.state.itemNum[1],
+		    long_pants: this.state.itemNum[2],
+		    long_sleeve: this.state.itemNum[3],
+		    rain_jacket: this.state.itemNum[4],
+		    sandals: this.state.itemNum[5],
+		    scarf: this.state.itemNum[6],
+		    shoes: this.state.itemNum[7],
+		    shorts: this.state.itemNum[8],
+		    sweater: this.state.itemNum[9],
+		    t_shirt: this.state.itemNum[10],
+		    tank_top: this.state.itemNum[11],
+		    umbrella: this.state.itemNum[12],
+		    windbreaker: this.state.itemNum[13],
+		    winter_coat: this.state.itemNum[14]
+		  })
+		})
 	}
 };
 

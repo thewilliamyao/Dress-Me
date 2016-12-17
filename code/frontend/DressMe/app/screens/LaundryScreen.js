@@ -47,6 +47,7 @@ class LaundryScreen extends Component{
         </View>
         <View style={styles.reset}>
           {this.resetLaundryButton()}
+          {this.backButton()}
         </View>
     </Image>
     )
@@ -68,26 +69,6 @@ class LaundryScreen extends Component{
     return closetItems;
   }
 
-  // textBoxInput(number) {
-  //  var value;
-  //  if (!this.state.itemNum[number]) {
-  //    value = "..."
-  //    return (
-  //          <TextInput
-  //          style={styles.amount}
-  //          onChangeText={(text) => this.setState({text})};
-  //          value={value}/> 
-  //         );
-  //  } else {
-  //    value = this.state.itemNum[number] + "";
-  //      return (
-  //        <TextInput
-  //          style={styles.amount}
-  //          onChangeText={(value) => this.setState({value})}
-  //          value={value}/> 
-  //      );
-  //  }
-  //   }
 
   getCloset() {
     if (this.state.LaundryList == null) {
@@ -124,11 +105,15 @@ class LaundryScreen extends Component{
   }
   
   handleResetLaundryPress() {
-    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/0', {
+    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/id', {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
-      }
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'token': this.state.token
+      },
+      body: JSON.stringify({
+      })
     })
   }
 
@@ -143,6 +128,23 @@ class LaundryScreen extends Component{
         </Text>
 
     </TouchableHighlight>
+  }
+
+  backButton() {
+    return <TouchableHighlight
+    underlayColor="gray"
+    onPress={() => this.handleBackPress()}
+    style={styles.updateButton}
+    >
+      <Text style={styles.resetButtonText}>
+      BACK
+      </Text>
+
+    </TouchableHighlight>
+  }
+
+  handleBackPress() {
+    this.props.navigator.pop()
   }
 };
 
