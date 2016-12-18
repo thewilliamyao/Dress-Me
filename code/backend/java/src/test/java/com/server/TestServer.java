@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 
 public class TestServer {
 
-    private static final int NUMBER_CLOTHES_DEFAULT = 10;
+    private static final int NUMBER_CLOTHES_DEFAULT = 0;
     private static final String API_PREFIX = "/api/v1/";
     // to use for testing purposes
     private static String dbHost_test = "ec2-54-243-245-58.compute-1.amazonaws.com";
@@ -195,15 +195,41 @@ public class TestServer {
         // create new user
         testLogin();
         ClosetJson expectedCloset = new ClosetJson();
-        expectedCloset.umbrella = 5;
-        expectedCloset.boots = 7;
-        expectedCloset.t_shirt = 23;
-        String expectedJson = new Gson().toJson(expectedCloset);
-        Response radd = request("PUT", API_PREFIX + "/closet/0", expectedCloset);
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("t_shirt", 5);
+        expectedCloset.t_shirt = 5;
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
         ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
         assertEquals(200, radd.httpStatus);
         assertEquals(expectedCloset, resultCloset);
+
+        closetUpdate = new ClosetUpdateJson("long_pants", 7);
+        expectedCloset.long_pants = 7;
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, resultCloset);
     }
+    public void testInvalidClosetUpdate() throws Exception {
+        // create new User
+        testLogin();
+        // grab initial closet
+        ClosetJson expectedCloset = new ClosetJson();
+        String expectedJson = new Gson().toJson(expectedCloset);
+        Response radd = request("GET", API_PREFIX + "closet/0", null);
+        ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, resultCloset);
+        // now update something invalid
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("t_shirt", -3);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        assertEquals(400, radd.httpStatus);
+        // check that closet is not any different now
+        radd = request("GET", API_PREFIX + "closet/0", null);
+        resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, resultCloset);
+    }
+
 
     @Test
     public void testGetClosetNoTokenFail() throws Exception {
@@ -225,6 +251,7 @@ public class TestServer {
         Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
         assertEquals(403, radd.httpStatus);
     }
+
     //------------------------------------------------------------------------//
     // Tests for Location
     //------------------------------------------------------------------------//
@@ -256,15 +283,34 @@ public class TestServer {
     // Tests for Laundry
     //------------------------------------------------------------------------//
     @Test
+    public void testDefaultLaundry() throws Exception {
+        // create new user
+        testAddUser();
+        // check closet
+        ClosetJson expectedCloset = new ClosetJson();
+        expectedCloset.setToZero();
+        String expectedJson = new Gson().toJson(expectedCloset);
+        Response radd = request("GET", API_PREFIX + "laundry/0", null);
+        ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, resultCloset);
+    }
+
+    @Test
     public void testMarkShirtsDirty() throws Exception {
         // create a new user
         testLogin();
         // mark an item as dirty
         DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "NONE", "NONE", "NONE", "NONE");
 
+        // make it so we own 10 t_shirts
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("t_shirt", 10);
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate = new ClosetUpdateJson("long_pants", 10);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+
         // mark a shirt dirty until we expect it to return true
-        Response radd;
-        for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
+        for (int i = 0; i < 0.7*10; i++) {
             radd = request("PUT", API_PREFIX + "dirty/0", dirty);
             assertEquals(200, radd.httpStatus);
             assertEquals("false", radd.content);
@@ -283,9 +329,12 @@ public class TestServer {
         // mark an item as dirty
         DirtyClothesJson dirty = new DirtyClothesJson("NONE", "long_pants", "NONE", "NONE", "NONE");
 
+        // make it so we own 10 long_pants
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("long_pants", 10);
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+
         // mark pants dirty until we expect it to return true
-        Response radd;
-        for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
+        for (int i = 0; i < 0.7*10; i++) {
             for (int j = 0; j < 3; j++) {
                 radd = request("PUT", API_PREFIX + "dirty/0", dirty);
                 assertEquals(200, radd.httpStatus);
@@ -311,8 +360,15 @@ public class TestServer {
         // mark an item as dirty
         DirtyClothesJson dirty = new DirtyClothesJson("NONE", "NONE", "hoodie", "shoes", "umbrella");
 
+        // make it so we own 1 of these items
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("hoodie", 1);
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate = new ClosetUpdateJson("shoes", 1);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate = new ClosetUpdateJson("umbrella", 1);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+
         // These items should never return dirty.
-        Response radd;
         for (int i = 0; i < 25; i++) {
             radd = request("PUT", API_PREFIX + "dirty/0", dirty);
             assertEquals(200, radd.httpStatus);
@@ -338,9 +394,19 @@ public class TestServer {
         // other stuff is already past the limit
         testMarkShirtsDirty();
 
+        // update number owned for the items we are testing
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("long_sleeve", 10);
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate = new ClosetUpdateJson("long_pants", 10);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate = new ClosetUpdateJson("shoes", 10);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate = new ClosetUpdateJson("tank_top", 10);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+
         // mark items as dirty, should all continue to return true
         DirtyClothesJson dirty = new DirtyClothesJson("long_sleeve", "long_pants", "shoes", "NONE", "NONE");
-        Response radd = request("PUT", API_PREFIX + "dirty/0", dirty);
+        radd = request("PUT", API_PREFIX + "dirty/0", dirty);
         assertEquals(200, radd.httpStatus);
         assertEquals("true", radd.content);
 
@@ -365,7 +431,7 @@ public class TestServer {
         DirtyClothesJson dirty = new DirtyClothesJson("t_shirt", "long_pants", "shoes", "NONE", "NONE");
 
         // mark an item dirty until we expect it to return true
-        for (int i = 0; i < 0.7*NUMBER_CLOTHES_DEFAULT; i++) {
+        for (int i = 0; i < 0.7*10; i++) {
             radd = request("PUT", API_PREFIX + "dirty/0", dirty);
             assertEquals(200, radd.httpStatus);
             assertEquals("false", radd.content);
@@ -425,15 +491,56 @@ public class TestServer {
         testLogin();
         ClosetJson expectedCloset = new ClosetJson();
         expectedCloset.setToZero();
-        expectedCloset.umbrella = 5;
-        expectedCloset.boots = 7;
-        expectedCloset.t_shirt = 23;
-        String expectedJson = new Gson().toJson(expectedCloset);
-        Response radd = request("PUT", API_PREFIX + "/laundry/0", expectedCloset);
+        // set number owned to be higher than those values so we can test updates
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("t_shirt", 10);
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate = new ClosetUpdateJson("long_pants", 10);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+
+        // now do an update
+        closetUpdate = new ClosetUpdateJson("t_shirt", 5);
+        expectedCloset.t_shirt = 5;
+        radd = request("PUT", API_PREFIX + "laundry/0", closetUpdate);
         ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
         assertEquals(200, radd.httpStatus);
         assertEquals(expectedCloset, resultCloset);
+
+        // try another update
+        closetUpdate = new ClosetUpdateJson("long_pants", 5);
+        expectedCloset.long_pants = 5;
+        radd = request("PUT", API_PREFIX + "laundry/0", closetUpdate);
+        resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, resultCloset);
     }
+
+
+    public void testInvalidLaundryUpdate() throws Exception {
+        // create new user
+        testLogin();
+        // grab inital laundry
+        ClosetJson expectedCloset = new ClosetJson();
+        String expectedJson = new Gson().toJson(expectedCloset);
+        Response radd = request("GET", API_PREFIX + "laundry/0", null);
+        ClosetJson resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, resultCloset);
+        // now do an invalid update because negative
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("t_shirt", -5);
+        radd = request("PUT", API_PREFIX + "laundry/0", closetUpdate);
+        assertEquals(400, radd.httpStatus);
+        // now check laundry to make sure its the same
+        radd = request("GET", API_PREFIX + "laundry/0", null);
+        resultCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, resultCloset);
+        // try an invalid update because its more than the number owned
+        // by default number owned is 0 so....
+        closetUpdate = new ClosetUpdateJson("t_shirt", 5);
+        radd = request("PUT", API_PREFIX + "laundry/0", closetUpdate);
+        assertEquals(400, radd.httpStatus);
+    }
+
     //------------------------------------------------------------------------//
     // Tests for Recommendation
     //------------------------------------------------------------------------//

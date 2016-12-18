@@ -73,6 +73,8 @@ public class ClothesController {
             } catch (ClothesService.ClothesServiceException ex) {
                 logger.error("Failed to update closet");
                 response.status(420);
+            } catch (ClothesService.InvalidInputException ex) {
+                response.status(400);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
@@ -90,6 +92,8 @@ public class ClothesController {
             } catch (ClothesService.ClothesServiceException ex) {
                 logger.error("Failed to update closet");
                 response.status(420);
+            } catch (ClothesService.InvalidInputException ex) {
+                response.status(400);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());
