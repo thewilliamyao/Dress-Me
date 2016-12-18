@@ -15,7 +15,8 @@ import {
   TouchableHighlight,
   ScrollView,
   TextInput,
-  Navigator
+  Navigator,
+  Image
 } from 'react-native';
 // var Rec = null
 class RecommendationScreen extends Component {
@@ -44,7 +45,7 @@ class RecommendationScreen extends Component {
       <View style= {[styles.settingsContainer, styles.buttonWrapper, this.border('pink')]}>
         {this.settingsButton()}
       </View>
-    {/*View Below is Time Bar*/}
+    {/*View Below is ratingButtons*/}
         {this.ratingButtons()}
     {/*View Below is Dress up Guy*/}
       <View style= {[styles.displayContainer, this.border('lime')]}>
@@ -189,31 +190,45 @@ class RecommendationScreen extends Component {
 
   ratingButtons() {
     return (
-      <View style= {[styles.timeContainer,styles.buttonWrapper, this.border('red')]}>
-        <TouchableHighlight
-        underlayColor="gray"
-        onPress={() => this.handleRatings(-10)}
-        style={styles.ratingButton}>
-          <Text>
-            Too Cold
-          </Text>
-      </TouchableHighlight>
-      <TouchableHighlight
-        underlayColor="gray"
-        onPress={() => this.handleRatings(0)}
-        style={styles.ratingButton}>
-          <Text>
-            Perfect
-          </Text>
-      </TouchableHighlight>
-      <TouchableHighlight
-        underlayColor="gray"
-        onPress={() => this.handleRatings(10)}
-        style={styles.ratingButton}>
-          <Text>
-            Too Hot
-          </Text>
-      </TouchableHighlight>
+      <View style= {[styles.timeContainer, this.border('red')]}>
+        <Text style={styles.feedback}>
+          -Feedback-
+        </Text>
+        <View style={styles.buttonWrapper}>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(-10)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/too-cold.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Too Cold
+                </Text>
+              </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(0)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/perfect.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Perfect
+                </Text>
+              </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(10)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/too-hot.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Too Hot
+                </Text>
+              </View>
+          </TouchableHighlight>
+        </View>
     </View>
     )
   }
@@ -402,11 +417,27 @@ var styles = StyleSheet.create({
      textAlign: 'right',
   },
   ratingButton: {
-    width: 100,
-    height: 50,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    borderColor: '#000000'
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  ratingButtonView: {
+    flexDirection: 'column',
+  },
+  ratingButtonImage: {
+    marginLeft: 7,
+		height: 30,
+		width: 30,
+  },
+  ratingButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center'
+  },
+  feedback: {
+    paddingTop: 5,
+    textAlign: 'center'
   }
 });
 
