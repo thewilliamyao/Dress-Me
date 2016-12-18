@@ -69,7 +69,7 @@ public class ClothesController {
                     return Collections.EMPTY_MAP;
                 }
                 response.status(200);
-                return clothesService.updateClothes(request.params(":userId"), request.body());
+                return clothesService.updateCloset(request.params(":userId"), request.body());
             } catch (ClothesService.ClothesServiceException ex) {
                 logger.error("Failed to update closet");
                 response.status(420);

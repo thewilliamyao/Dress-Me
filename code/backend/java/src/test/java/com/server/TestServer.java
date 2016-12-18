@@ -514,7 +514,7 @@ public class TestServer {
         assertEquals(expectedCloset, resultCloset);
     }
 
-
+    @Test
     public void testInvalidLaundryUpdate() throws Exception {
         // create new user
         testLogin();
@@ -541,6 +541,24 @@ public class TestServer {
         assertEquals(400, radd.httpStatus);
     }
 
+    @Test
+    public void testChangeNumberOwnedLessThanNumberDirty() throws Exception {
+        //create user
+        testLogin();
+        // set some values up
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("t_shirt", 5);
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate = new ClosetUpdateJson("t_shirt", 4);
+        radd = request("PUT", API_PREFIX + "laundry/0", closetUpdate);
+        // now set number owned to be less than that
+        closetUpdate = new ClosetUpdateJson("t_shirt", 3);
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        ClosetJson expectedCloset = new ClosetJson();
+        expectedCloset.t_shirt = 3;
+        ClosetJson actualCloset = new Gson().fromJson(radd.content, ClosetJson.class);
+        assertEquals(200, radd.httpStatus);
+        assertEquals(expectedCloset, actualCloset);
+    }
     //------------------------------------------------------------------------//
     // Tests for Recommendation
     //------------------------------------------------------------------------//

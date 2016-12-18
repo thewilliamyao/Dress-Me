@@ -280,16 +280,15 @@ public class ClothesService {
     * @param body the json form containing all clothes and their counts, {type: x, number: y}.
     * @return a map of the new counts for all items.
     */
-    public HashMap<String, Integer> updateClothes(String id, String body) throws ClothesServiceException, InvalidInputException {
+    public HashMap<String, Integer> updateCloset(String id, String body) throws ClothesServiceException, InvalidInputException {
         // grab params
         int currId = Integer.parseInt(id);
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
         String type = obj.get("type").getAsString();
         int number = obj.get("number").getAsInt();
-        // fetch 
         if (number < 0) { 
-            throw new InvalidInputException("ClothesService.updateClothes: Negative input");
+            throw new InvalidInputException("ClothesService.updateCloset: Negative input");
         }
         String updateItem = "UPDATE clothes SET number_owned = :numberOwned WHERE (user_id = :userId AND specific_type = :specificType)";
         try (Connection conn = db.open()) {
@@ -309,8 +308,35 @@ public class ClothesService {
                 .addParameter("userId", currId)
                 .executeUpdate();
         } catch (Sql2oException ex) {
-            logger.error("ClothesService.updateClothes: Failed to update clothes", ex);
-            throw new ClothesServiceException("ClothesService.updateClothes: Failed to update clothes", ex);
+            logger.error("ClothesService.updateCloset: Failed to update clothes", ex);
+            throw new ClothesServiceException("ClothesService.updateCloset: Failed to update clothes", ex);
+        }
+        Clothes c = fetchClothes(currId, type);
+        if (c != null) {
+            // check to see if we need to update number dirty
+            if (c.getNumberDirty() > c.getNumberOwned()) {
+                try (Connection conn = db.open()) {
+                    String updateDirty = "UPDATE clothes SET number_dirty = :numberDirty  WHERE (user_id = :userId AND specific_type = :specificType)";
+                    conn.createQuery(updateDirty)
+                        .addColumnMapping("user_id", "userId")
+                        .addColumnMapping("clothes_id", "clothesId")
+                        .addColumnMapping("type", "type")
+                        .addColumnMapping("specific_type", "specificType")
+                        .addColumnMapping("number_owned", "numberOwned")
+                        .addColumnMapping("number_dirty", "numberDirty")
+                        .addColumnMapping("temp_high", "tempHigh")
+                        .addColumnMapping("temp_low", "tempLow")
+                        .addColumnMapping("times_worn", "timesWorn")
+                        .addColumnMapping("max_times_worn", "maxTimesWorn")
+                        .addParameter("specificType", type)
+                        .addParameter("numberDirty", c.getNumberOwned())
+                        .addParameter("userId", currId)
+                        .executeUpdate();
+                } catch (Sql2oException ex) {
+                    logger.error("ClothesService.updateCloset: Failed to update clothes", ex);
+                    throw new ClothesServiceException("ClothesService.updateCloset: Failed to update clothes", ex);
+                }
+            }
         }
         /*
         Set<Map.Entry<String, JsonElement>> s = obj.entrySet();
@@ -335,8 +361,8 @@ public class ClothesService {
                     .executeUpdate();
             }
         } catch (Sql2oException ex) {
-            logger.error("ClothesService.updateClothes: Failed to update clothes", ex);
-            throw new ClothesServiceException("ClothesService.updateClothes: Failed to update clothes", ex);
+            logger.error("ClothesService.updateCloset: Failed to update clothes", ex);
+            throw new ClothesServiceException("ClothesService.updateCloset: Failed to update clothes", ex);
         }
         */
         return getClothesMap(currId);
@@ -365,7 +391,6 @@ public class ClothesService {
             throw new ClothesServiceException("ClothesService.fetchClothes: Failed to fetch clothes", ex);
         }
     }
-
 
     /**
     * Updates the number of items dirty for a specific user.
@@ -437,8 +462,8 @@ public class ClothesService {
                     .executeUpdate();
             }
         } catch (Sql2oException ex) {
-            logger.error("ClothesService.updateClothes: Failed to update clothes", ex);
-            throw new ClothesServiceException("ClothesService.updateClothes: Failed to update clothes", ex);
+            logger.error("ClothesService.updateCloset: Failed to update clothes", ex);
+            throw new ClothesServiceException("ClothesService.updateCloset: Failed to update clothes", ex);
         }
         */
         return getLaundryMap(currId);
@@ -546,10 +571,10 @@ public class ClothesService {
         evaluateDirty(currId, dirtyMap, timesWornMap, maxTimesWornMap, numberOwnedMap, outerwear);
 
         // then check for each item, if there is less than 30% clean, return true, to signal should do laundry
-        HashMap<String, Integer> ownedMap = getClothesMap(currId);
         for (HashMap.Entry<String, Integer> entry : dirtyMap.entrySet()) {
+            if (numberOwnedMap.get(entry.getKey()) == 0) continue;
             // if we have more than 70% dirty, then we return true
-            if (entry.getValue() > (0.7) * ownedMap.get(entry.getKey())) {
+            if (entry.getValue() > (0.7) * numberOwnedMap.get(entry.getKey())) {
                 return true;
             }
         }
