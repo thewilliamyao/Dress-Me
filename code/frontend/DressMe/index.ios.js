@@ -78,7 +78,7 @@ export default class DressMe extends Component {
       <Navigator
         initialRoute={{ident: "Login"}}
         renderScene={this._renderScene}
-        configureScene={this._configureScene}/>
+        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}/>
     )
   } 
 }
