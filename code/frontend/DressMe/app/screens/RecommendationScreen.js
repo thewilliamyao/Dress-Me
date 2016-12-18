@@ -16,23 +16,19 @@ import {
   ScrollView,
   TextInput,
   Navigator,
-  Image
+  Image,
+  AlertIOS
 } from 'react-native';
 // var Rec = null
 class RecommendationScreen extends Component {
-/*
-  var top;
-  var bottom;
-  var footwear;
-  var accessory;
-  var outerwear;
-*/
+
   static recommendationJson = null;
+  static temp = false;
   static choiceInt = 0;
 
   constructor(props) {
     super(props);
-    this.state = {Rec: null, id: this.props.id, token: this.props.token};
+    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false};
   }
   
   componentDidMount() {
@@ -292,8 +288,34 @@ class RecommendationScreen extends Component {
         })
       }).then((response) => response.json())
         .then((responseJson) => {
+          this.temp = responseJson
+          this.setState({shouldClean: responseJson});
           console.log(responseJson);
         })
+      if(this.state.shouldClean) {
+        console.log("We should do laundry")
+        {this.sendAlert()}
+        this.temp = false;
+      }
+  }
+
+  sendAlert(){
+    AlertIOS.alert(
+     'Update Time',
+     'Please do your Laundry',
+     [
+       {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+       {text: 'Do Laundry', onPress: () => {this.doLaundry()}},
+     ],
+    );   
+  }
+
+  doLaundry(){
+    this.props.navigator.push({
+     ident: "Laundry",
+     id: this.state.id,
+     token: this.state.token
+    })    
   }
 
   tempRender(){
