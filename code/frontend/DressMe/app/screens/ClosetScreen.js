@@ -62,6 +62,7 @@ class ClosetScreen extends Component{
 				<Text style={styles.titleText}>
 					C l o s e t
 				</Text>
+				{this.invisBlock()}
 			</View>
 			<View style={styles.container}>
 				<ScrollView>
@@ -70,9 +71,9 @@ class ClosetScreen extends Component{
 					</View>
 				</ScrollView>
 			</View>
-			<View style={styles.update}>
+			{/* <View style={styles.update}>
 				{this.resetLaundryButton()}
-			</View>
+			</View> */}
 		</Image>
 		)
 	}
@@ -169,12 +170,21 @@ class ClosetScreen extends Component{
 
 	backButton() {
 		return <TouchableHighlight
-		underlayColor="gray"
+		underlayColor='transparent'
 		onPress={() => this.handleBackPress()}
 		style={styles.backButton}
 		>
+			<Image source={require('../../img/icon/left-arrow.png')} style = {styles.backImage} />
+
+		</TouchableHighlight>
+	}
+
+	invisBlock() {
+		return <TouchableHighlight
+		style={styles.invisBlock}
+		>
 			<Text style={styles.updateButtonText}>
-			BACK
+			INVIS
 			</Text>
 
 		</TouchableHighlight>
@@ -216,7 +226,7 @@ class ClosetScreen extends Component{
 
 var styles = StyleSheet.create({
 	container: {
-		height: 460
+		height: 510
 	},
 	backgroundImage: {
         flex: 1,
@@ -231,14 +241,14 @@ var styles = StyleSheet.create({
 	title: {
 		paddingTop: 20,
 		paddingBottom: 20,
-		justifyContent: 'flex-start',
-    	alignItems: 'center',
 		flexDirection: 'row',
 	},
 	titleText: {
+		flex: 1,
 		fontSize: 36,
 		fontWeight: '700',
-		color: '#FFFFFF'
+		color: '#FFFFFF',
+		textAlign:'center',
 	},
 	closetItems: {
 		width: 300,
@@ -264,14 +274,27 @@ var styles = StyleSheet.create({
 	updateButtonText: {
         fontSize: 12,
         fontWeight: '600',
-		color: '#FFFFFF'
+		color: '#FFFFFF',
+		backgroundColor: '#000000',
+    },
+	backImage: {
+		height: 30,
+		width: 30,
+		opacity: 0.7,
+		tintColor: '#FFFFFF'
     },
 	backButton: {
-		width: 50,
+		width: 70,
 		height: 30,
-		backgroundColor: '#000000',
 		justifyContent: 'center',
-		alignItems: 'center'
+		alignItems: 'center',
+		paddingLeft: 5,
+		paddingTop: 15
+	},
+	invisBlock: {
+		width: 70,
+		height: 30,
+		opacity: 0
 	}
 })
 
