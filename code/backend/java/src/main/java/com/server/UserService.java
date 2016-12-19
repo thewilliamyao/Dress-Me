@@ -19,6 +19,18 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Collections;
 
+// imports for encrypting password
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
 public class UserService {
 
     private static final int MAX_RECS = 3;
@@ -28,6 +40,15 @@ public class UserService {
     private static int userCounter = 0; // counter for free value of the id
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
+    /*
+        global vars for encrypting password:
+    */
+    private static final byte[] SALT = {
+        (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
+        (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
+    };
+    private static final char[] SECRET_KEY = "skhafiluasdhfuihasd".toCharArray();
+    private static final String PBE_STRING = "PBEWithMD5AndDES";
     /**
     * Construct the model with a pre-defined datasource. The current implementation
     * also ensures that the DB schema is created if necessary.
@@ -36,7 +57,6 @@ public class UserService {
     */
     public UserService(Sql2o currDb) throws UserServiceException {
         db = currDb;
-        
         //Create the schema for the database if necessary. This allows this
         //program to mostly self-contained. But this is not always what you want;
         //sometimes you want to create the schema externally via a script.
@@ -61,37 +81,95 @@ public class UserService {
         }
     }
 
+    public void reset() throws UserServiceException {
+        try (Connection conn = db.open()) {
+            String sql = "DROP TABLE IF EXISTS users";
+            conn.createQuery(sql).executeUpdate();
+            sql = "DROP TABLE IF EXISTS clothes";
+            conn.createQuery(sql).executeUpdate();
+            sql = "DROP TABLE IF EXISTS locations";
+            conn.createQuery(sql).executeUpdate();
+        }
+    }
+
+    private static String base64Encode(byte[] bytes) {
+        return new BASE64Encoder().encode(bytes);
+    }
+    private static byte[] base64Decode(String input) throws IOException {
+        return new BASE64Decoder().decodeBuffer(input);
+    }
+
+    /**
+    * Helper method to encrypt an input
+    * @param input the string which you want to encrypt.
+    * @return the encrypted string
+    */
+    public String encrypt(String input) throws GeneralSecurityException, UnsupportedEncodingException {
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBE_STRING);
+        SecretKey key = keyFactory.generateSecret(new PBEKeySpec(SECRET_KEY));
+        Cipher pbeCipher = Cipher.getInstance(PBE_STRING);
+        pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
+        return base64Encode(pbeCipher.doFinal(input.getBytes("UTF-8")));
+    }
+
+    /**
+    * Helper method to decrypt a string.
+    * @param input the string which you wish to decrypt
+    * @return the decrypted string
+    */
+    public String decrypt(String input) throws GeneralSecurityException, IOException{
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBE_STRING);
+        SecretKey key = keyFactory.generateSecret(new PBEKeySpec(SECRET_KEY));
+        Cipher pbeCipher = Cipher.getInstance(PBE_STRING);
+        pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
+        return new String(pbeCipher.doFinal(base64Decode(input)), "UTF-8");
+    }
+    
     /**
     * Creates a new user, and adds it to the db. Also calls LocationService and ClothesService to
     * add defaults values into the location and clothes db.
     * @param body the json request form to create a user, {email: x, password: y}.
     * @return the java User object created.
     */
-    public User createNewUser(String body) throws UserServiceException, LocationService.LocationServiceException,
-            ClothesService.ClothesServiceException {
-        User user = new Gson().fromJson(body, User.class);
-	
-    	// If no username was entered
-    	if(user.getEmail().equals("")) {
-    	    logger.error("UserService.createNewUser: No username specified.");
-    	    throw new NewUserException("UserService.createNewUser: No username specified.");
-    	} // If no password was entered
-    	else if(user.getPassword().equals("")) {
-    	    logger.error("UserService.createNewUser: No password specified.");
-    	    throw new NewUserException("UserService.createNewUser: No password specified.");
-    	}
-	
-        int currUserId = this.userCounter++;
-        user.setUserId(currUserId);
-
-        LocationService.createNewLocation(currUserId);
-        ClothesService.createNewClothes(currUserId);
-
-        // TODO password encryption/token authentication
+    public LoginToken createNewUser(String body) throws NewUserException, UserServiceException, LocationService.LocationServiceException,
+            ClothesService.ClothesServiceException, GeneralSecurityException, IOException, Exception {
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
         String currEmail = obj.get("email").getAsString();
         String currPassword = obj.get("password").getAsString();
+
+        if(currEmail.equals("")) {
+            logger.error("UserService.createNewUser: No username specified.");
+            return new LoginToken(-1, "");
+        } else if(currPassword.equals("")) {
+            logger.error("UserService.createNewUser: No password specified.");
+            return new LoginToken(-1, "");
+        }
+	
+        // check that there are no users with the same email
+        String sqlUserCount = "SELECT COUNT(*) FROM users WHERE (email = :email)";
+        int numUsers = 0;
+        try (Connection conn = db.open()) {
+            numUsers = 
+                conn.createQuery(sqlUserCount)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("email", "email")
+                    .addColumnMapping("password", "password")
+                    .addParameter("email", currEmail)
+                    .executeAndFetchFirst(Integer.class);
+        } catch (Sql2oException ex) {
+	        logger.error("UserService.createNewUser: Failed to query users", ex);
+            return new LoginToken(-2, "");
+        }
+        if (numUsers > 0) {
+            logger.error("UserServer.createNewUser: User already exists");
+            return new LoginToken(-1, "");
+        }
+        int currUserId = this.userCounter++;
+        LocationService.createNewLocation(currUserId);
+        ClothesService.createNewClothes(currUserId);
+
+        String encryptedPass  = encrypt(currPassword);
 
         // add user to database
         String sqlUser = "INSERT INTO users (user_id, email, password)" +
@@ -104,14 +182,59 @@ public class UserService {
                 .addColumnMapping("password", "password")
                 .addParameter("userId", currUserId)
                 .addParameter("email", currEmail)
-                .addParameter("password", currPassword)
+                .addParameter("password", encryptedPass)
                 .executeUpdate();
         } catch (Sql2oException ex) {
 	        logger.error("UserService.createNewUser: Failed to add new user entry", ex);
-            throw new UserServiceException("UserService.createNewUser: Failed to add new user entry", ex);
+            return new LoginToken(-2, "");
         }
-        return user;
+        return new LoginToken(currUserId);
     }
+
+    public LoginToken getLoginToken(String body) throws UserServiceException, Exception { 
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(body).getAsJsonObject();
+        String currEmail = obj.get("email").getAsString();
+        String currPassword = obj.get("password").getAsString();
+
+        if(currEmail.equals("")) {
+            logger.error("UserService.createNewUser: No username specified.");
+            return new LoginToken(-1, "");
+        } else if(currPassword.equals("")) {
+            logger.error("UserService.createNewUser: No password specified.");
+            return new LoginToken(-1, "");
+        }
+        // get encrypted password
+        String sqlUser = "SELECT * FROM users WHERE (email = :email)";
+        User currUser;
+        try (Connection conn = db.open()) {
+            currUser =
+                conn.createQuery(sqlUser)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("email", "email")
+                    .addColumnMapping("password", "password")
+                    .addParameter("email", currEmail)
+                    .executeAndFetchFirst(User.class);
+        } catch (Sql2oException ex) {
+	        logger.error("UserService.createLoginToken: Failed to find user entry", ex);
+            return new LoginToken(-2, "");
+        }
+        if (currUser == null) {
+            return new LoginToken(-1, "");
+        }
+        // now verify password
+        try {
+            if (currPassword.equals(decrypt(currUser.getPassword()))) {
+                // good, generate token
+                return new LoginToken(currUser.getUserId());
+            }
+        } catch (Exception ex) {
+            logger.error("UserServer.createLoginToken: Invalid password", ex);
+            return new LoginToken(-1, "");
+        }
+        return new LoginToken(-1, "");
+    }
+
 
     /**
     * Creates a map of 3 recommendations based on a user's location and closet.
@@ -480,7 +603,6 @@ public class UserService {
                 accessoryRecommendation = "scarf";
             }
         }
-
 	return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation,
 				  accessoryRecommendation, outwearRecommendation);  
     }
@@ -516,9 +638,12 @@ public class UserService {
         public UserServiceException(String message, Throwable cause) {
             super(message, cause);
         }
+        public UserServiceException(String message) {
+            super(message, null);
+        }
     }
 
-    public static class NewUserException extends UserServiceException {
+    public static class NewUserException extends Exception {
     	public NewUserException(String message) {
     	    super(message, null);
     	}

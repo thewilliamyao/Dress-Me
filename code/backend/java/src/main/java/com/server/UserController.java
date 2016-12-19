@@ -26,31 +26,48 @@ public class UserController {
     * Sets up the endpoints for a user.
     */
     private void setupEndpoints() {
+        get(API_CONTEXT + "/reset", "application/json", (request, response) -> {
+            userService.reset();
+            return Collections.EMPTY_MAP;
+        }, new JsonTransformer());
+
         // create a new user
         post(API_CONTEXT + "/user", "application/json", (request, response) -> {
-            try {
-                User u = userService.createNewUser(request.body());
-                response.status(201);
-                return u;
-            } catch (UserService.UserServiceException ex) {
-                logger.error("Failed to create new user");
-        if(ex instanceof UserService.NewUserException) {
-            response.status(411);
-        } else {
-            response.status(410);
-        }
+            response.status(201);
+            LoginToken l = userService.createNewUser(request.body());
+            if (l.getId() == -1) {
+                response.status(403);
+            } else if (l.getId() == -2) {
+                response.status(420);
             }
-            return Collections.EMPTY_MAP;
+            return l;
+        }, new JsonTransformer());
+
+        //logs in for a user
+        put(API_CONTEXT + "/login", "application/json", (request, response) -> {
+            response.status(200);
+            LoginToken l = userService.getLoginToken(request.body());
+            if (l.getId() == -1) {
+                response.status(403);
+            } else if (l.getId() == -2) {
+                response.status(420);
+            }
+            return l;
         }, new JsonTransformer());
 
         // get a new recommendation
         get(API_CONTEXT + "/recommendation/:userId", "application/json", (request, response) -> {
             try {
-                response.status(200);		
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(403);
+                    return Collections.EMPTY_MAP;
+                }
+                response.status(200);
                 return userService.getRecommendation(Integer.parseInt(request.params(":userId")));
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to generate recommendation");
-                response.status(410);
+                response.status(420);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());

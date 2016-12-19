@@ -191,12 +191,14 @@ class ClosetScreen extends Component{
 	}
 
 	handleBackPress() {
-		{/*this.props.navigator.pop()*/}
-		this.props.navigator.push({
+		this.props.navigator.pop()
+		
+		{/*this.props.navigator.push({
                 ident: "Settings",
                 id: this.state.id,
-                token: this.state.token
-          })
+                token: this.state.token,
+                transition: -1
+          })*/}
 	}
 
 	handleUpdatePress() {

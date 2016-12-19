@@ -18,6 +18,7 @@ import {
 //import AppNavigator from './app/navigation/AppNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import RecommendationScreen from './app/screens/RecommendationScreen'
+import ClosetSetup from './app/screens/ClosetSetup'
 import ClosetScreen from './app/screens/ClosetScreen'
 import LaundryScreen from './app/screens/LaundryScreen'
 import LoginScreen from './app/screens/LoginScreen'
@@ -51,6 +52,11 @@ export default class DressMe extends Component {
             <RegisterScreen
               {...globalProps}/>
         )
+      case "Setup" :
+        return(
+          <ClosetSetup
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
       case "Settings" :
         return(
           <SettingsScreen
@@ -77,7 +83,7 @@ export default class DressMe extends Component {
   render() {
     return (
       <Navigator
-        initialRoute={{ident: "Login", statusBarHidden: true}}
+        initialRoute={{ident: "Login", statusBarHidden: true, transition: 1}}
         renderScene={this._renderScene}
         configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}/>
     )

@@ -10,12 +10,6 @@ public class User {
     /**User account password.*/
     private String password;
 
-    /**User's list of cloethes in closet*/
-    // private Closet closet;
-    /**User's list of clothes in laundry*/
-    // private Laundry laundry;
-    /**Generated recommendation for the weather*/
-    // private Recommendation recommendation;
     /**User's current location*/
     // private Location currrentLocation;
 
@@ -36,10 +30,6 @@ public class User {
         System.out.println("uid: " + this.userId + ", email: " + this.email + ", pass: " + this.password);
     }
 
-    public int getUserId() {
-	return this.userId;
-    }
-    
     /**
     *   Sets the user's Id
     *   @param id, the user's id
@@ -48,6 +38,13 @@ public class User {
         this.userId = id;
     }
 
+    /**
+    * Gets the user id
+    * @return the id of the user
+    */
+    public int getUserId() {
+        return this.userId;
+    }
 
     /**
     *   Get the user's email.
@@ -70,7 +67,7 @@ public class User {
     *   @return the user's password.
     */
     public String getPassword(){
-	return password;
+	    return password;
     }
     
     /**
@@ -79,24 +76,6 @@ public class User {
     */
     public void updatePassword(String s){
 
-    }
-
-    /**
-    *   Lets user update their current closet.
-    *   @param c the closet to update.
-    *   @return the updated closet.
-    */
-    public Closet updateCloset(Closet c){
-        return null;
-    }
-
-    /**
-    *   Lets user update their current laundry.
-    *   @param l the laundry to update.
-    *   @return the updated laundry.
-    */
-    public Laundry updateLaundry(Laundry l){
-        return null;
     }
 
     /**
@@ -117,6 +96,6 @@ public class User {
     }
 
     public Recommendation getRecommendation() {
-	return null;
+        return null;
     }
 }
