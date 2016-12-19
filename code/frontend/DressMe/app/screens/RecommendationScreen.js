@@ -31,33 +31,36 @@ class RecommendationScreen extends Component {
   render() {
     return <Image source={require('../../img/background/bg-morning.jpg')} style = {styles.backgroundImage}>
     {/*View Below is Settings Bar*/}  
-      <View style= {[styles.settingsContainer, styles.buttonWrapper, this.border('pink')]}>
+      <View style= {styles.settingsContainer}>
         {this.settingsButton()}
       </View>
     {/*View Below is ratingButtons*/}
         {this.ratingButtons()}
     {/*View Below is Dress up Guy*/}
-      <View style= {[styles.displayContainer, this.border('lime')]}>
+      <View style= {styles.displayContainer}>
         {this.middleDisplay()}
       </View>
     {/*View Below is Dress me Button*/}
-      <View style= {[styles.dressMeContainer,styles.buttonWrapper, this.border('cyan')]}>
+      <View style= {[styles.dressMeContainer,styles.buttonWrapper]}>
         {this.dressMeButton()}
       </View>
     </Image>
   }
 
   settingsButton() {
-    return <TouchableHighlight
-      underlayColor="gray"
-      onPress={() => this.handleSettingsPress()}
-      style={styles.settingsButtonS}
-      >
-        <Text>
-          Settings
-        </Text>
-
-    </TouchableHighlight>
+    return <View style={styles.settingsContainer}>
+      <View style={styles.topWrapper}>
+        <Text style={styles.topBarString}></Text>
+          <TouchableHighlight
+          underlayColor="gray"
+          onPress={() => this.handleSettingsPress()}
+          style={styles.topBarButton}>
+            <View style={styles.topBarButtonView}>
+              <Image source={require('../../img/icon/settings-black.png')} style = {styles.topBarButtonImage} />
+            </View>
+          </TouchableHighlight>
+        </View>
+      </View>
   }
 
   handleSettingsPress(){
@@ -156,18 +159,18 @@ class RecommendationScreen extends Component {
     return <TouchableHighlight
       underlayColor="gray"
       onPress={() => this.handleDressMePress()}
-      style={styles.dressMeButton}
-      >
-        <Text>
-          Dress Me!
-        </Text>
-
+      style={styles.optionButton}>
+        <View style={styles.optionButtonView}>
+          <Text style={styles.optionButtonText}>
+            Dress Me!
+          </Text>
+        </View>
     </TouchableHighlight>
   }
 
   ratingButtons() {
     return (
-      <View style= {[styles.timeContainer, this.border('red')]}>
+      <View style= {styles.timeContainer}>
         <Text style={styles.feedback}>
           -Feedback-
         </Text>
@@ -344,6 +347,11 @@ var styles = StyleSheet.create({
   timeContainer: {
     flex: 2
   },
+  topWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
   displayContainer: {
     flex: 9,
     flexDirection: 'row'
@@ -456,9 +464,60 @@ var styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center'
   },
+  optionButton: {
+    width: 150,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+    shadowOffset:{
+      width: 2,
+      height: 2,
+    },
+    shadowColor: 'black',
+    shadowOpacity: 0.5,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    marginRight: 50,
+    marginLeft: 50
+  },
+  optionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    backgroundColor: '#000000',
+  },
+  optionButtonView: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  topBarButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topBarButtonImage: {
+    height: 30,
+    width: 30,
+  },
+  topBarButtonView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 30,
+    marginRight: 10
+  },
   feedback: {
     paddingTop: 5,
     textAlign: 'center'
+  },
+  outfit: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  topBarString: {
+    fontSize: 20,
+    color: 'white',
+    marginTop: 25
   }
 });
 
