@@ -86,12 +86,6 @@ class SettingsScreen extends Component{
 
     handleBackPress() {
         this.props.navigator.pop()
-        
-        {/*this.props.navigator.push({
-            ident: "Recommendation",
-            id: this.state.id,
-            token: this.state.token
-        })*/}
     }
 
     backButton() {
@@ -117,14 +111,6 @@ class SettingsScreen extends Component{
 	}
 }
 
-{/*}
-LoginScreen.propTypes = {
-    title: PropTypes.string.isRequired,
-    onForward: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired
-};
-*/}
-
 var styles = StyleSheet.create({
     backgroundImage: {
         flex: 1,
@@ -132,7 +118,6 @@ var styles = StyleSheet.create({
         width: null,
         justifyContent: 'center',
         alignItems: 'center'
-        //resizeMode: 'cover', // or 'stretch'
     },
     container: {
         flex: 1,

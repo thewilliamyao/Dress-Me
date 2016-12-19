@@ -15,7 +15,6 @@ import {
   View,
   StatusBar
 } from 'react-native';
-//import AppNavigator from './app/navigation/AppNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import RecommendationScreen from './app/screens/RecommendationScreen'
 import ClosetSetup from './app/screens/ClosetSetup'
@@ -37,11 +36,6 @@ export default class DressMe extends Component {
           <LoginScreen
             {...globalProps}/>
         )
-      {/*case "TabScreen" :
-        return(
-          <TabScreen
-            id = {route.id} token = {route.token} tabbing = {route.tabbing} {...globalProps}/>
-        )*/}
       case "Recommendation" :
         return(
           <RecommendationScreen
@@ -89,11 +83,6 @@ export default class DressMe extends Component {
     )
   } 
 }
-/*
-<View style={styles.container}>
-        <LoginScreen/>
-      </View>
-      */
 const styles = StyleSheet.create({
   container: {
     flex: 1,

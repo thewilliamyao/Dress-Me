@@ -153,21 +153,12 @@ class RegisterScreen extends Component{
         else {
             console.log("Failed Registration")
         }
-
     }
 
     handleBackPress() {
         this.props.navigator.pop()
     }
 }
-
-{/*}
-LoginScreen.propTypes = {
-    title: PropTypes.string.isRequired,
-    onForward: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired
-};
-*/}
 
 var styles = StyleSheet.create({
     backgroundImage: {
@@ -176,7 +167,6 @@ var styles = StyleSheet.create({
         width: null,
         justifyContent: 'center',
         alignItems: 'center'
-        //resizeMode: 'cover', // or 'stretch'
     },
     registerImage: {
         height: 80,
@@ -221,7 +211,6 @@ var styles = StyleSheet.create({
         },
         shadowColor: 'black',
         shadowOpacity: 0.5,
-        // backgroundColor: '#FFFFFF' 
     },
     buttonContainer: {
         flex: 1,

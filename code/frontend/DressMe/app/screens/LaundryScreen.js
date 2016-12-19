@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//var RootNav = require('./laundry.ios');
 import {
   AppRegistry,
   StyleSheet,
@@ -27,10 +26,6 @@ class LaundryScreen extends Component{
         token: this.props.token
       };
     }
-
-    // componentWillMount() {
-    //  this.getCloset();
-    // }
 
   render(){
     return (
@@ -84,17 +79,8 @@ class LaundryScreen extends Component{
           
           }).then((response) => response.json())
             .then((responseJson) => {
-                console.log(responseJson.boots);
                 this.setState({LaundryList: responseJson});
-                console.log(this.state.LaundryList.boots);
-                console.log(this.state.LaundryList);
-                // console.log(itemTypes[0]);
-                // parseClosetJson()
-                // console.log(closetJson);
                 {this.getNums()}
-                // var tempArray = this.closet();
-                // console.log("time to print");
-                // return tempArray;
             })
         } 
   }
@@ -129,17 +115,8 @@ class LaundryScreen extends Component{
           
           }).then((response) => response.json())
             .then((responseJson) => {
-                console.log(responseJson.boots);
                 this.setState({LaundryList: responseJson});
-                console.log(this.state.LaundryList.boots);
-                console.log(this.state.LaundryList);
-                // console.log(itemTypes[0]);
-                // parseClosetJson()
-                // console.log(closetJson);
                 {this.getNums()}
-                // var tempArray = this.closet();
-                // console.log("time to print");
-                // return tempArray;
             })
 
     
@@ -190,14 +167,13 @@ var styles = StyleSheet.create({
 		height: 460
 	},
 	backgroundImage: {
-        flex: 1,
-        height: null,
-        width: null,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
+    flex: 1,
+    height: null,
+    width: null,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
 		flexDirection: 'column'
 		
-        //resizeMode: 'cover', // or 'stretch'
     },
 	title: {
 		paddingTop: 20,

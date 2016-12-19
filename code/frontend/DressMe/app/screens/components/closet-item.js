@@ -74,7 +74,6 @@ class ClosetItem extends Component{
 
     render() {
         const {text} = this.state;
-        //same as const text = this.state.text
         const {amount} = this.props;
 
         return <View style={styles.container}>

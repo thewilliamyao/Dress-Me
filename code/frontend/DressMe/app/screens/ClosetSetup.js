@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//var RootNav = require('./laundry.ios');
 import {
   AppRegistry,
   StyleSheet,
@@ -30,8 +29,6 @@ var CustomLayoutSpring = {
     },
 };
 
-// var this.state.itemNum = []
-
 class ClosetSetup extends Component{
     static closetJson = null;
 
@@ -50,15 +47,10 @@ class ClosetSetup extends Component{
         };
     }
 
-    // componentWillMount() {
-    //  this.getCloset();
-    // }
-
     render(){
         return (
         <Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
             <View style={styles.title}>
-                {/*{this.backButton()}*/}
                 <Text style={styles.titleText}>
                     C l o s e t
                 </Text>
@@ -85,7 +77,6 @@ class ClosetSetup extends Component{
         for (var i = 0; i < 15; i++){
             var itemType = itemTypes[i];
             var number = this.state.itemNum[i];
-            // console.log(number);
             console.log(this.state.itemNum[i]);
             closetItems.push(
                 <ClosetItem style={styles.closetElement} key={i} type={itemType} amount={this.state.itemNum[i]} id={this.state.id} token={this.state.token} which={'closet/'} />
@@ -109,27 +100,12 @@ class ClosetSetup extends Component{
                     this.setState({ClosetList: responseJson});
                     console.log(this.state.ClosetList.boots);
                     console.log(this.state.ClosetList);
-                    // console.log(itemTypes[0]);
-                    // parseClosetJson()
-                    // console.log(closetJson);
                     {this.getNums()}
-                    // var tempArray = this.closet();
-                    // console.log("time to print");
-                    // return tempArray;
                 })
         }   
     }
 
     getNums(){
-        // var itemNum = this.state.itemNum.slice();
-        // itemTypes.map((item) => {
-        //  itemNum.push(this.state.ClosetList[item]);
-        //  this.setState({ itemNum: itemNum })
-        // })
-        // console.log("here");
-        // this.state.itemNum.map((item) => {
-        //  console.log(item);
-        // })
         for (var i = 0; i < 15; i++) {
             var itemNum = this.state.itemNum.slice();
             itemNum[i] = (this.state.ClosetList[itemTypes[i]]);
@@ -141,8 +117,6 @@ class ClosetSetup extends Component{
         return <TouchableHighlight
         underlayColor="gray"
         onPress={() => this.handleSetupPress()}
-        //onPressIn={() => this.closetButtonAnimation()}
-        //onPressOut={() => this.closetButtonReturnAnimation()}
         style={[styles.updateButton,
              {width: this.state.buttonWidth, 
                  height: this.state.buttonHeight, 
@@ -155,18 +129,6 @@ class ClosetSetup extends Component{
 
         </TouchableHighlight>
     }
-
-    //Animation needs a little work, might take out
-
-    // closetButtonAnimation() {
-    //  LayoutAnimation.configureNext(CustomLayoutSpring);
-    //  this.setState({buttonMarginLeft: -2.5, buttonMarginTop: -2.5, buttonWidth: 145, buttonHeight: 45})
-    // }
-
-    // closetButtonReturnAnimation() {
-    //  LayoutAnimation.configureNext(CustomLayoutSpring);
-    //  this.setState({buttonMarginLeft: 0, buttonMarginTop: 0, buttonWidth: 140, buttonHeight: 40})
-    // }
 
     setupButton() {
         return <TouchableHighlight
@@ -191,7 +153,6 @@ class ClosetSetup extends Component{
     }
 
     handleSetupPress() {
-        {/*this.props.navigator.pop()*/}
         this.props.navigator.push({
                 ident: "Recommendation",
                 id: this.state.id,
@@ -200,34 +161,6 @@ class ClosetSetup extends Component{
           })
     }
 
-    handleUpdatePress() {
-        console.log(this.state.itemNum[0]);
-        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/closet/' + this.state.id, {
-          method: 'PUT',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'token': this.state.token
-          },
-          body: JSON.stringify({
-            boots: this.state.itemNum[0],
-            hoodie: this.state.itemNum[1],
-            long_pants: this.state.itemNum[2],
-            long_sleeve: this.state.itemNum[3],
-            rain_jacket: this.state.itemNum[4],
-            sandals: this.state.itemNum[5],
-            scarf: this.state.itemNum[6],
-            shoes: this.state.itemNum[7],
-            shorts: this.state.itemNum[8],
-            sweater: this.state.itemNum[9],
-            t_shirt: this.state.itemNum[10],
-            tank_top: this.state.itemNum[11],
-            umbrella: this.state.itemNum[12],
-            windbreaker: this.state.itemNum[13],
-            winter_coat: this.state.itemNum[14]
-          })
-        })
-    }
 };
 
 var styles = StyleSheet.create({
@@ -242,7 +175,6 @@ var styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'column'
         
-        //resizeMode: 'cover', // or 'stretch'
     },
     title: {
         paddingTop: 20,
