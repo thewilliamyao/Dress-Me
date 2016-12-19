@@ -145,8 +145,7 @@ class RegisterScreen extends Component{
 
         if(this.state.id != -1) {
             this.props.navigator.push({
-                ident: "Closet",
-                tabbing: "tab2",
+                ident: "Setup",
                 id: this.state.id,
                 token: this.state.token
             })

@@ -180,7 +180,9 @@ export default class LoginScreen extends Component{
 
     handleRegisterPress() {
        this.props.navigator.push({
-            ident: "Register"
+            ident: "Register",
+            transition: 1,
+            sceneConfig: Navigator.SceneConfigs.floatFromBottom
         }) 
     }
 
