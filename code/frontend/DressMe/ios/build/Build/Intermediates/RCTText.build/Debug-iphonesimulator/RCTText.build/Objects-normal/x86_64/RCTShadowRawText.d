@@ -1,6 +1,6 @@
 dependencies: \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/Libraries/Text/RCTShadowRawText.m \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/Libraries/Text/RCTShadowRawText.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/Libraries/Text/RCTShadowRawText.m \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/Libraries/Text/RCTShadowRawText.h \
   ../../React/Views/RCTShadowView.h ../../React/CSSLayout/CSSLayout.h \
   ../../React/CSSLayout/CSSMacros.h ../../React/Views/RCTComponent.h \
   ../../React/Base/RCTRootView.h ../../React/Base/RCTBridge.h \

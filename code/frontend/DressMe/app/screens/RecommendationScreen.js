@@ -38,33 +38,36 @@ class RecommendationScreen extends Component {
   render() {
     return <Image source={require('../../img/background/bg-morning.jpg')} style = {styles.backgroundImage}>
     {/*View Below is Settings Bar*/}  
-      <View style= {[styles.settingsContainer, styles.buttonWrapper, this.border('pink')]}>
+      <View style= {styles.settingsContainer}>
         {this.settingsButton()}
       </View>
     {/*View Below is ratingButtons*/}
         {this.ratingButtons()}
     {/*View Below is Dress up Guy*/}
-      <View style= {[styles.displayContainer, this.border('lime')]}>
+      <View style= {styles.displayContainer}>
         {this.middleDisplay()}
       </View>
     {/*View Below is Dress me Button*/}
-      <View style= {[styles.dressMeContainer,styles.buttonWrapper, this.border('cyan')]}>
+      <View style= {[styles.dressMeContainer,styles.buttonWrapper]}>
         {this.dressMeButton()}
       </View>
     </Image>
   }
 
   settingsButton() {
-    return <TouchableHighlight
-      underlayColor="gray"
-      onPress={() => this.handleSettingsPress()}
-      style={styles.settingsButtonS}
-      >
-        <Text>
-          Settings
-        </Text>
-
-    </TouchableHighlight>
+    return <View style={styles.settingsContainer}>
+      <View style={styles.topWrapper}>
+        <Text style={styles.topBarString}></Text>
+        <TouchableHighlight
+          underlayColor="gray"
+          onPress={() => this.handleSettingsPress()}
+          style={styles.topBarButton}>
+            <View style={styles.topBarButtonView}>
+              <Image source={require('../../img/icon/settings-black.png')} style = {styles.topBarButtonImage} />
+            </View>
+        </TouchableHighlight>
+      </View>
+    </View>
   }
 
   handleSettingsPress(){
@@ -105,23 +108,10 @@ class RecommendationScreen extends Component {
         </View>
       )
     } else {
+      console.log("in here")
       return (
-        <View style={styles.contentText}>
-          <View>
-            <Text style={styles.contentTextLeft}>Top</Text>
-            <Text style={styles.contentTextLeft}>Pants</Text>
-            <Text style={styles.contentTextLeft}>Footwear</Text>
-            <Text style={styles.contentTextLeft}>Accessory</Text>
-            <Text style={styles.contentTextLeft}>Outerwear</Text>
-          </View>
-          <View>
-            <Text>: {this.state.Rec.top}</Text>
-            <Text>: {this.state.Rec.pants}</Text>
-            <Text>: {this.state.Rec.footwear}</Text>
-            <Text>: {this.state.Rec.accessory}</Text>
-            <Text>: {this.state.Rec.outerwear}</Text>
-          </View>
-        </View>
+        <Image source={require('../../img/clothes_icon/gingerbread-man.png')} resizeMode='contain' style={styles.outfit}>
+        </Image>
       )
     }
   }
@@ -165,11 +155,12 @@ class RecommendationScreen extends Component {
     return <TouchableHighlight
       underlayColor="gray"
       onPress={() => this.handleDressMePress()}
-      style={styles.dressMeButton}
-      >
-        <Text>
+      style={styles.optionButton}>
+        <View style={styles.optionButtonView}>
+          <Text style={styles.optionButtonText}>
           Dress Me!
-        </Text>
+          </Text>
+        </View>
 
     </TouchableHighlight>
   }
@@ -186,7 +177,7 @@ class RecommendationScreen extends Component {
 
   ratingButtons() {
     return (
-      <View style= {[styles.timeContainer, this.border('red')]}>
+      <View style= {styles.timeContainer}>
         <Text style={styles.feedback}>
           -Feedback-
         </Text>
@@ -266,6 +257,17 @@ class RecommendationScreen extends Component {
         } else {
           this.setState({Rec: this.recommendationJson.ThirdRecommendation});
         }
+
+        if(this.state.Rec.top == 'long_sleeve') {
+          this.state.Rec.topString = '../../img/clothes_icon/shirt-5.png';
+        } else if(this.state.Rec.top == 't_shirt') {
+          this.state.Rec.topString = '../../img/clothes_icon/shirt-2.png';
+        } else if(this.state.Rec.top == 'tank_top') {
+          this.state.Rec.topString = '../../img/clothes_icon/shirt-1.png';
+        } else {
+          this.state.Rec.topString = '../../img/clothes_icon/shoe.png';
+        }
+        console.log(this.state.Rec.topString)
       }
     }
   }
@@ -343,7 +345,7 @@ var styles = StyleSheet.create({
     //resizeMode: 'cover', // or 'stretch'
   },
   settingsContainer: {
-    flex: 1
+    flex: 1,
   },
   timeContainer: {
     flex: 2
@@ -391,6 +393,11 @@ var styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center'
   },
+  topWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
   arrowWrapper: {
     flexDirection: 'column',
     justifyContent: 'space-around',
@@ -435,12 +442,6 @@ var styles = StyleSheet.create({
     color: '#ffffff',
     backgroundColor: 'transparent',
   },
-  contentText: {
-    flexDirection: 'row',
-  },
-  contentTextLeft: {
-     textAlign: 'right',
-  },
   ratingButton: {
     width: 60,
     height: 60,
@@ -460,9 +461,60 @@ var styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center'
   },
+  optionButton: {
+    width: 150,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+    shadowOffset:{
+          width: 2,
+          height: 2,
+      },
+    shadowColor: 'black',
+    shadowOpacity: 0.5,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    marginRight: 50,
+    marginLeft: 50
+  },
+  optionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    backgroundColor: '#000000',
+  },
+  optionButtonView: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  topBarButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topBarButtonImage: {
+      height: 30,
+      width: 30,
+  },
+  topBarButtonView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 30,
+    marginRight: 10
+  },
   feedback: {
     paddingTop: 5,
     textAlign: 'center'
+  },
+  outfit: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  topBarString: {
+    fontSize: 20,
+    color: 'white',
+    marginTop: 25
   }
 });
 
