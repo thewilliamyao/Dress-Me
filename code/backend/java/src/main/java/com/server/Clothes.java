@@ -19,9 +19,16 @@ public class Clothes{
     /**User's low temperatur for this type.*/
     private double tempLow;
 
+    /**
+     *   Minimal constructor for a single items of clothing.
+     */
+    public Clothes (String specificType) {
+	this.specificType = specificType;
+    }
+    
     /*
-    * Constructor for clothes.
-    */
+     * Constructor for clothes.
+     */
     public Clothes(int userId, int clothesId, String type, String specificType, int numberOwned, int numberDirty,
         double tempHigh, double tempLow) {
         this.userId = userId;
@@ -33,8 +40,17 @@ public class Clothes{
         this.tempHigh = tempHigh;
         this.tempLow = tempLow;
     }
+
     public void print() {
         System.out.println("userId: " + userId + ", type: " + type + ", specificType: " + specificType + ", numberOwned: " + numberOwned);
+    }
+
+    public boolean equals(Clothes c) {
+	return this.specificType.equals(c.getSpecificType());
+    }
+
+    public int hashCode() {
+	return specificType.hashCode();
     }
 
     public int getUserId() {

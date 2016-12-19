@@ -35,6 +35,11 @@ public class User {
     public void print() {
         System.out.println("uid: " + this.userId + ", email: " + this.email + ", pass: " + this.password);
     }
+
+    public int getUserId() {
+	return this.userId;
+    }
+    
     /**
     *   Sets the user's Id
     *   @param id, the user's id
@@ -111,14 +116,7 @@ public class User {
         return null;
     }
 
-    /**
-    *   Provides the daily recommendation.
-    *   @param c the closet to choose from.
-    *   @param l the laundry to avoid.
-    *   @param loc the location of the user.
-    *   @return the recommended daily outfit.
-    */
-    public Recommendation getRecommendation(Closet c, Laundry l, Location loc){
-        return null;
+    public Recommendation getRecommendation() {
+	return null;
     }
 }

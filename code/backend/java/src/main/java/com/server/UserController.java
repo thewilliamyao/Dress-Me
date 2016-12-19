@@ -46,7 +46,7 @@ public class UserController {
         // get a new recommendation
         get(API_CONTEXT + "/recommendation/:userId", "application/json", (request, response) -> {
             try {
-                response.status(200);
+                response.status(200);		
                 return userService.getRecommendation(Integer.parseInt(request.params(":userId")));
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to generate recommendation");

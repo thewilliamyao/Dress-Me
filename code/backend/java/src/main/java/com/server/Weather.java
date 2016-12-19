@@ -89,6 +89,10 @@ public class Weather implements Comparable<DaySummary> {
 	//int humidityDiff = (int) (Math.round(this.humidity - w.getHumidity()));		
     }
 
+    public double getComparisonValue() {
+	return this.maxTemp + this.maxApparentTemp;
+    }
+
     public double getWindSpeed() {
         return this.windSpeed;
     }

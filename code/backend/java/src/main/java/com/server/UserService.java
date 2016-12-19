@@ -13,12 +13,17 @@ import com.github.dvdme.ForecastIOLib.*;
 
 import java.util.List;
 import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Collections;
 
 public class UserService {
 
+    private static final int MAX_RECS = 3;
+    private static final int MAX_DAYS = 32;
+    private static final int MAX_LOOPS = 10;
     private Sql2o db;
     private static int userCounter = 0; // counter for free value of the id
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -121,72 +126,223 @@ public class UserService {
         // get the weather based on the location
         Weather currWeather = new Weather(currLocation.getLatitude(), currLocation.getLongitude());
 
-	// Criteria to compare Weather objects by: temperature, apparentTemp, humidity
-	// Possibly windSpeed, precipIntensity?
+	// recreate clothes map for this user	
+        List<Clothes> currClothes = ClothesService.getClothesList(currId);        
+        HashMap<Clothes, Integer> ownedMap = new HashMap<>();
+        HashMap<Clothes, Integer> dirtyMap = new HashMap<>();
+	
+        for (Clothes c : currClothes) {
+            ownedMap.put(c, new Integer(c.getNumberOwned()));
+            dirtyMap.put(c, new Integer(c.getNumberDirty()));            
+        }
 
 	// When user gives feedback at the end of the day, front end should send comparison critera
 	// to back end for storage in database.
-	
-	// Keep last 10, 20 days in database?	
-	// Don't want to compare with large number of past days if used for a long time
-
+		
 	// TODO: replace this so it actually gets something from the database
-	//       also replace it with combined Weather + Clothing object that has similarity index
-	//       Create new class, use Pair<Weather, Outfit> (new Outfit class), or populate variables from database?
+	
 	ArrayList<DaySummary> pastDays = new ArrayList<>();
-
-	// TODO: go through past weathers, populating a PriorityQueue of similarity indices (Doubles)
-	//       make 20 into private static final variable "MAX_KEPT" or something
-	PriorityQueue<Integer> similarityIndices = new PriorityQueue<>(20, Collections.reverseOrder());
+	HashMap<String, Recommendation> toReturn = new HashMap<String, Recommendation>();
+	PriorityQueue<Integer> similarityQueue = new PriorityQueue<>(MAX_DAYS);
 	HashMap<Integer, DaySummary> similarList = new HashMap<>();
 
 	for (DaySummary d : pastDays) {
 	    // Compare to current weather
 	    Integer similarity = Integer.valueOf(currWeather.compareTo(d));
-	    similarityIndices.add(similarity);
+	    similarityQueue.add(similarity);
 	    similarList.put(similarity, d);
 	}
-		
-        // recreate clothes map for this user
-        List<Clothes> currClothes = ClothesService.getClothesList(currId);
-        HashMap<String, Double> highMap = new HashMap<String, Double>();
-        HashMap<String, Double> lowMap = new HashMap<String, Double>();
-        HashMap<String, Integer> ownedMap = new HashMap<String, Integer>();
-        HashMap<String, Integer> dirtyMap = new HashMap<String, Integer>();
-        for (Clothes c : currClothes) {
-            ownedMap.put(c.getSpecificType(), new Integer(c.getNumberOwned()));
-            dirtyMap.put(c.getSpecificType(), new Integer(c.getNumberDirty()));
-            highMap.put(c.getSpecificType(), new Double(c.getTempHigh()));
-            lowMap.put(c.getSpecificType(), new Double(c.getTempLow()));
-        }		
-	
-        String pantsRecommendation = "NONE";
-        String backupPants = "";
-        String shirtRecommendation = "NONE";
-        String backupShirt = "";
-        String outwearRecommendation = "NONE";
-        String backupOuterwear = "";
-        String footwearRecommendation = "NONE";
-        String backupFootwear = "";
-        String accessoryRecommendation = "NONE";
 
+	Integer head = similarityQueue.poll();
+	String recNumber = "FirstRecommendation";
+	Recommendation outfit;	
+	
+	while (head != null && toReturn.size() < MAX_RECS) {
+	    if (toReturn.size() == 1) {
+		recNumber = "SecondRecommendation";
+	    } else {
+		recNumber = "ThirdRecommendation";
+	    }
+	    
+	    DaySummary day = similarList.get(head);
+	    outfit = day.getRecommendation();
+	    
+	    if (hasOutfit(outfit, ownedMap, dirtyMap) && !toReturn.containsValue(outfit)) {
+		if (!outfit.getOuterwear().equals("winter_coat")) {
+		    if (ownedMap.containsKey("windbreaker") && currWeather.getWindSpeed() > 25) {
+			outfit.setOuterwear("windbreaker");
+		    } // Add more cases like this
+		}     // LMFAO is it really worth it tho
+		toReturn.put(recNumber, outfit);
+	    } else {
+		// Beginning of mutate method
+		/*for (Clothes item : outfit.asClothesList()) {
+		    if (!hasClean(item, ownedMap, dirtyMap) || toReturn.containsValue(outfit)) {
+			Integer highKey, lowKey, targetKey;
+			targetKey = currWeather.getMaxApparentTemp();
+			List<Clothes> options = new ArrayList<>();
+			highKey = highTree.lowerKey(day.getMaxApparentTemp());
+			lowKey = lowTree.higherKey(day.getMaxApparentTemp());
+			options.addAll(highTree.get(highKey));
+			options.addAll(lowTree.get(lowKey));
+			
+			if (options != null) {
+			    Clothes selection = options.get(0);
+			    int minDiff = Math.min(Math.abs(selection.tempHigh - targetKey),
+						   Math.abs(selection.tempLow - targetKey));
+			    int diff;
+			    for (Clothes c : options) {
+				if (hasClean(c, ownedMap, dirtyMap) &&
+				    c.getType().equals(item.getType()) &&
+				    !c.getSpecificType.equals(item.getSpecificType())) {
+
+				    if (c.tempHigh >= targetKey && c.tempLow <= targetKey) {
+					selection = c;
+					break;
+				    } else {
+					diff = Math.min(Math.abs(closest.tempHigh - targetKey),
+							Math.abs(closest.tempLow - targetKey));
+					if (diff < minDiff) {
+					    selection = c;
+					}
+				    }
+				}
+			    }
+			} else { // No possible replacements left. Recommend original.
+			    selection = item;
+			}
+			outfit.setItem(selection);
+			}
+			}// End of mutate method*/	       
+		toReturn.put(recNumber, mutateRecommendation(outfit, currWeather.getMaxApparentTemp(),
+							     toReturn, ownedMap, dirtyMap));
+	    }	    
+	}
+	
+	int loops = 0;
+	// If there aren't enough entries in the database or there are no entries with similar weather,
+	// make recommendations using the default algorithm.
+	while (toReturn.size() < MAX_RECS) {
+	    if (loops >= MAX_LOOPS) {
+		System.out.println("Failed to find default recommendation after 10 attempts.");
+		break;
+	    }
+	    if (toReturn.size() == 1) {
+		recNumber = "SecondRecommendation";
+	    } else {
+		recNumber = "ThirdRecommendation";
+	    }
+	    // Make default recommendation if we weren't able to recommend from smart algorithm
+	    outfit = defaultRecommendation(toReturn, ownedMap, dirtyMap, currWeather);
+
+	    if (!toReturn.containsValue(outfit)) {
+		toReturn.put(recNumber, outfit);
+	    } else {
+		toReturn.put(recNumber, mutateRecommendation(outfit, currWeather.getMaxApparentTemp(),
+							     toReturn, ownedMap, dirtyMap));
+	    }
+	    loops++;
+	}
+
+	return toReturn;
+    }
+
+    public Recommendation mutateRecommendation(Recommendation outfit, Double targetTemp,
+			  HashMap<String, Recommendation> currRecs, HashMap<Clothes, Integer> ownedMap,
+			  HashMap<Clothes, Integer> dirtyMap) {
+	
+	// create TreeMaps to get clothes w/ similar temperature parameters
+	TreeMap<Double, List<Clothes>> highTree = new TreeMap<>();
+	TreeMap<Double, List<Clothes>> lowTree = new TreeMap<>();
+
+	// Populate high/low trees; if a collision occurs, add to list instead of replacing.
+	for (Clothes c : ownedMap.keySet()) {
+	    if (hasClean(c, ownedMap, dirtyMap)) {
+		if (!highTree.containsKey(Double.valueOf(c.getTempHigh()))) {
+		    highTree.put(new Double(c.getTempHigh()), Arrays.asList(c));
+		} else {
+		    highTree.get(c.getTempHigh()).add(c);
+		}
+		if (!lowTree.containsKey(Double.valueOf(c.getTempHigh()))) {
+		    lowTree.put(new Double(c.getTempLow()), Arrays.asList(c));
+		} else {
+		    lowTree.get(c.getTempLow()).add(c);
+		}
+	    }
+	}
+
+	for (Clothes item : outfit.asClothesList()) {
+	    if (!hasClean(item, ownedMap, dirtyMap) || currRecs.containsValue(outfit)) {
+		Double highKey, lowKey;
+		List<Clothes> options = new ArrayList<>();
+		Clothes selection;
+		highKey = highTree.lowerKey(targetTemp);
+		lowKey = lowTree.higherKey(targetTemp);
+		options.addAll(highTree.get(highKey));
+		options.addAll(lowTree.get(lowKey));
+			
+		if (options != null) {
+		    selection = options.get(0);
+		    double minDiff = Math.min(Math.abs(selection.getTempHigh() - targetTemp),
+					   Math.abs(selection.getTempLow() - targetTemp));
+		    double diff;
+ 		    for (Clothes c : options) {
+			if (hasClean(c, ownedMap, dirtyMap) &&
+			    c.getType().equals(item.getType()) &&
+			    !c.getSpecificType().equals(item.getSpecificType())) {
+			    
+			    if (c.getTempHigh() >= targetTemp && c.getTempLow() <= targetTemp) {
+				selection = c;
+				break;
+			    } else {
+				diff = Math.min(Math.abs(selection.getTempHigh() - targetTemp),
+						Math.abs(selection.getTempLow() - targetTemp));
+				if (diff < minDiff) {
+				    selection = c;
+				}
+			    }
+			}
+		    }			    
+		} else { // No possible replacements left. Recommend original.
+		    selection = item;
+		}
+		outfit.setItem(selection);
+	    }
+	}
+	return outfit;
+    }
+
+    public Recommendation defaultRecommendation(HashMap<String, Recommendation> currRecs,
+			  HashMap<Clothes, Integer> ownedMap, HashMap<Clothes, Integer> dirtyMap,
+ 						Weather weather) {
+	
+	String pantsRecommendation = "NONE";
+        String shirtRecommendation = "NONE";
+        String outwearRecommendation = "NONE";
+        String footwearRecommendation = "NONE";
+        String accessoryRecommendation = "NONE";
+	Double temp = weather.getMaxApparentTemp();
+
+	HashMap<String, Double> highMap = new HashMap<>();
+        HashMap<String, Double> lowMap = new HashMap<>();
+
+	for (Clothes c : ownedMap.keySet()) {
+            highMap.put(c.getSpecificType(), new Double(c.getTempHigh()));
+            lowMap.put(c.getSpecificType(), new Double(c.getTempLow()));    	    
+        }
+	
         // if too hot for long pants, recommend shorts
-        if (currWeather.getMaxApparentTemp() > highMap.get("long_pants")) {
+        if (temp > highMap.get("long_pants")) {
             // recommend shorts if possible
             if (hasClean("shorts", ownedMap, dirtyMap)) {
                 pantsRecommendation = "shorts";
-                if (hasClean("long_pants", ownedMap, dirtyMap)) {
-                    // we can recommend long pants as a backup
-                    backupPants = "long_pants";
-                }
             } else if (hasClean("long_pants", ownedMap, dirtyMap)) {
                 // if not recommend long pants if he owns it
                 pantsRecommendation = "long_pants";
             } else {
                 // he has no pants...
                 pantsRecommendation = "NONE";
-            }
-            // recommend 
+            }	    
         } else {
             // we prefer long pants
             if (hasClean("long_pants", ownedMap, dirtyMap)) {
@@ -202,35 +358,21 @@ public class UserService {
 
         // set shirt.
             //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
-        if (currWeather.getMaxApparentTemp() > lowMap.get("tank_top")) {
+        if (temp > lowMap.get("tank_top")) {
             // want to prefer tank
             if (hasClean("tank_top", ownedMap, dirtyMap)) {
-                shirtRecommendation = "tank_top";
-                if (hasClean("t_shirt", ownedMap, dirtyMap)) {
-                    backupShirt = "t_shirt";
-                } else if (hasClean("long_sleeve", ownedMap, dirtyMap)) {
-                    backupShirt = "long_sleeve";
-                }
+                shirtRecommendation = "tank_top";                
             } else if (hasClean("t_shirt", ownedMap, dirtyMap)) {
                 // if owned none, then shirt
                 shirtRecommendation = "t_shirt";
-                if (hasClean("long_sleeve", ownedMap, dirtyMap)) {
-                    backupShirt = "long_sleeve";
-                }
             } else if (hasClean("long_sleeve", ownedMap, dirtyMap)) {
                 // if owned none, then long sleeve
-                shirtRecommendation = "long_sleeve";
-                if (hasClean("t_shirt", ownedMap, dirtyMap)) {
-                    backupShirt = "t_shirt";
-                }
+                shirtRecommendation = "long_sleeve";        
             }
-        } else if (currWeather.getMaxApparentTemp() < highMap.get("long_sleeve")) { // TODO: double check this
+        } else if (temp < highMap.get("long_sleeve")) { // TODO: double check this
             // it is cold enough for a long sleeve
             if (hasClean("long_sleeve", ownedMap, dirtyMap)) {
                 shirtRecommendation = "long_sleeve";
-                if (hasClean("t_shirt", ownedMap, dirtyMap)) {
-                    backupShirt = "t_shirt";
-                }
             } else if (hasClean("t_shirt", ownedMap, dirtyMap)) {
                 shirtRecommendation = "t_shirt";
             } else if (hasClean("tank_top", ownedMap, dirtyMap)) {
@@ -239,10 +381,7 @@ public class UserService {
         } else {
             // recommend a t-shirt
             if (hasClean("t_shirt", ownedMap, dirtyMap)) {
-                shirtRecommendation = "t_shirt";
-                if (hasClean("long_sleeve", ownedMap, dirtyMap)) {
-                    backupShirt = "long_sleeve";
-                }
+                shirtRecommendation = "t_shirt";              
             } else if (hasClean("long_sleeve", ownedMap, dirtyMap)) {
                 shirtRecommendation = "long_sleeve";
             } else if (hasClean("tank_top", ownedMap, dirtyMap)) {
@@ -251,26 +390,21 @@ public class UserService {
         }
 
         // set footwear.
-            //check precip. if raining or snowing, recommend boots. if not, but still cold, recommend shoes. if hot and clear, recommend sandals.
-        if (currWeather.getPrecipType().equals("rain") || currWeather.getPrecipType().equals("snow") || (currWeather.getMaxApparentTemp() < lowMap.get("boots"))) {
+	// check precip. if raining or snowing, recommend boots
+	// if not, but still cold, recommend shoes. if hot and clear, recommend sandals.
+        if (weather.getPrecipType().equals("rain") || weather.getPrecipType().equals("snow")) {
             // wear boots
             if (ownedMap.get("boots") > 0) {
                 footwearRecommendation = "boots";
-                if (ownedMap.get("shoes") > 0) {
-                    backupFootwear = "shoes";
-                }
             } else if (ownedMap.get("shoes") > 0) {
                 footwearRecommendation = "shoes";
             } else if (ownedMap.get("sandals") > 0) {
                 footwearRecommendation = "sandals";
             }
-        } else if (currWeather.getMaxApparentTemp() > lowMap.get("sandals")) {
+        } else if (weather.getMaxApparentTemp() > lowMap.get("sandals")) {
             // really hot, wear sandals
             if (ownedMap.get("sandals") > 0) {
-                footwearRecommendation = "sandals";
-                if (ownedMap.get("shoes") > 0) {
-                    backupFootwear = "shoes";
-                }
+                footwearRecommendation = "sandals";            
             } else if (ownedMap.get("shoes") > 0) {
                 footwearRecommendation = "shoes";
             } else if (ownedMap.get("boots") > 0) {
@@ -288,8 +422,9 @@ public class UserService {
         }
 
         // set outerwear.
-            // check precip. if very cold, recommend winter jacket. else if rainig, recommend rain jacket. if clear but somewhat cold, recommend hoodie.
-        if (currWeather.getMaxApparentTemp() < highMap.get("winter_coat") || currWeather.getPrecipType().equals("snow")) {
+	// check precip. if very cold, recommend winter jacket.
+	// else if rainig, recommend rain jacket. if clear but somewhat cold, recommend hoodie.
+        if (temp < highMap.get("winter_coat") || weather.getPrecipType().equals("snow")) {
             // recommend winter coat
             if (hasClean("winter_coat", ownedMap, dirtyMap)) {
                 outwearRecommendation = "winter_coat";
@@ -302,7 +437,7 @@ public class UserService {
             } else if (hasClean("rain_jacket", ownedMap, dirtyMap)) {
                 outwearRecommendation = "rain_jacket";
             }
-        } else if (currWeather.getWindSpeed() > 20) {
+        } else if (weather.getWindSpeed() > 20) {
             // if windy, recommend windbreaker
             if (hasClean("windbreaker", ownedMap, dirtyMap)) {
                 outwearRecommendation = "windbreaker";
@@ -313,7 +448,7 @@ public class UserService {
             } else if (hasClean("sweater", ownedMap, dirtyMap)) {
                 outwearRecommendation = "sweater";
             }
-        } else if (currWeather.getPrecipType().equals("rain")) {
+        } else if (weather.getPrecipType().equals("rain")) {
             // if rainy, recommend rain jacket
             if (hasClean("rain_jacket", ownedMap, dirtyMap)) {
                 outwearRecommendation = "rain_jacket";
@@ -324,76 +459,57 @@ public class UserService {
             } else if (hasClean("sweater", ownedMap, dirtyMap)) {
                 outwearRecommendation = "sweater";
             }
-        } else if (currWeather.getMaxApparentTemp() < highMap.get("hoodie")) {
+        } else if (weather.getMaxApparentTemp() < highMap.get("hoodie")) {
             // recommend hoodie/sweater
             if (hasClean("hoodie", ownedMap, dirtyMap)) {
-                outwearRecommendation = "hoodie";
-                if (hasClean("sweater", ownedMap, dirtyMap)) {
-                    backupOuterwear = "sweater";
-                }
+                outwearRecommendation = "hoodie";                
             } else if (hasClean("sweater", ownedMap, dirtyMap)) {
                 outwearRecommendation = "sweater";
-                if (hasClean("hoodie", ownedMap, dirtyMap)) {
-                    backupOuterwear = "hoodie";
-                }
             }
         }
 
         // set accessory
-            // if windy or cold, scarf. if raining and not windy, recommend umbrella.
-            // prefer umbrella to scarf.
-        if (currWeather.getPrecipType().equals("rain") && currWeather.getWindSpeed() < 30) {
+	// if windy or cold, scarf. if raining and not windy, recommend umbrella.
+	// prefer umbrella to scarf.
+        if (weather.getPrecipType().equals("rain") && weather.getWindSpeed() < 30) {
             if (ownedMap.get("umbrella") > 0) {
                 accessoryRecommendation = "umbrella";
             }
-        } else if (currWeather.getMaxApparentTemp() < highMap.get("scarf") || currWeather.getWindSpeed() > 20) {
+        } else if (temp < highMap.get("scarf") || weather.getWindSpeed() > 20) {
             if (ownedMap.get("scarf") > 0) {
                 accessoryRecommendation = "scarf";
             }
         }
 
-        HashMap<String, Recommendation> toReturn = new HashMap<String, Recommendation>();
-        // ArrayList<Recommendation> toReturn = new ArrayList<Recommendation>();
-        // first recommendation
-        toReturn.put("FirstRecommendation", new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation));
-  
-        //second recommendation
-        // swap out shirt if possible
-        if (!backupShirt.equals("")) {
-            toReturn.put("SecondRecommendation", new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, outwearRecommendation));
-        } else if (!backupPants.equals("")) {
-            toReturn.put("SecondRecommendation", new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation));
-        } else if (!backupOuterwear.equals("")) {
-            toReturn.put("SecondRecommendation", new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear));
-        } else if (!backupFootwear.equals("")) {
-            toReturn.put("SecondRecommendation", new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, outwearRecommendation));
-        }
-
-        // third recommendation
-        if (!backupShirt.equals("") && !backupPants.equals("")) {
-            toReturn.put("ThirdRecommendation", new Recommendation(backupShirt, backupPants, footwearRecommendation, accessoryRecommendation, outwearRecommendation));
-        } else if (!backupShirt.equals("") && !backupOuterwear.equals("")) {
-            toReturn.put("ThirdRecommendation", new Recommendation(backupShirt, pantsRecommendation, footwearRecommendation, accessoryRecommendation, backupOuterwear));
-        } else if (!backupOuterwear.equals("") && !backupPants.equals("")) {
-            toReturn.put("ThirdRecommendation", new Recommendation(shirtRecommendation, backupPants, footwearRecommendation, accessoryRecommendation, backupOuterwear));
-        } else if (!backupFootwear.equals("") && !backupOuterwear.equals("")) {
-            toReturn.put("ThirdRecommendation", new Recommendation(shirtRecommendation, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear));
-        } else if (!backupFootwear.equals("") && !backupShirt.equals("")) {
-            toReturn.put("ThirdRecommendation", new Recommendation(backupShirt, pantsRecommendation, backupFootwear, accessoryRecommendation, backupOuterwear));
-        } else if (!backupFootwear.equals("") && !backupPants.equals("")) {
-            toReturn.put("ThirdRecommendation", new Recommendation(shirtRecommendation, backupPants, backupFootwear, accessoryRecommendation, backupOuterwear));
-        }
-
-        return toReturn;
+	return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation,
+				  accessoryRecommendation, outwearRecommendation);  
     }
 
     //-----------------------------------------------------------------------------//
     // Helper Classes and Methods
     //-----------------------------------------------------------------------------//
-
-    public boolean hasClean(String item, HashMap<String, Integer> ownedMap,
-			    HashMap<String, Integer> dirtyMap) {
+    
+    public boolean hasClean(Clothes item, HashMap<Clothes, Integer> ownedMap,
+			    HashMap<Clothes, Integer> dirtyMap) {
 	return ownedMap.get(item) - dirtyMap.get(item) > 0;
+    }
+
+    public boolean hasClean(String item, HashMap<Clothes, Integer> ownedMap,
+			    HashMap<Clothes, Integer> dirtyMap) {
+	Clothes dummy = new Clothes(item);
+	return ownedMap.get(dummy) - dirtyMap.get(dummy) > 0;
+    }
+
+    public boolean hasOutfit(Recommendation outfit, HashMap<Clothes, Integer> ownedMap, HashMap<Clothes, Integer> dirtyMap) {
+	List<Clothes> clothes = outfit.asClothesList();
+
+	for (Clothes item : clothes) {
+	    if (!hasClean(item, ownedMap, dirtyMap)) {
+		return false;
+	    }
+	}
+
+	return true;
     }
 
     public static class UserServiceException extends Exception {

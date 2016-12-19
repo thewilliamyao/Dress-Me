@@ -3,7 +3,8 @@ package com.server;
 /**
 *   Abstract class for ClothesContainer
 */
-import java.util.*;
+import java.util.List;
+
 public abstract class ClothesContainer{
 
     /**The list of clothes in the container.*/

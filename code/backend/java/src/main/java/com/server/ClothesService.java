@@ -387,7 +387,7 @@ public class ClothesService {
     //-----------------------------------------------------------------------------//
     // Helper Classes and Methods
     //-----------------------------------------------------------------------------//
-
+    
     public static class ClothesServiceException extends Exception {
         public ClothesServiceException(String message, Throwable cause) {
             super(message, cause);

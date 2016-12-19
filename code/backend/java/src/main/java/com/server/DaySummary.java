@@ -11,27 +11,25 @@ public class DaySummary {
     /** Day's max apparent temperature.*/
     private Double maxApparentTemp;
     /** The outfit that was worn.*/
-    private HashMap<String, String> outfit;    
+    private Recommendation outfit;
 
-    public DaySummary(int userId, Weather weather) {
+    /*public DaySummary(int userId, Weather weather, Recommendation rec) {
 	this.userId = userId;
 	this.maxTemp = weather.getMaxTemp();
 	this.maxApparentTemp = weather.getMaxApparentTemp();
-	this.outfit = new HashMap<>();
-    }
+	this.outfit = rec.clone();
+	}*/
 
     public DaySummary(int userId, Double maxTemp, Double maxApparentTemp, String top, String pants,
 		      String footwear, String accessory, String outerwear) {
 	this.userId = userId;
 	this.maxTemp = maxTemp;
 	this.maxApparentTemp = maxApparentTemp;	
+	this.outfit = new Recommendation(top, pants, footwear, accessory, outerwear);
+    }
 
-	this.outfit = new HashMap<>();
-	this.outfit.put("top", top);
-	this.outfit.put("pants", pants);
-	this.outfit.put("footwear", footwear);
-	this.outfit.put("accessory", accessory);
-	this.outfit.put("outerwear", outerwear);	
+    public double getComparisonValue() {
+	return this.maxTemp + this.maxApparentTemp;
     }
 
     /**
@@ -59,6 +57,14 @@ public class DaySummary {
     }
 
     /**
+     *   Gets the recommendation that was chosen by the user on this day.
+     *   @return the recommendation.
+     */
+    public Recommendation getRecommendation() {
+	return this.outfit;
+    }
+    
+    /**
      *   Sets the user ID.
      *   @param the new user ID.
      */
@@ -84,9 +90,9 @@ public class DaySummary {
 
     /**
      *   Sets the outfit.
-     *   @param the HashMap object representing this outfit.
+     *   @param the Recommendation object representing this outfit.
      */
-    public void setOutfit(HashMap<String, String> outfit) {
+    public void setOutfit(Recommendation outfit) {
 	this.outfit = outfit;
     }
 }
