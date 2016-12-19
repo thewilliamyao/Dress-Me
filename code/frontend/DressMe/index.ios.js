@@ -10,91 +10,94 @@ import {
   TabBarIOS,
   StyleSheet,
   Text,
-  View
+  Navigator,
+  TouchableHighlight,
+  View,
+  StatusBar
 } from 'react-native';
 //import AppNavigator from './app/navigation/AppNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import RecommendationScreen from './app/screens/RecommendationScreen'
+import ClosetSetup from './app/screens/ClosetSetup'
 import ClosetScreen from './app/screens/ClosetScreen'
 import LaundryScreen from './app/screens/LaundryScreen'
+import LoginScreen from './app/screens/LoginScreen'
+import RegisterScreen from './app/screens/RegisterScreen'
+import SettingsScreen from './app/screens/SettingsScreen'
+import FeedbackScreen from './app/screens/FeedbackScreen'
+//import TabScreen from './app/screens/TabScreen'
 
 export default class DressMe extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      selectedTab: "tab1"
+  _renderScene(route, navigator) {
+    var globalProps = {navigator}
+
+    switch(route.ident) {
+      case "Login" :
+        return (
+          <LoginScreen
+            {...globalProps}/>
+        )
+      {/*case "TabScreen" :
+        return(
+          <TabScreen
+            id = {route.id} token = {route.token} tabbing = {route.tabbing} {...globalProps}/>
+        )*/}
+      case "Recommendation" :
+        return(
+          <RecommendationScreen
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
+      case "Register" :
+        return(
+            <RegisterScreen
+              {...globalProps}/>
+        )
+      case "Setup" :
+        return(
+          <ClosetSetup
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
+      case "Settings" :
+        return(
+          <SettingsScreen
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
+      case "Rate" :
+        return(
+          <FeedbackScreen
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
+      case "Closet" :
+        return(
+          <ClosetScreen
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
+      case "Laundry" :
+        return(
+          <LaundryScreen
+            id = {route.id} token = {route.token} {...globalProps}/>
+        )
     }
   }
 
   render() {
     return (
-      <TabBarIOS
-        selectedTab = {this.state.selectedTab}>
-
-        <TabBarIOS.Item
-          title="Recommendation"
-          selected={this.state.selectedTab === "tab1"}
-          onPress={() => {
-            this.setState({
-              selectedTab: "tab1",
-            });
-          }}>
-
-          <RecommendationScreen/>
-          {/*<AppNavigator initialRoute={{ident: "Recommendation", index: 0}} />*/}
-          {/*this._renderContent("blue")*/}
-
-        </TabBarIOS.Item>
-
-        <TabBarIOS.Item
-          title="Closet"
-          selected={this.state.selectedTab === "tab2"}
-          onPress={() => {
-            this.setState({
-              selectedTab: "tab2",
-            });
-          }}>
-
-          <ClosetScreen/>
-
-        </TabBarIOS.Item>
-
-        <TabBarIOS.Item
-          title="Laundry"
-          selected={this.state.selectedTab === "tab3"}
-          onPress={() => {
-            this.setState({
-              selectedTab: "tab3",
-            });
-          }}>
-
-          <LaundryScreen/>
-
-        </TabBarIOS.Item>
-
-      </TabBarIOS>
+      <Navigator
+        initialRoute={{ident: "Login", statusBarHidden: true, transition: 1}}
+        renderScene={this._renderScene}
+        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}/>
     )
-  }
-
-  changeTheState(){
-    console.log(this.state.selectedTab);
-  }
-
-  _renderContent = (color: string) => {
-    return(
-      <View style = {[{flex: 1}, {backgroundColor: color}]}>
-            <Text> "Tab 2" </Text>
-      </View>
-    );
-  };
+  } 
 }
-
+/*
+<View style={styles.container}>
+        <LoginScreen/>
+      </View>
+      */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+  
   },
   welcome: {
     fontSize: 20,

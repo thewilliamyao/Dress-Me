@@ -29,6 +29,7 @@ public class User {
     public void print() {
         System.out.println("uid: " + this.userId + ", email: " + this.email + ", pass: " + this.password);
     }
+
     /**
     *   Sets the user's Id
     *   @param id, the user's id
@@ -91,6 +92,10 @@ public class User {
     *   @return the user's location.
     */
     public Location getLocation(){
+        return null;
+    }
+
+    public Recommendation getRecommendation() {
         return null;
     }
 }

@@ -8,114 +8,256 @@ import {
   NavigatorIOS,
   TouchableHighlight,
   ScrollView,
-  TextInput
+  TextInput,
+  Image
 } from 'react-native';
 
 var ClosetItem = require('./components/closet-item')
 
-//var itemTypes = ['Tank Top', 'T Shirt', 'Long Sleeve', 'Shorts', 'Long Pants', 'Hoodie', "Windbreaker", "Sweater", "Winter Coat", "Rain Jacket" ]
+var itemTypes = ['boots', 'hoodie', 'long_pants', 'long_sleeve', 'rain_jacket', 'sandals', 'scarf', 'shoes', 'shorts', 'sweater', 't_shirt', 'tank_top', 'umbrella', 'windbreaker', 'winter_coat']
 
-var itemTypes = ['Umbrella', 'Long Pants', 'Scarf', 'Long Sleeve', 'Tank Top', 'Sandals', 'Rain Jacket', 'Shoes', 'Hoodie', 'Windbreaker', 'Boots', 'Sweater', 'Shorts', 'Winter Coat', 'T-Shirt']
-
-var itemNum = []
-
-// var ClosetScreen = React.createClass({
-//  render: function() {
-//    return <View style={styles.container}>
-//      <Text style={styles.title}>
-//        Closet
-//      </Text>
-//      <View style={styles.closetItems}>
-//        {this.closet()}
-//      </View>
-//    </View>
-//  },
 class LaundryScreen extends Component{
   constructor(props) {
       super(props)
       this.state = {
-        ClosetList: null,
-        text: '0'
+        LaundryList: null,
+        itemNum: ['...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...', '...'],
+        text: '0',
+        id: this.props.id,
+        token: this.props.token
       };
     }
 
+    // componentWillMount() {
+    //  this.getCloset();
+    // }
+
   render(){
-    return <ScrollView style={styles.container}>
-      <View style={styles.title}>
-        <Text style={styles.titleText}>
-          Laundry
-        </Text>
-      </View>
-      <View style={styles.closetItems}>
-        {this.getCloset()}
-        {this.closet()}
-      </View>
-    </ScrollView>
+    return (
+      <Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
+        <View style={styles.title}>
+          {this.backButton()}
+          <Text style={styles.titleText}>
+            D i r t y   P i l e
+          </Text>
+          {this.invisBlock()}
+        </View>
+        <View style={styles.container}>
+          <ScrollView>
+            <View style={styles.closetItems}>
+              {this.closet()}
+            </View>
+          </ScrollView>
+        </View>
+        <View style={styles.reset}>
+          {this.resetLaundryButton()}
+        </View>
+    </Image>
+    )
   }
 
   closet() {
+    this.getCloset();
     var closetItems = [];
 
     for (var i = 0; i < 15; i++){
       var itemType = itemTypes[i];
-      var number = itemNum[i];
-      console.log({itemNum});
+      var number = this.state.itemNum[i];
+      // console.log(number);
+      console.log(this.state.itemNum[i]);
       closetItems.push(
-        <ClosetItem key={i} type={itemType} amount={this.textBoxInput()}/>
+        <ClosetItem key={i} type={itemType} amount={this.state.itemNum[i]} id={this.state.id} token={this.state.token} which={'laundry/'}/>
       )
     }
     return closetItems;
   }
 
-  textBoxInput() {
-    return (
-      <TextInput
-        style={{height:40, width: 40, borderColor: 'gray', color:'white', borderWidth: 1}}
-        onChangeText={(text) => this.setState({text})}
-        value={this.state.text}/> 
-    );
-  }
 
   getCloset() {
-        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/user/closet/0', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-        
-      }).then((response) => response.json())
-        .then((responseJson) => {
-          this.recommendationJson = responseJson;
-          this.choiceInt = 1;
-          this.setState({ClosetList: recommendationJson});
-          //{this.getNums()}
-        })
+    if (this.state.LaundryList == null) {
+        fetch('https://dry-beyond-51182.herokuapp.com/api/v1/laundry/' + this.props.id, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'token': this.props.token
+            }
+          
+          }).then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson.boots);
+                this.setState({LaundryList: responseJson});
+                console.log(this.state.LaundryList.boots);
+                console.log(this.state.LaundryList);
+                // console.log(itemTypes[0]);
+                // parseClosetJson()
+                // console.log(closetJson);
+                {this.getNums()}
+                // var tempArray = this.closet();
+                // console.log("time to print");
+                // return tempArray;
+            })
+        } 
   }
 
   getNums(){
-    for(var j = 0; j < 15; j++) {
-            var num = this.state.ClosetList[j];
-            itemNum.push(
-              num
-            )
+    for (var i = 0; i < 15; i++) {
+      var itemNum = this.state.itemNum.slice();
+      itemNum[i] = (this.state.LaundryList[itemTypes[i]]);
+      this.setState({ itemNum: itemNum });
         }
+  }
+  
+  handleResetLaundryPress() {
+
+    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/' + this.state.id, {
+      method: 'PUT',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'token': this.state.token
+      },
+      body: JSON.stringify({
+      })
+    })
+
+    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/laundry/' + this.props.id, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'token': this.props.token
+            }
+          
+          }).then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson.boots);
+                this.setState({LaundryList: responseJson});
+                console.log(this.state.LaundryList.boots);
+                console.log(this.state.LaundryList);
+                // console.log(itemTypes[0]);
+                // parseClosetJson()
+                // console.log(closetJson);
+                {this.getNums()}
+                // var tempArray = this.closet();
+                // console.log("time to print");
+                // return tempArray;
+            })
+
+    
+  }
+
+  resetLaundryButton() {
+    return <TouchableHighlight
+      underlayColor="gray"
+      onPress={() => this.handleResetLaundryPress()}
+      style={styles.resetButton}
+      >
+        <Text style={styles.resetButtonText}>
+          RESET LAUNDRY
+        </Text>
+
+    </TouchableHighlight>
+  }
+
+  backButton() {
+		return <TouchableHighlight
+		underlayColor='transparent'
+		onPress={() => this.handleBackPress()}
+		style={styles.backButton}
+		>
+			<Image source={require('../../img/icon/left-arrow.png')} style = {styles.backImage} />
+
+		</TouchableHighlight>
+	}
+
+	invisBlock() {
+		return <TouchableHighlight
+		style={styles.invisBlock}
+		>
+			<Text style={styles.updateButtonText}>
+			INVIS
+			</Text>
+
+		</TouchableHighlight>
+	}
+
+  handleBackPress() {
+    this.props.navigator.pop()
   }
 };
 
 var styles = StyleSheet.create({
   container: {
-    flex: 1,
+		height: 460
+	},
+	backgroundImage: {
+        flex: 1,
+        height: null,
+        width: null,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+		flexDirection: 'column'
+		
+        //resizeMode: 'cover', // or 'stretch'
+    },
+	title: {
+		paddingTop: 20,
+		paddingBottom: 20,
+		flexDirection: 'row',
+	},
+	titleText: {
+		flex: 1,
+		fontSize: 36,
+		fontWeight: '700',
+		color: '#FFFFFF',
+		textAlign:'center',
+	},
+	closetItems: {
+		width: 300,
+	},
+  reset: {
+		marginTop: 30,
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	resetButton: {
+		width: 150,
+		height: 40,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'black',
+		shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+		borderWidth: 2,
+		borderColor: '#FFFFFF'
+	},
+	resetButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+		color: '#FFFFFF'
   },
-  title: {
-    justifyContent: 'center',
-      alignItems: 'center'
-  },
-  titleText: {
-    fontSize: 36,
-  },
-  closetItems: {
-    marginTop: 30
-  }
+  backImage: {
+		height: 30,
+		width: 30,
+    opacity: 0.7,
+		tintColor: '#FFFFFF'
+    },
+	backButton: {
+		width: 70,
+		height: 30,
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingLeft: 5,
+		paddingTop: 15
+	},
+	invisBlock: {
+		width: 70,
+		height: 30,
+		opacity: 0
+	}
 })
 
 module.exports = LaundryScreen;

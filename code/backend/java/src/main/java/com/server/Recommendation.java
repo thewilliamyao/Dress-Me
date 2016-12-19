@@ -5,7 +5,7 @@ package com.server;
 */
 
 import java.util.*;
-public class Recommendation{
+public class Recommendation {
     /**List of recommended clothes*/
     private String top;
     private String pants;
@@ -16,18 +16,57 @@ public class Recommendation{
     public Recommendation() {
     }
 
-    public Recommendation(String top, String pants, String footwear, String accessory, String outerwear) {
+    public Recommendation (String top, String pants, String footwear, String accessory, String outerwear) {
         this.top = top;
         this.pants = pants;
         this.footwear = footwear;
         this.accessory = accessory;
         this.outerwear = outerwear;
     }
+    
     public void print() {
         System.out.println("TOP: " + this.top + ", PANTS: " + this.pants + ", FOOTWEAR: " +
             this.footwear + ", ACCESSORY: " + this.accessory + ", OUTER: " + this.outerwear);
     }
 
+    public List<Clothes> asClothesList() {
+	List<Clothes> outfit = new ArrayList<>();
+	outfit.add(new Clothes(this.top));
+	outfit.add(new Clothes(this.pants));
+	outfit.add(new Clothes(this.footwear));
+	outfit.add(new Clothes(this.accessory));
+	outfit.add(new Clothes(this.outerwear));
+	return outfit;
+    }
+
+    public void setItem(Clothes item) {
+	String specificType = item.getSpecificType();
+	switch (item.getType()) {
+	case "top":
+	    setTop(specificType);
+	    break;
+	case "pants":
+	    setPants(specificType);
+	    break;
+	case "footwear":
+	    setFootwear(specificType);
+	    break;
+	case "accessory":
+	    setAccessory(specificType);
+	    break;
+	case "outerwear":
+	    setOuterwear(specificType);
+	    break;
+	default:
+	    System.out.println("Invalid clothing item.\n");
+	    break;
+	}
+    }
+
+    public boolean equals(Recommendation r) {
+	return this.asClothesList().equals(r.asClothesList());
+    }
+    
     public void setTop(String top) {
         this.top = top;
     }
@@ -59,7 +98,4 @@ public class Recommendation{
     public String getOuterwear() {
         return this.outerwear;
     }
-    
-    
-
 }

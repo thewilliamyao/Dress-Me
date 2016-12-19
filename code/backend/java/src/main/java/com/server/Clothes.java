@@ -25,8 +25,15 @@ public class Clothes{
     /**Number of times this item can be worn*/
     private int maxTimesWorn;
 
+    /**
+     *   Minimal constructor for a single items of clothing.
+     */
+    public Clothes (String specificType) {
+        this.specificType = specificType;
+    }
+    
     /*
-    * Default constructor for clothes.
+    * Constructor for clothes.
     */
     public Clothes(int userId, int clothesId, String type, String specificType, int numberOwned, int numberDirty,
         double tempHigh, double tempLow) {
@@ -51,6 +58,14 @@ public class Clothes{
     * Returns the user Id.
     * @return the id of the user
     */
+    public boolean equals(Clothes c) {
+        return this.specificType.equals(c.getSpecificType());
+    }
+
+    public int hashCode() {
+        return specificType.hashCode();
+    }
+
     public int getUserId() {
         return this.userId;
     }

@@ -12,24 +12,23 @@ import {
   StyleSheet,
   Text,
   View,
-  NavigatorIOS,
-  TouchableHighlight
+  TouchableHighlight,
+  ScrollView,
+  TextInput,
+  Navigator,
+  Image,
+  AlertIOS
 } from 'react-native';
 // var Rec = null
 class RecommendationScreen extends Component {
-/*
-  var top;
-  var bottom;
-  var footwear;
-  var accessory;
-  var outerwear;
-*/
+
   static recommendationJson = null;
+  static temp = false;
   static choiceInt = 0;
 
   constructor(props) {
     super(props);
-    this.state = {Rec: null};
+    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false};
   }
   
   componentDidMount() {
@@ -37,15 +36,13 @@ class RecommendationScreen extends Component {
   }
 
   render() {
-    return <View style= {styles.container}>
+    return <Image source={require('../../img/background/bg-morning.jpg')} style = {styles.backgroundImage}>
     {/*View Below is Settings Bar*/}  
       <View style= {[styles.settingsContainer, styles.buttonWrapper, this.border('pink')]}>
         {this.settingsButton()}
       </View>
-    {/*View Below is Time Bar*/}
-      <View style= {[styles.timeContainer,styles.buttonWrapper, this.border('red')]}>
-          {this.selectButton()}
-      </View>
+    {/*View Below is ratingButtons*/}
+        {this.ratingButtons()}
     {/*View Below is Dress up Guy*/}
       <View style= {[styles.displayContainer, this.border('lime')]}>
         {this.middleDisplay()}
@@ -54,13 +51,13 @@ class RecommendationScreen extends Component {
       <View style= {[styles.dressMeContainer,styles.buttonWrapper, this.border('cyan')]}>
         {this.dressMeButton()}
       </View>
-    </View>
+    </Image>
   }
 
   settingsButton() {
     return <TouchableHighlight
       underlayColor="gray"
-      onPress={() => this.handleSettingsPress}
+      onPress={() => this.handleSettingsPress()}
       style={styles.settingsButtonS}
       >
         <Text>
@@ -71,13 +68,17 @@ class RecommendationScreen extends Component {
   }
 
   handleSettingsPress(){
-    return (
-      <NavigatorIOS
-      initialRoute={{
-        title: 'My Root',
-        component: RootNav
-      }}/>
-    );  
+    console.log("Pressed Settings")
+    this.props.navigator.push({
+            ident: "Recommendation",
+            id: this.state.id,
+            token: this.state.token
+        })
+    this.props.navigator.push({
+            ident: "Settings",
+            id: this.state.id,
+            token: this.state.token
+    }) 
   }
 
   middleDisplay() {
@@ -106,11 +107,6 @@ class RecommendationScreen extends Component {
     } else {
       return (
         <View style={styles.contentText}>
-          top=  {this.state.Rec.top},
-          bottom=  {this.state.Rec.pants},
-          footwear=  {this.state.Rec.footwear},
-          accessory={this.state.Rec.accessory},
-          outerwear={this.state.Rec.outerwear}
           <View>
             <Text style={styles.contentTextLeft}>Top</Text>
             <Text style={styles.contentTextLeft}>Pants</Text>
@@ -178,26 +174,80 @@ class RecommendationScreen extends Component {
     </TouchableHighlight>
   }
 
-  selectButton() {
-    return <TouchableHighlight
-      underlayColor="gray"
-      onPress={() => this.handleDressMePress()}
-      style={styles.dressMeButton}
-      >
-        <Text>
-          Choose
-        </Text>
+  // <TouchableHighlight
+      //   underlayColor="gray"
+      //   onPress={() => this.handleRateMePress()}
+      //   style={styles.dressMeButton}
+      //   >
+      //     <Text>
+      //       Rate
+      //     </Text>
+      // </TouchableHighlight>
 
-    </TouchableHighlight>
+  ratingButtons() {
+    return (
+      <View style= {[styles.timeContainer, this.border('red')]}>
+        <Text style={styles.feedback}>
+          -Feedback-
+        </Text>
+        <View style={styles.buttonWrapper}>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(-10)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/too-cold.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Too Cold
+                </Text>
+              </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(0)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/perfect.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Perfect
+                </Text>
+              </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(10)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/too-hot.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Too Hot
+                </Text>
+              </View>
+          </TouchableHighlight>
+        </View>
+    </View>
+    )
+  }
+
+  handleRatings(rate) {
+
+  }
+
+  handleRateMePress(){
+    console.log("Pressed Rate")
+    this.props.navigator.push({
+            ident: "Rate"
+        })
   }
   
   requestClothing(option) {
+    console.log(this.state.id);
     if (this.recommendationJson == null) {
-      console.log('im here now');
-      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/0', {
+      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/' + this.state.id, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'token': this.state.token
         }
         
       }).then((response) => response.json())
@@ -222,20 +272,50 @@ class RecommendationScreen extends Component {
 
   handleDressMePress() {
     console.log('Dress Me was pressed');
-    {/*fetch('https://dry-beyond-51182.herokuapp.com/user/dirty/:userid', {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          top:  {this.top},
-          bottom:  {thispants},
-          footwear:  {this.footwear},
-          accessory: {this.accessory},
-          outerwear: {this.outerwear}
-      })
-    })*/}
+      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/dirty/' + this.state.id, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'token': this.state.token
+        },
+        body: JSON.stringify({
+            top: this.state.Rec.top,
+            pants:  this.state.Rec.pants,
+            footwear:  this.state.Rec.footwear,
+            accessory: this.state.Rec.accessory,
+            outerwear: this.state.Rec.outerwear
+        })
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          this.temp = responseJson
+          this.setState({shouldClean: responseJson});
+          console.log(responseJson);
+        })
+      if(this.state.shouldClean) {
+        console.log("We should do laundry")
+        {this.sendAlert()}
+        this.temp = false;
+      }
+  }
+
+  sendAlert(){
+    AlertIOS.alert(
+     'Update Time',
+     'Please do your Laundry',
+     [
+       {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+       {text: 'Do Laundry', onPress: () => {this.doLaundry()}},
+     ],
+    );   
+  }
+
+  doLaundry(){
+    this.props.navigator.push({
+     ident: "Laundry",
+     id: this.state.id,
+     token: this.state.token
+    })    
   }
 
   tempRender(){
@@ -256,8 +336,11 @@ class RecommendationScreen extends Component {
 }
 
 var styles = StyleSheet.create({
-  container: {
-    flex: 1
+  backgroundImage: {
+    flex: 1,
+    height: null,
+    width: null,
+    //resizeMode: 'cover', // or 'stretch'
   },
   settingsContainer: {
     flex: 1
@@ -357,6 +440,29 @@ var styles = StyleSheet.create({
   },
   contentTextLeft: {
      textAlign: 'right',
+  },
+  ratingButton: {
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  ratingButtonView: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  ratingButtonImage: {
+		height: 30,
+		width: 30,
+  },
+  ratingButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center'
+  },
+  feedback: {
+    paddingTop: 5,
+    textAlign: 'center'
   }
 });
 
