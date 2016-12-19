@@ -36,9 +36,11 @@ class LaundryScreen extends Component{
     return (
       <Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
         <View style={styles.title}>
+          {this.backButton()}
           <Text style={styles.titleText}>
-            D i r t y   B a s k e t
+            D i r t y   P i l e
           </Text>
+          {this.invisBlock()}
         </View>
         <View style={styles.container}>
           <ScrollView>
@@ -49,7 +51,6 @@ class LaundryScreen extends Component{
         </View>
         <View style={styles.reset}>
           {this.resetLaundryButton()}
-          {this.backButton()}
         </View>
     </Image>
     )
@@ -118,6 +119,30 @@ class LaundryScreen extends Component{
       body: JSON.stringify({
       })
     })
+
+    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/laundry/' + this.props.id, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'token': this.props.token
+            }
+          
+          }).then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson.boots);
+                this.setState({LaundryList: responseJson});
+                console.log(this.state.LaundryList.boots);
+                console.log(this.state.LaundryList);
+                // console.log(itemTypes[0]);
+                // parseClosetJson()
+                // console.log(closetJson);
+                {this.getNums()}
+                // var tempArray = this.closet();
+                // console.log("time to print");
+                // return tempArray;
+            })
+
+    
   }
 
   resetLaundryButton() {
@@ -134,17 +159,26 @@ class LaundryScreen extends Component{
   }
 
   backButton() {
-    return <TouchableHighlight
-    underlayColor="gray"
-    onPress={() => this.handleBackPress()}
-    style={styles.resetButton}
-    >
-      <Text style={styles.resetButtonText}>
-      BACK
-      </Text>
+		return <TouchableHighlight
+		underlayColor='transparent'
+		onPress={() => this.handleBackPress()}
+		style={styles.backButton}
+		>
+			<Image source={require('../../img/icon/left-arrow.png')} style = {styles.backImage} />
 
-    </TouchableHighlight>
-  }
+		</TouchableHighlight>
+	}
+
+	invisBlock() {
+		return <TouchableHighlight
+		style={styles.invisBlock}
+		>
+			<Text style={styles.updateButtonText}>
+			INVIS
+			</Text>
+
+		</TouchableHighlight>
+	}
 
   handleBackPress() {
     this.props.navigator.pop()
@@ -168,13 +202,14 @@ var styles = StyleSheet.create({
 	title: {
 		paddingTop: 20,
 		paddingBottom: 20,
-		justifyContent: 'center',
-    	alignItems: 'center'
+		flexDirection: 'row',
 	},
 	titleText: {
+		flex: 1,
 		fontSize: 36,
 		fontWeight: '700',
-		color: '#FFFFFF'
+		color: '#FFFFFF',
+		textAlign:'center',
 	},
 	closetItems: {
 		width: 300,
@@ -203,7 +238,26 @@ var styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
 		color: '#FFFFFF'
-  }
+  },
+  backImage: {
+		height: 30,
+		width: 30,
+    opacity: 0.7,
+		tintColor: '#FFFFFF'
+    },
+	backButton: {
+		width: 70,
+		height: 30,
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingLeft: 5,
+		paddingTop: 15
+	},
+	invisBlock: {
+		width: 70,
+		height: 30,
+		opacity: 0
+	}
 })
 
 module.exports = LaundryScreen;

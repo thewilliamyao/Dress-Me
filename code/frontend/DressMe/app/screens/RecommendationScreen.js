@@ -15,23 +15,20 @@ import {
   TouchableHighlight,
   ScrollView,
   TextInput,
-  Navigator
+  Navigator,
+  Image,
+  AlertIOS
 } from 'react-native';
 // var Rec = null
 class RecommendationScreen extends Component {
-/*
-  var top;
-  var bottom;
-  var footwear;
-  var accessory;
-  var outerwear;
-*/
+
   static recommendationJson = null;
+  static temp = false;
   static choiceInt = 0;
 
   constructor(props) {
     super(props);
-    this.state = {Rec: null, id: this.props.id, token: this.props.token};
+    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false};
   }
   
   componentDidMount() {
@@ -44,7 +41,7 @@ class RecommendationScreen extends Component {
       <View style= {[styles.settingsContainer, styles.buttonWrapper, this.border('pink')]}>
         {this.settingsButton()}
       </View>
-    {/*View Below is Time Bar*/}
+    {/*View Below is ratingButtons*/}
         {this.ratingButtons()}
     {/*View Below is Dress up Guy*/}
       <View style= {[styles.displayContainer, this.border('lime')]}>
@@ -189,31 +186,45 @@ class RecommendationScreen extends Component {
 
   ratingButtons() {
     return (
-      <View style= {[styles.timeContainer,styles.buttonWrapper, this.border('red')]}>
-        <TouchableHighlight
-        underlayColor="gray"
-        onPress={() => this.handleRatings(-10)}
-        style={styles.ratingButton}>
-          <Text>
-            Too Cold
-          </Text>
-      </TouchableHighlight>
-      <TouchableHighlight
-        underlayColor="gray"
-        onPress={() => this.handleRatings(0)}
-        style={styles.ratingButton}>
-          <Text>
-            Perfect
-          </Text>
-      </TouchableHighlight>
-      <TouchableHighlight
-        underlayColor="gray"
-        onPress={() => this.handleRatings(10)}
-        style={styles.ratingButton}>
-          <Text>
-            Too Hot
-          </Text>
-      </TouchableHighlight>
+      <View style= {[styles.timeContainer, this.border('red')]}>
+        <Text style={styles.feedback}>
+          -Feedback-
+        </Text>
+        <View style={styles.buttonWrapper}>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(-10)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/too-cold.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Too Cold
+                </Text>
+              </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(0)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/perfect.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Perfect
+                </Text>
+              </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            underlayColor="gray"
+            onPress={() => this.handleRatings(10)}
+            style={styles.ratingButton}>
+              <View style={styles.ratingButtonView}>
+                <Image source={require('../../img/icon/too-hot.png')} style = {styles.ratingButtonImage} />
+                <Text style = {styles.ratingButtonText}>
+                  Too Hot
+                </Text>
+              </View>
+          </TouchableHighlight>
+        </View>
     </View>
     )
   }
@@ -277,8 +288,34 @@ class RecommendationScreen extends Component {
         })
       }).then((response) => response.json())
         .then((responseJson) => {
+          this.temp = responseJson
+          this.setState({shouldClean: responseJson});
           console.log(responseJson);
         })
+      if(this.state.shouldClean) {
+        console.log("We should do laundry")
+        {this.sendAlert()}
+        this.temp = false;
+      }
+  }
+
+  sendAlert(){
+    AlertIOS.alert(
+     'Update Time',
+     'Please do your Laundry',
+     [
+       {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+       {text: 'Do Laundry', onPress: () => {this.doLaundry()}},
+     ],
+    );   
+  }
+
+  doLaundry(){
+    this.props.navigator.push({
+     ident: "Laundry",
+     id: this.state.id,
+     token: this.state.token
+    })    
   }
 
   tempRender(){
@@ -402,11 +439,27 @@ var styles = StyleSheet.create({
      textAlign: 'right',
   },
   ratingButton: {
-    width: 100,
-    height: 50,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    borderColor: '#000000'
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  ratingButtonView: {
+    flexDirection: 'column',
+  },
+  ratingButtonImage: {
+    marginLeft: 7,
+		height: 30,
+		width: 30,
+  },
+  ratingButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center'
+  },
+  feedback: {
+    paddingTop: 5,
+    textAlign: 'center'
   }
 });
 

@@ -8,7 +8,8 @@ import {
   TouchableHighlight,
   ScrollView,
   TextInput,
-  Navigator
+  Navigator,
+  Image
 } from 'react-native';
 
 class SettingsScreen extends Component{
@@ -17,10 +18,14 @@ class SettingsScreen extends Component{
         this.state = {text: 'Email', text1: 'Password', id: this.props.id, token: this.props.token}
     }
     render() {
-        return (<View style = {styles.container}>
-            <View style={styles.settingsTitle}>
-                <Text> Settings </Text>
-            </View>
+        return (<Image source={require('../../img/background/bg-blue.png')} style = {styles.backgroundImage}>
+            <View style={styles.title}>
+				{this.backButton()}
+				<Text style={styles.titleText}>
+					S e t t i n g s
+				</Text>
+				{this.invisBlock()}
+			</View>
             <View style={styles.buttonContainer}>
                 <TouchableHighlight
                   underlayColor="gray"
@@ -49,18 +54,8 @@ class SettingsScreen extends Component{
                       Logout
                     </Text>
                 </TouchableHighlight>
-            
-            
-                <TouchableHighlight
-                  underlayColor="gray"
-                  onPress={() => this.handleBackPress()}
-                  style={styles.loginButton}>
-                    <Text>
-                      Back
-                    </Text>
-                </TouchableHighlight>
             </View>
-        </View>
+        </Image>
         );
     }
 
@@ -87,8 +82,35 @@ class SettingsScreen extends Component{
     }
 
     handleBackPress() {
-        this.props.navigator.pop()
+        {/*this.props.navigator.pop()*/}
+        this.props.navigator.push({
+            ident: "Recommendation",
+            id: this.state.id,
+            token: this.state.token
+        })
     }
+
+    backButton() {
+		return <TouchableHighlight
+		underlayColor='transparent'
+		onPress={() => this.handleBackPress()}
+		style={styles.backButton}
+		>
+			<Image source={require('../../img/icon/left-arrow.png')} style = {styles.backImage} />
+
+		</TouchableHighlight>
+	}
+
+    invisBlock() {
+		return <TouchableHighlight
+		style={styles.invisBlock}
+		>
+			<Text style={styles.updateButtonText}>
+			INVIS
+			</Text>
+
+		</TouchableHighlight>
+	}
 }
 
 {/*}
@@ -100,6 +122,14 @@ LoginScreen.propTypes = {
 */}
 
 var styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+        height: null,
+        width: null,
+        justifyContent: 'center',
+        alignItems: 'center'
+        //resizeMode: 'cover', // or 'stretch'
+    },
     container: {
         flex: 1,
         backgroundColor: 'blue'
@@ -150,21 +180,37 @@ var styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center'
     },
-    textColor: {
-        color: 'white'
+    title: {
+    paddingTop: 20,
+    paddingBottom: 20,
+    flexDirection: 'row',
+	},
+	titleText: {
+		flex: 1,
+		fontSize: 36,
+		fontWeight: '700',
+		color: '#FFFFFF',
+		textAlign:'center',
+	},
+    backImage: {
+		height: 30,
+		width: 30,
+		opacity: 0.7,
+		tintColor: '#FFFFFF'
     },
-    input: {
-        flex: 1,
-        color: '#FFFFFF',
-        height:40, 
-        width: 40, 
-        borderColor: 'gray', 
-        color:'white', 
-        borderWidth: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
-
+	backButton: {
+		width: 70,
+		height: 30,
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingLeft: 5,
+		paddingTop: 15
+	},
+	invisBlock: {
+		width: 70,
+		height: 30,
+		opacity: 0
+	}
 })
 
 module.exports = SettingsScreen;

@@ -61,6 +61,7 @@ class ClosetItem extends Component{
     _onBlur() {
         LayoutAnimation.configureNext(CustomReturnSpring);
         this.setState({amountLeft: 0, amountRight: 0})
+        this.update();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -166,6 +167,7 @@ var styles = StyleSheet.create({
         alignItems: 'center'
     },
     amountText: {
+        textAlign: 'center',
         marginLeft: 20,
         fontSize: 36,
         color: '#FFFFFF',

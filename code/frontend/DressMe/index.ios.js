@@ -12,7 +12,8 @@ import {
   Text,
   Navigator,
   TouchableHighlight,
-  View
+  View,
+  StatusBar
 } from 'react-native';
 //import AppNavigator from './app/navigation/AppNavigator'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -76,9 +77,9 @@ export default class DressMe extends Component {
   render() {
     return (
       <Navigator
-        initialRoute={{ident: "Login"}}
+        initialRoute={{ident: "Login", statusBarHidden: true}}
         renderScene={this._renderScene}
-        configureScene={this._configureScene}/>
+        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}/>
     )
   } 
 }
