@@ -14,22 +14,22 @@ public class DaySummary {
     private Recommendation outfit;
 
     /*public DaySummary(int userId, Weather weather, Recommendation rec) {
-	this.userId = userId;
-	this.maxTemp = weather.getMaxTemp();
-	this.maxApparentTemp = weather.getMaxApparentTemp();
-	this.outfit = rec.clone();
-	}*/
+    this.userId = userId;
+    this.maxTemp = weather.getMaxTemp();
+    this.maxApparentTemp = weather.getMaxApparentTemp();
+    this.outfit = rec.clone();
+    }*/
 
     public DaySummary(int userId, Double maxTemp, Double maxApparentTemp, String top, String pants,
-		      String footwear, String accessory, String outerwear) {
-	this.userId = userId;
-	this.maxTemp = maxTemp;
-	this.maxApparentTemp = maxApparentTemp;	
-	this.outfit = new Recommendation(top, pants, footwear, accessory, outerwear);
+              String footwear, String accessory, String outerwear) {
+        this.userId = userId;
+        this.maxTemp = maxTemp;
+        this.maxApparentTemp = maxApparentTemp; 
+        this.outfit = new Recommendation(top, pants, footwear, accessory, outerwear);
     }
 
     public double getComparisonValue() {
-	return this.maxTemp + this.maxApparentTemp;
+        return this.maxTemp + this.maxApparentTemp;
     }
 
     /**
@@ -37,7 +37,7 @@ public class DaySummary {
      *   @return the user's ID.
      */
     public int getUserId() {
-	return this.userId;
+        return this.userId;
     }
 
     /**
@@ -45,7 +45,7 @@ public class DaySummary {
      *   @return the max temp.
      */
     public Double getMaxTemp() {
-	return this.maxTemp;
+        return this.maxTemp;
     }
 
     /**
@@ -53,7 +53,7 @@ public class DaySummary {
      *   @return the max apparent temp.
      */
     public Double getMaxApparentTemp() {
-	return this.maxApparentTemp;
+        return this.maxApparentTemp;
     }
 
     /**
@@ -61,7 +61,7 @@ public class DaySummary {
      *   @return the recommendation.
      */
     public Recommendation getRecommendation() {
-	return this.outfit;
+        return this.outfit;
     }
     
     /**
@@ -69,7 +69,7 @@ public class DaySummary {
      *   @param the new user ID.
      */
     public void setUserId(int userId) {
-	this.userId = userId;
+        this.userId = userId;
     }
 
     /**
@@ -77,7 +77,7 @@ public class DaySummary {
      *   @param the new max temperature.
      */
     public void setMaxTemp(int maxApparentTemp) {
-	this.maxTemp = maxTemp;
+        this.maxTemp = maxTemp;
     }
 
     /**
@@ -85,7 +85,7 @@ public class DaySummary {
      *   @param the new max apparent temperature.
      */
     public void setMaxApparentTemp(Double maxApparentTemp) {
-	this.maxApparentTemp = maxApparentTemp;
+        this.maxApparentTemp = maxApparentTemp;
     }
 
     /**
@@ -93,6 +93,6 @@ public class DaySummary {
      *   @param the Recommendation object representing this outfit.
      */
     public void setOutfit(Recommendation outfit) {
-	this.outfit = outfit;
+        this.outfit = outfit;
     }
 }

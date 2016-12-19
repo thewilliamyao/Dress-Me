@@ -51,7 +51,7 @@ public class User {
     *   @return the user's email.
     */
     public String getEmail(){
-	return email;
+    return email;
     }
     
     /**
@@ -67,7 +67,7 @@ public class User {
     *   @return the user's password.
     */
     public String getPassword(){
-	    return password;
+        return password;
     }
     
     /**

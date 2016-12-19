@@ -145,7 +145,7 @@ public class UserService {
             logger.error("UserService.createNewUser: No password specified.");
             return new LoginToken(-1, "");
         }
-	
+    
         // check that there are no users with the same email
         String sqlUserCount = "SELECT COUNT(*) FROM users WHERE (email = :email)";
         int numUsers = 0;
@@ -158,7 +158,7 @@ public class UserService {
                     .addParameter("email", currEmail)
                     .executeAndFetchFirst(Integer.class);
         } catch (Sql2oException ex) {
-	        logger.error("UserService.createNewUser: Failed to query users", ex);
+            logger.error("UserService.createNewUser: Failed to query users", ex);
             return new LoginToken(-2, "");
         }
         if (numUsers > 0) {
@@ -173,7 +173,7 @@ public class UserService {
 
         // add user to database
         String sqlUser = "INSERT INTO users (user_id, email, password)" +
-	        "                  VALUES (:userId, :email, :password)";
+            "                  VALUES (:userId, :email, :password)";
 
         try (Connection conn = db.open()) {
             conn.createQuery(sqlUser)
@@ -185,7 +185,7 @@ public class UserService {
                 .addParameter("password", encryptedPass)
                 .executeUpdate();
         } catch (Sql2oException ex) {
-	        logger.error("UserService.createNewUser: Failed to add new user entry", ex);
+            logger.error("UserService.createNewUser: Failed to add new user entry", ex);
             return new LoginToken(-2, "");
         }
         return new LoginToken(currUserId);
@@ -216,7 +216,7 @@ public class UserService {
                     .addParameter("email", currEmail)
                     .executeAndFetchFirst(User.class);
         } catch (Sql2oException ex) {
-	        logger.error("UserService.createLoginToken: Failed to find user entry", ex);
+            logger.error("UserService.createLoginToken: Failed to find user entry", ex);
             return new LoginToken(-2, "");
         }
         if (currUser == null) {
@@ -249,211 +249,167 @@ public class UserService {
         // get the weather based on the location
         Weather currWeather = new Weather(currLocation.getLatitude(), currLocation.getLongitude());
 
-	// recreate clothes map for this user	
+        // recreate clothes map for this user   
         List<Clothes> currClothes = ClothesService.getClothesList(currId);        
         HashMap<Clothes, Integer> ownedMap = new HashMap<>();
         HashMap<Clothes, Integer> dirtyMap = new HashMap<>();
-	
+    
         for (Clothes c : currClothes) {
             ownedMap.put(c, new Integer(c.getNumberOwned()));
             dirtyMap.put(c, new Integer(c.getNumberDirty()));            
         }
 
-	// When user gives feedback at the end of the day, front end should send comparison critera
-	// to back end for storage in database.
-		
-	// TODO: replace this so it actually gets something from the database
-	
-	ArrayList<DaySummary> pastDays = new ArrayList<>();
-	HashMap<String, Recommendation> toReturn = new HashMap<String, Recommendation>();
-	PriorityQueue<Integer> similarityQueue = new PriorityQueue<>(MAX_DAYS);
-	HashMap<Integer, DaySummary> similarList = new HashMap<>();
+        // When user gives feedback at the end of the day, front end should send comparison critera
+        // to back end for storage in database.
+            
+        // TODO: replace this so it actually gets something from the database
+        
+        ArrayList<DaySummary> pastDays = new ArrayList<>();
+        HashMap<String, Recommendation> toReturn = new HashMap<String, Recommendation>();
+        PriorityQueue<Integer> similarityQueue = new PriorityQueue<>(MAX_DAYS);
+        HashMap<Integer, DaySummary> similarList = new HashMap<>();
 
-	for (DaySummary d : pastDays) {
-	    // Compare to current weather
-	    Integer similarity = Integer.valueOf(currWeather.compareTo(d));
-	    similarityQueue.add(similarity);
-	    similarList.put(similarity, d);
-	}
+        for (DaySummary d : pastDays) {
+            // Compare to current weather
+            Integer similarity = Integer.valueOf(currWeather.compareTo(d));
+            similarityQueue.add(similarity);
+            similarList.put(similarity, d);
+        }
 
-	Integer head = similarityQueue.poll();
-	String recNumber = "FirstRecommendation";
-	Recommendation outfit;	
-	
-	while (head != null && toReturn.size() < MAX_RECS) {
-	    if (toReturn.size() == 1) {
-		recNumber = "SecondRecommendation";
-	    } else {
-		recNumber = "ThirdRecommendation";
-	    }
-	    
-	    DaySummary day = similarList.get(head);
-	    outfit = day.getRecommendation();
-	    
-	    if (hasOutfit(outfit, ownedMap, dirtyMap) && !toReturn.containsValue(outfit)) {
-		if (!outfit.getOuterwear().equals("winter_coat")) {
-		    if (ownedMap.containsKey("windbreaker") && currWeather.getWindSpeed() > 25) {
-			outfit.setOuterwear("windbreaker");
-		    } // Add more cases like this
-		}     // LMFAO is it really worth it tho
-		toReturn.put(recNumber, outfit);
-	    } else {
-		// Beginning of mutate method
-		/*for (Clothes item : outfit.asClothesList()) {
-		    if (!hasClean(item, ownedMap, dirtyMap) || toReturn.containsValue(outfit)) {
-			Integer highKey, lowKey, targetKey;
-			targetKey = currWeather.getMaxApparentTemp();
-			List<Clothes> options = new ArrayList<>();
-			highKey = highTree.lowerKey(day.getMaxApparentTemp());
-			lowKey = lowTree.higherKey(day.getMaxApparentTemp());
-			options.addAll(highTree.get(highKey));
-			options.addAll(lowTree.get(lowKey));
-			
-			if (options != null) {
-			    Clothes selection = options.get(0);
-			    int minDiff = Math.min(Math.abs(selection.tempHigh - targetKey),
-						   Math.abs(selection.tempLow - targetKey));
-			    int diff;
-			    for (Clothes c : options) {
-				if (hasClean(c, ownedMap, dirtyMap) &&
-				    c.getType().equals(item.getType()) &&
-				    !c.getSpecificType.equals(item.getSpecificType())) {
+        Integer head = similarityQueue.poll();
+        String recNumber = "FirstRecommendation";
+        Recommendation outfit;  
+        
+        while (head != null && toReturn.size() < MAX_RECS) {
+            if (toReturn.size() == 1) {
+                recNumber = "SecondRecommendation";
+            } else {
+                recNumber = "ThirdRecommendation";
+            }
+            
+            DaySummary day = similarList.get(head);
+            outfit = day.getRecommendation();
+            
+            if (hasOutfit(outfit, ownedMap, dirtyMap) && !toReturn.containsValue(outfit)) {
+                if (!outfit.getOuterwear().equals("winter_coat")) {
+                    if (ownedMap.containsKey("windbreaker") && currWeather.getWindSpeed() > 25) {
+                        outfit.setOuterwear("windbreaker");
+                    } // Add more cases like this
+                }     // LMFAO is it really worth it tho
+                toReturn.put(recNumber, outfit);
+            } else {
+                toReturn.put(recNumber, mutateRecommendation(outfit, currWeather.getMaxApparentTemp(),
+                                     toReturn, ownedMap, dirtyMap));
+            }       
+        }
+        
+        int loops = 0;
+        // If there aren't enough entries in the database or there are no entries with similar weather,
+        // make recommendations using the default algorithm.
+        while (toReturn.size() < MAX_RECS) {
+            if (loops >= MAX_LOOPS) {
+                System.out.println("Failed to find default recommendation after 10 attempts.");
+                break;
+            }
+            if (toReturn.size() == 1) {
+                recNumber = "SecondRecommendation";
+            } else {
+                recNumber = "ThirdRecommendation";
+            }
+            // Make default recommendation if we weren't able to recommend from smart algorithm
+            outfit = defaultRecommendation(toReturn, ownedMap, dirtyMap, currWeather);
 
-				    if (c.tempHigh >= targetKey && c.tempLow <= targetKey) {
-					selection = c;
-					break;
-				    } else {
-					diff = Math.min(Math.abs(closest.tempHigh - targetKey),
-							Math.abs(closest.tempLow - targetKey));
-					if (diff < minDiff) {
-					    selection = c;
-					}
-				    }
-				}
-			    }
-			} else { // No possible replacements left. Recommend original.
-			    selection = item;
-			}
-			outfit.setItem(selection);
-			}
-			}// End of mutate method*/	       
-		toReturn.put(recNumber, mutateRecommendation(outfit, currWeather.getMaxApparentTemp(),
-							     toReturn, ownedMap, dirtyMap));
-	    }	    
-	}
-	
-	int loops = 0;
-	// If there aren't enough entries in the database or there are no entries with similar weather,
-	// make recommendations using the default algorithm.
-	while (toReturn.size() < MAX_RECS) {
-	    if (loops >= MAX_LOOPS) {
-		System.out.println("Failed to find default recommendation after 10 attempts.");
-		break;
-	    }
-	    if (toReturn.size() == 1) {
-		recNumber = "SecondRecommendation";
-	    } else {
-		recNumber = "ThirdRecommendation";
-	    }
-	    // Make default recommendation if we weren't able to recommend from smart algorithm
-	    outfit = defaultRecommendation(toReturn, ownedMap, dirtyMap, currWeather);
-
-	    if (!toReturn.containsValue(outfit)) {
-		toReturn.put(recNumber, outfit);
-	    } else {
-		toReturn.put(recNumber, mutateRecommendation(outfit, currWeather.getMaxApparentTemp(),
-							     toReturn, ownedMap, dirtyMap));
-	    }
-	    loops++;
-	}
-
-	return toReturn;
+            if (!toReturn.containsValue(outfit)) {
+                toReturn.put(recNumber, outfit);
+            } else {
+                toReturn.put(recNumber, mutateRecommendation(outfit, currWeather.getMaxApparentTemp(),
+                                     toReturn, ownedMap, dirtyMap));
+            }
+            loops++;
+        }
+        return toReturn;
     }
 
     public Recommendation mutateRecommendation(Recommendation outfit, Double targetTemp,
-			  HashMap<String, Recommendation> currRecs, HashMap<Clothes, Integer> ownedMap,
-			  HashMap<Clothes, Integer> dirtyMap) {
-	
-	// create TreeMaps to get clothes w/ similar temperature parameters
-	TreeMap<Double, List<Clothes>> highTree = new TreeMap<>();
-	TreeMap<Double, List<Clothes>> lowTree = new TreeMap<>();
+              HashMap<String, Recommendation> currRecs, HashMap<Clothes, Integer> ownedMap,
+              HashMap<Clothes, Integer> dirtyMap) {
+        // create TreeMaps to get clothes w/ similar temperature parameters
+        TreeMap<Double, List<Clothes>> highTree = new TreeMap<>();
+        TreeMap<Double, List<Clothes>> lowTree = new TreeMap<>();
 
-	// Populate high/low trees; if a collision occurs, add to list instead of replacing.
-	for (Clothes c : ownedMap.keySet()) {
-	    if (hasClean(c, ownedMap, dirtyMap)) {
-		if (!highTree.containsKey(Double.valueOf(c.getTempHigh()))) {
-		    highTree.put(new Double(c.getTempHigh()), Arrays.asList(c));
-		} else {
-		    highTree.get(c.getTempHigh()).add(c);
-		}
-		if (!lowTree.containsKey(Double.valueOf(c.getTempHigh()))) {
-		    lowTree.put(new Double(c.getTempLow()), Arrays.asList(c));
-		} else {
-		    lowTree.get(c.getTempLow()).add(c);
-		}
-	    }
-	}
+        // Populate high/low trees; if a collision occurs, add to list instead of replacing.
+        for (Clothes c : ownedMap.keySet()) {
+            if (hasClean(c, ownedMap, dirtyMap)) {
+                if (!highTree.containsKey(Double.valueOf(c.getTempHigh()))) {
+                    highTree.put(new Double(c.getTempHigh()), Arrays.asList(c));
+                } else {
+                    highTree.get(c.getTempHigh()).add(c);
+                }
+                if (!lowTree.containsKey(Double.valueOf(c.getTempHigh()))) {
+                    lowTree.put(new Double(c.getTempLow()), Arrays.asList(c));
+                } else {
+                    lowTree.get(c.getTempLow()).add(c);
+                }
+            }
+        }
 
-	for (Clothes item : outfit.asClothesList()) {
-	    if (!hasClean(item, ownedMap, dirtyMap) || currRecs.containsValue(outfit)) {
-		Double highKey, lowKey;
-		List<Clothes> options = new ArrayList<>();
-		Clothes selection;
-		highKey = highTree.lowerKey(targetTemp);
-		lowKey = lowTree.higherKey(targetTemp);
-		options.addAll(highTree.get(highKey));
-		options.addAll(lowTree.get(lowKey));
-			
-		if (options != null) {
-		    selection = options.get(0);
-		    double minDiff = Math.min(Math.abs(selection.getTempHigh() - targetTemp),
-					   Math.abs(selection.getTempLow() - targetTemp));
-		    double diff;
- 		    for (Clothes c : options) {
-			if (hasClean(c, ownedMap, dirtyMap) &&
-			    c.getType().equals(item.getType()) &&
-			    !c.getSpecificType().equals(item.getSpecificType())) {
-			    
-			    if (c.getTempHigh() >= targetTemp && c.getTempLow() <= targetTemp) {
-				selection = c;
-				break;
-			    } else {
-				diff = Math.min(Math.abs(selection.getTempHigh() - targetTemp),
-						Math.abs(selection.getTempLow() - targetTemp));
-				if (diff < minDiff) {
-				    selection = c;
-				}
-			    }
-			}
-		    }			    
-		} else { // No possible replacements left. Recommend original.
-		    selection = item;
-		}
-		outfit.setItem(selection);
-	    }
-	}
-	return outfit;
+        for (Clothes item : outfit.asClothesList()) {
+            if (!hasClean(item, ownedMap, dirtyMap) || currRecs.containsValue(outfit)) {
+                Double highKey, lowKey;
+                List<Clothes> options = new ArrayList<>();
+                Clothes selection;
+                highKey = highTree.lowerKey(targetTemp);
+                lowKey = lowTree.higherKey(targetTemp);
+                options.addAll(highTree.get(highKey));
+                options.addAll(lowTree.get(lowKey));
+                
+                if (options != null) {
+                    selection = options.get(0);
+                    double minDiff = Math.min(Math.abs(selection.getTempHigh() - targetTemp),
+                               Math.abs(selection.getTempLow() - targetTemp));
+                    double diff;
+                    for (Clothes c : options) {
+                        if (hasClean(c, ownedMap, dirtyMap) && c.getType().equals(item.getType()) && !c.getSpecificType().equals(item.getSpecificType())) {
+                            if (c.getTempHigh() >= targetTemp && c.getTempLow() <= targetTemp) {
+                                selection = c;
+                                break;
+                            } else {
+                                diff = Math.min(Math.abs(selection.getTempHigh() - targetTemp),
+                                Math.abs(selection.getTempLow() - targetTemp));
+                                if (diff < minDiff) {
+                                    selection = c;
+                                }
+                            }
+                        }
+                    }               
+                } else { // No possible replacements left. Recommend original.
+                    selection = item;
+                }
+                outfit.setItem(selection);
+            }
+        }
+        return outfit;
     }
 
     public Recommendation defaultRecommendation(HashMap<String, Recommendation> currRecs,
-			  HashMap<Clothes, Integer> ownedMap, HashMap<Clothes, Integer> dirtyMap,
- 						Weather weather) {
-	
-	String pantsRecommendation = "NONE";
+              HashMap<Clothes, Integer> ownedMap, HashMap<Clothes, Integer> dirtyMap,
+                        Weather weather) {
+    
+        String pantsRecommendation = "NONE";
         String shirtRecommendation = "NONE";
         String outwearRecommendation = "NONE";
         String footwearRecommendation = "NONE";
         String accessoryRecommendation = "NONE";
-	Double temp = weather.getMaxApparentTemp();
+        Double temp = weather.getMaxApparentTemp();
 
-	HashMap<String, Double> highMap = new HashMap<>();
+        HashMap<String, Double> highMap = new HashMap<>();
         HashMap<String, Double> lowMap = new HashMap<>();
 
-	for (Clothes c : ownedMap.keySet()) {
+        for (Clothes c : ownedMap.keySet()) {
             highMap.put(c.getSpecificType(), new Double(c.getTempHigh()));
-            lowMap.put(c.getSpecificType(), new Double(c.getTempLow()));    	    
+            lowMap.put(c.getSpecificType(), new Double(c.getTempLow()));            
         }
-	
+    
         // if too hot for long pants, recommend shorts
         if (temp > highMap.get("long_pants")) {
             // recommend shorts if possible
@@ -465,7 +421,7 @@ public class UserService {
             } else {
                 // he has no pants...
                 pantsRecommendation = "NONE";
-            }	    
+            }       
         } else {
             // we prefer long pants
             if (hasClean("long_pants", ownedMap, dirtyMap)) {
@@ -513,8 +469,8 @@ public class UserService {
         }
 
         // set footwear.
-	// check precip. if raining or snowing, recommend boots
-	// if not, but still cold, recommend shoes. if hot and clear, recommend sandals.
+        // check precip. if raining or snowing, recommend boots
+        // if not, but still cold, recommend shoes. if hot and clear, recommend sandals.
         if (weather.getPrecipType().equals("rain") || weather.getPrecipType().equals("snow")) {
             // wear boots
             if (ownedMap.get("boots") > 0) {
@@ -545,8 +501,8 @@ public class UserService {
         }
 
         // set outerwear.
-	// check precip. if very cold, recommend winter jacket.
-	// else if rainig, recommend rain jacket. if clear but somewhat cold, recommend hoodie.
+        // check precip. if very cold, recommend winter jacket.
+        // else if rainig, recommend rain jacket. if clear but somewhat cold, recommend hoodie.
         if (temp < highMap.get("winter_coat") || weather.getPrecipType().equals("snow")) {
             // recommend winter coat
             if (hasClean("winter_coat", ownedMap, dirtyMap)) {
@@ -592,8 +548,8 @@ public class UserService {
         }
 
         // set accessory
-	// if windy or cold, scarf. if raining and not windy, recommend umbrella.
-	// prefer umbrella to scarf.
+        // if windy or cold, scarf. if raining and not windy, recommend umbrella.
+        // prefer umbrella to scarf.
         if (weather.getPrecipType().equals("rain") && weather.getWindSpeed() < 30) {
             if (ownedMap.get("umbrella") > 0) {
                 accessoryRecommendation = "umbrella";
@@ -603,8 +559,8 @@ public class UserService {
                 accessoryRecommendation = "scarf";
             }
         }
-	return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation,
-				  accessoryRecommendation, outwearRecommendation);  
+        return new Recommendation(shirtRecommendation, pantsRecommendation, footwearRecommendation,
+                      accessoryRecommendation, outwearRecommendation);  
     }
 
     //-----------------------------------------------------------------------------//
@@ -612,26 +568,24 @@ public class UserService {
     //-----------------------------------------------------------------------------//
     
     public boolean hasClean(Clothes item, HashMap<Clothes, Integer> ownedMap,
-			    HashMap<Clothes, Integer> dirtyMap) {
-	return ownedMap.get(item) - dirtyMap.get(item) > 0;
+                HashMap<Clothes, Integer> dirtyMap) {
+        return ownedMap.get(item) - dirtyMap.get(item) > 0;
     }
 
     public boolean hasClean(String item, HashMap<Clothes, Integer> ownedMap,
-			    HashMap<Clothes, Integer> dirtyMap) {
-	Clothes dummy = new Clothes(item);
-	return ownedMap.get(dummy) - dirtyMap.get(dummy) > 0;
+                HashMap<Clothes, Integer> dirtyMap) {
+    Clothes dummy = new Clothes(item);
+        return ownedMap.get(dummy) - dirtyMap.get(dummy) > 0;
     }
 
     public boolean hasOutfit(Recommendation outfit, HashMap<Clothes, Integer> ownedMap, HashMap<Clothes, Integer> dirtyMap) {
-	List<Clothes> clothes = outfit.asClothesList();
-
-	for (Clothes item : clothes) {
-	    if (!hasClean(item, ownedMap, dirtyMap)) {
-		return false;
-	    }
-	}
-
-	return true;
+    List<Clothes> clothes = outfit.asClothesList();
+        for (Clothes item : clothes) {
+            if (!hasClean(item, ownedMap, dirtyMap)) {
+            return false;
+            }
+        }
+        return true;
     }
 
     public static class UserServiceException extends Exception {
@@ -644,8 +598,8 @@ public class UserService {
     }
 
     public static class NewUserException extends Exception {
-    	public NewUserException(String message) {
-    	    super(message, null);
-    	}
+        public NewUserException(String message) {
+            super(message, null);
+        }
     }
 }

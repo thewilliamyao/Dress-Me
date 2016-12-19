@@ -77,20 +77,20 @@ public class Weather implements Comparable<DaySummary> {
     }
 
     public int compareTo(DaySummary d) {
-	// Factors being compared: temperature, apparentTemp, humidity, windSpeed?, precipIntensity
-	// Take precipChance into consideration in algorithm, but not similarity index b/c it is due to chance
+    // Factors being compared: temperature, apparentTemp, humidity, windSpeed?, precipIntensity
+    // Take precipChance into consideration in algorithm, but not similarity index b/c it is due to chance
 
-	int tempDiff = (int) (Math.round(this.maxTemp - d.getMaxTemp()));
-	int apparentTempDiff = (int) (Math.round(this.maxApparentTemp - d.getMaxApparentTemp()));
+    int tempDiff = (int) (Math.round(this.maxTemp - d.getMaxTemp()));
+    int apparentTempDiff = (int) (Math.round(this.maxApparentTemp - d.getMaxApparentTemp()));
 
-	return tempDiff + apparentTempDiff;
-	//int maxFactor = Math.max(Math.abs(tempDiff), Math.abs(apparentTempDiff));
-	
-	//int humidityDiff = (int) (Math.round(this.humidity - w.getHumidity()));		
+    return tempDiff + apparentTempDiff;
+    //int maxFactor = Math.max(Math.abs(tempDiff), Math.abs(apparentTempDiff));
+    
+    //int humidityDiff = (int) (Math.round(this.humidity - w.getHumidity()));       
     }
 
     public double getComparisonValue() {
-	return this.maxTemp + this.maxApparentTemp;
+    return this.maxTemp + this.maxApparentTemp;
     }
 
     public double getWindSpeed() {
