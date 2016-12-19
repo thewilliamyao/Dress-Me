@@ -36,7 +36,7 @@ class RecommendationScreen extends Component {
   }
 
   render() {
-    return <View style= {styles.container}>
+    return <Image source={require('../../img/background/bg-morning.jpg')} style = {styles.backgroundImage}>
     {/*View Below is Settings Bar*/}  
       <View style= {[styles.settingsContainer, styles.buttonWrapper, this.border('pink')]}>
         {this.settingsButton()}
@@ -51,7 +51,7 @@ class RecommendationScreen extends Component {
       <View style= {[styles.dressMeContainer,styles.buttonWrapper, this.border('cyan')]}>
         {this.dressMeButton()}
       </View>
-    </View>
+    </Image>
   }
 
   settingsButton() {
@@ -336,8 +336,11 @@ class RecommendationScreen extends Component {
 }
 
 var styles = StyleSheet.create({
-  container: {
-    flex: 1
+  backgroundImage: {
+    flex: 1,
+    height: null,
+    width: null,
+    //resizeMode: 'cover', // or 'stretch'
   },
   settingsContainer: {
     flex: 1
@@ -445,10 +448,10 @@ var styles = StyleSheet.create({
     alignItems: 'center'
   },
   ratingButtonView: {
-    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   ratingButtonImage: {
-    marginLeft: 7,
 		height: 30,
 		width: 30,
   },

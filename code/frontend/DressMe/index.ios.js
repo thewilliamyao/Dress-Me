@@ -24,7 +24,7 @@ import LoginScreen from './app/screens/LoginScreen'
 import RegisterScreen from './app/screens/RegisterScreen'
 import SettingsScreen from './app/screens/SettingsScreen'
 import FeedbackScreen from './app/screens/FeedbackScreen'
-import TabScreen from './app/screens/TabScreen'
+//import TabScreen from './app/screens/TabScreen'
 
 export default class DressMe extends Component {
   _renderScene(route, navigator) {
@@ -36,11 +36,11 @@ export default class DressMe extends Component {
           <LoginScreen
             {...globalProps}/>
         )
-      case "TabScreen" :
+      {/*case "TabScreen" :
         return(
           <TabScreen
             id = {route.id} token = {route.token} tabbing = {route.tabbing} {...globalProps}/>
-        )
+        )*/}
       case "Recommendation" :
         return(
           <RecommendationScreen

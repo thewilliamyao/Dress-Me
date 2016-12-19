@@ -28,29 +28,32 @@ class SettingsScreen extends Component{
 			</View>
             <View style={styles.buttonContainer}>
                 <TouchableHighlight
-                  underlayColor="gray"
                   onPress={() => this.handleClosetPress()}
-                  style={styles.loginButton}>
-                    <Text>
-                      Closet
-                    </Text>
+                  style={styles.optionButton}>
+                    <View style={styles.optionButtonView}>
+                        <Image source={require('../../img/icon/hanger-thin.png')} style = {styles.optionButtonImage} />
+                        <Text style={styles.optionButtonText}>
+                        Closet
+                        </Text>
+                    </View>
                 </TouchableHighlight>
                 <TouchableHighlight
-                  underlayColor="gray"
                   onPress={() => this.handleLaundryPress()}
-                  style={styles.loginButton}>
-                    <Text>
+                  style={styles.optionButton}>
+                  <View style={styles.optionButtonView}>
+                    <Image source={require('../../img/icon/laundry.png')} style = {styles.optionButtonImage} />
+                    <Text style={styles.optionButtonText}>
                       Laundry
                     </Text>
+                </View>
                 </TouchableHighlight>
             </View>
 
             <View style={styles.backButtonContainer}>
                 <TouchableHighlight
-                  underlayColor="gray"
                   onPress={() => this.handleLogOutPress()}
-                  style={styles.loginButton}>
-                    <Text>
+                  style={styles.logoutButton}>
+                    <Text style={styles.optionButtonText}>
                       Logout
                     </Text>
                 </TouchableHighlight>
@@ -134,56 +137,73 @@ var styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'blue'
     },
-    titleContainer: {
-        flex: 1,
-        backgroundColor: 'yellow',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    loginContainer: {
-        flex: 1,
-        backgroundColor: 'red',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    loginButton: {
+    optionButton: {
         width: 100,
-        height: 50,
-        borderWidth: 2,
+        height: 80,
         justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'red'
+		alignItems: 'center',
+		backgroundColor: 'black',
+		shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+		borderWidth: 2,
+		borderColor: '#FFFFFF',
+        marginRight: 50,
+        marginLeft: 50
     },
-    settingsTitle: {
-        flex: 2,
-        backgroundColor: 'white',
-        justifyContent: 'space-around',
+    optionButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+		color: '#FFFFFF',
+		backgroundColor: '#000000',
+    },
+    optionButtonImage: {
+        tintColor: '#FFFFFF',
+        height: 40,
+        width: 40,
+    },
+    optionButtonView: {
         alignItems: 'center',
-        flexDirection: 'column'
+        justifyContent: 'center'
+    },
+    logoutButton: {
+        marginTop: 30,
+        width: 100,
+        height: 40,
+        justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'black',
+		shadowOffset:{
+            width: 2,
+            height: 2,
+        },
+        shadowColor: 'black',
+        shadowOpacity: 0.5,
+		borderWidth: 2,
+		borderColor: '#FFFFFF',
+        marginRight: 50,
+        marginLeft: 50
     },
     buttonContainer: {
-        flex: 13,
-        backgroundColor: 'white',
+        flex: 2,
         justifyContent: 'space-around',
         alignItems: 'center',
         flexDirection: 'row'
     },
     backButtonContainer: {
-        flex: 13,
-        backgroundColor: 'white',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        flexDirection: 'column'
-    },
-    buttonWrapper: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center'
+        flex: 2,
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        flexDirection: 'row'
     },
     title: {
-    paddingTop: 20,
-    paddingBottom: 20,
-    flexDirection: 'row',
+        flex: 1,
+        paddingTop: 20,
+        paddingBottom: 20,
+        flexDirection: 'row',
 	},
 	titleText: {
 		flex: 1,
