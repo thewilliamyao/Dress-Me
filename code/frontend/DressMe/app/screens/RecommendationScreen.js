@@ -34,6 +34,11 @@ class RecommendationScreen extends Component {
     this.setState({recOpacity: 1})
   }
 
+  fadeOutRecommendation() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+    this.setState({recOpacity: 0})
+  }
+
   componentDidMount() {
     this.requestClothing(0);
   }
@@ -117,11 +122,11 @@ class RecommendationScreen extends Component {
     } else {
       return (
         <View style={[styles.contentText, , {opacity: this.state.recOpacity}]}>
-          <Text style={styles.prettyRecText}>{this.state.Rec.top}</Text>
-          <Text style={styles.prettyRecText}>{this.state.Rec.pants}</Text>
-          <Text style={styles.prettyRecText}>{this.state.Rec.footwear}</Text>
-          <Text style={styles.prettyRecText}>{this.state.Rec.accessory}</Text>
-          <Text style={styles.prettyRecText}>{this.state.Rec.outerwear}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.top}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.pants}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.footwear}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.accessory}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.outerwear}</Text>
           {/*<View>
             <Text style={styles.contentTextLeft}>Top</Text>
             <Text style={styles.contentTextLeft}>Pants</Text>
@@ -153,10 +158,6 @@ class RecommendationScreen extends Component {
     </TouchableHighlight>
   }
 
-  handleArrowLeft(){
-    console.log('Left Arrow was pressed');
-  }
-
   arrowRightButton(){
     return <TouchableHighlight
       underlayColor="gray"
@@ -167,11 +168,6 @@ class RecommendationScreen extends Component {
           Forward
         </Text>
     </TouchableHighlight>
-  }
-
-  handleArrowRight(){
-    console.log('Right Arrow was pressed');
-    this.requestClothing(-1);
   }
 
   dressMeButton() {
@@ -283,11 +279,50 @@ class RecommendationScreen extends Component {
       if ((this.choiceInt != 1 && option < 0) || (this.choiceInt != 3 && option > 0)) {
         this.choiceInt = this.choiceInt + option;
         if (this.choiceInt == 1) {
-          this.setState({Rec: this.recommendationJson.FirstRecommendation});
+          if (this.recommendationJson.FirstRecommendation != null){
+            this.setState({Rec: this.recommendationJson.FirstRecommendation});
+            this.setState({top: this.recommendationJson.FirstRecommendation.top.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({pants: this.recommendationJson.FirstRecommendation.pants.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({footwear: this.recommendationJson.FirstRecommendation.footwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({accessory: this.recommendationJson.FirstRecommendation.accessory.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({outerwear: this.recommendationJson.FirstRecommendation.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.fadeInRecommendation();
+          }
         } else if (this.choiceInt == 2) {
-          this.setState({Rec: this.recommendationJson.SecondRecommendation});
+          if (this.recommendationJson.SecondRecommendation != null){
+            this.setState({Rec: this.recommendationJson.SecondRecommendation});
+            this.setState({top: this.recommendationJson.SecondRecommendation.top.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({pants: this.recommendationJson.SecondRecommendation.pants.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({footwear: this.recommendationJson.SecondRecommendation.footwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({accessory: this.recommendationJson.SecondRecommendation.accessory.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({outerwear: this.recommendationJson.SecondRecommendation.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.fadeInRecommendation();
+          }
         } else {
-          this.setState({Rec: this.recommendationJson.ThirdRecommendation});
+          if (this.recommendationJson.ThirdRecommendation != null){
+            this.setState({Rec: this.recommendationJson.ThirdRecommendation});
+            this.setState({top: this.recommendationJson.ThirdRecommendation.top.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({pants: this.recommendationJson.ThirdRecommendation.pants.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({footwear: this.recommendationJson.ThirdRecommendation.footwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({accessory: this.recommendationJson.ThirdRecommendation.accessory.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({outerwear: this.recommendationJson.ThirdRecommendation.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.fadeInRecommendation();
+          }
         }
       }
     }
@@ -354,11 +389,6 @@ class RecommendationScreen extends Component {
       return letter.toUpperCase();})});
     this.setState({outerwear: this.state.Rec.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
       return letter.toUpperCase();})});
-    console.log(this.state.top);
-    console.log(this.state.pants);
-    console.log(this.state.footwear);
-    console.log(this.state.accessory);
-    console.log(this.state.outerwear);
   }
 
   border(color){
@@ -562,13 +592,13 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
-    color: '#FFFFFF',
     shadowOffset:{
       width: 2,
       height: 2,
     },
-    shadowColor: '#DDDDDD',
-    shadowOpacity: 0.3,
+    shadowColor: '#111111',
+    shadowOpacity: 0.5,
+    //backgroundColor: '#111111',
   }
 });
 
