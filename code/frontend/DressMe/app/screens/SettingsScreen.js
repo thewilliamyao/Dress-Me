@@ -209,7 +209,7 @@ var styles = StyleSheet.create({
 		height: 30,
 		width: 30,
 		opacity: 0.7,
-		tintColor: '#FFFFFF'
+		tintColor: '#FFFFFF',
     },
 	backButton: {
 		width: 70,
