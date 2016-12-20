@@ -141,18 +141,18 @@ class RegisterScreen extends Component{
           this.choiceInt = 1;
           this.setState({id: responseJson.id});
           this.setState({token: responseJson.token});
-        })
-
-        if(this.state.id != -1) {
+        }).then(() => {
+            if(this.state.id != -1) {
             this.props.navigator.push({
                 ident: "Setup",
                 id: this.state.id,
                 token: this.state.token
-            })
-        }
-        else {
-            console.log("Failed Registration")
-        }
+                })
+            }
+            else {
+                console.log("Failed Registration")
+            }
+        })
     }
 
     handleBackPress() {

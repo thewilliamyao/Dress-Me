@@ -163,19 +163,20 @@ export default class LoginScreen extends Component{
           this.choiceInt = 1;
           this.setState({id: responseJson.id});
           this.setState({token: responseJson.token});
+        }).then(() => {
+            console.log(this.state.id);
+            if(this.state.id != -1) {
+                this.props.navigator.push({
+                    ident: "Recommendation",
+                    id: this.state.id,
+                    token: this.state.token
+                })
+                this.forceUpdate();
+            }
+            else {
+                console.log("Failed Login")
+            }
         })
-        console.log(this.state.id);
-        if(this.state.id != -1) {
-            this.props.navigator.push({
-                ident: "Recommendation",
-                id: this.state.id,
-                token: this.state.token
-            })
-            this.forceUpdate();
-        }
-        else {
-            console.log("Failed Login")
-        }
     
     }
 

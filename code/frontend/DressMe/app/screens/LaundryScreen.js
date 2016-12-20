@@ -44,7 +44,7 @@ class LaundryScreen extends Component{
         <View style={styles.container}>
           <ScrollView>
             <View style={styles.closetItems}>
-              {this.closet()}
+              {this.laundry()}
             </View>
           </ScrollView>
         </View>
@@ -55,8 +55,8 @@ class LaundryScreen extends Component{
     )
   }
 
-  closet() {
-    this.getCloset();
+  laundry() {
+    this.getlaundry();
     var closetItems = [];
 
     for (var i = 0; i < 15; i++){
@@ -72,7 +72,7 @@ class LaundryScreen extends Component{
   }
 
 
-  getCloset() {
+  getlaundry() {
     if (this.state.LaundryList == null) {
         fetch('https://dry-beyond-51182.herokuapp.com/api/v1/laundry/' + this.props.id, {
             method: 'GET',
@@ -98,7 +98,6 @@ class LaundryScreen extends Component{
   }
   
   handleResetLaundryPress() {
-    {this.componentWillMount()}
     fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/' + this.state.id, {
       method: 'PUT',
       headers: {
