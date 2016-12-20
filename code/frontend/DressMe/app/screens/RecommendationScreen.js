@@ -10,7 +10,8 @@ import {
   TextInput,
   Navigator,
   Image,
-  AlertIOS
+  AlertIOS,
+  LayoutAnimation
 } from 'react-native';
 // var Rec = null
 class RecommendationScreen extends Component {
@@ -21,9 +22,18 @@ class RecommendationScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false};
+    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false, recOpacity: 0};
+  }
+
+  componentWillUpdate() {
+    LayoutAnimation.easeInEaseOut();
   }
   
+  fadeInRecommendation() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+    this.setState({recOpacity: 1})
+  }
+
   componentDidMount() {
     this.requestClothing(0);
   }
@@ -96,14 +106,19 @@ class RecommendationScreen extends Component {
   middleContent() {
     if (!this.state.Rec) {
       return (
-        <View>
-          <Text>Loading...</Text>
+        <View style={[styles.contentText, , {opacity: this.state.recOpacity}]}>
+          <Text style={styles.prettyRecText}>Loading...</Text>
         </View>
       )
     } else {
       return (
-        <View style={styles.contentText}>
-          <View>
+        <View style={[styles.contentText, , {opacity: this.state.recOpacity}]}>
+          <Text style={styles.prettyRecText}>{this.state.Rec.top}</Text>
+          <Text style={styles.prettyRecText}>{this.state.Rec.pants}</Text>
+          <Text style={styles.prettyRecText}>{this.state.Rec.footwear}</Text>
+          <Text style={styles.prettyRecText}>{this.state.Rec.accessory}</Text>
+          <Text style={styles.prettyRecText}>{this.state.Rec.outerwear}</Text>
+          {/*<View>
             <Text style={styles.contentTextLeft}>Top</Text>
             <Text style={styles.contentTextLeft}>Pants</Text>
             <Text style={styles.contentTextLeft}>Footwear</Text>
@@ -116,7 +131,7 @@ class RecommendationScreen extends Component {
             <Text>: {this.state.Rec.footwear}</Text>
             <Text>: {this.state.Rec.accessory}</Text>
             <Text>: {this.state.Rec.outerwear}</Text>
-          </View>
+          </View>*/}
         </View>
       )
     }
@@ -255,6 +270,7 @@ class RecommendationScreen extends Component {
           this.recommendationJson = responseJson;
           this.choiceInt = 1;
           this.setState({Rec: responseJson.FirstRecommendation});
+          this.fadeInRecommendation();
         })
     } else {
       if ((this.choiceInt != 1 && option < 0) || (this.choiceInt != 3 && option > 0)) {
@@ -440,7 +456,8 @@ var styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   contentText: {
-    flexDirection: 'row',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   contentTextLeft: {
      textAlign: 'right',
@@ -518,6 +535,22 @@ var styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
     marginTop: 25
+  },
+  prettyRecText: {
+    flex: 1,
+    fontSize: 30,
+    fontWeight: '500',
+    fontFamily: 'Helvetica',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    color: '#FFFFFF',
+    shadowOffset:{
+      width: 2,
+      height: 2,
+    },
+    shadowColor: '#DDDDDD',
+    shadowOpacity: 0.3,
   }
 });
 
