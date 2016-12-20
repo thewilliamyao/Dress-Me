@@ -317,8 +317,10 @@ public class UserService {
         for (DaySummary d : pastDays) {
             // Compare to current weather
             Integer similarity = Integer.valueOf(currWeather.compareTo(d));
-            similarityQueue.add(similarity);
-            similarList.put(similarity, d);
+	    if (similarity < 10) {
+		similarityQueue.add(similarity);
+		similarList.put(similarity, d);
+	    }
         }
 
         Integer head = similarityQueue.poll();
@@ -328,7 +330,7 @@ public class UserService {
         while (head != null && toReturn.size() < MAX_RECS) {
             if (toReturn.size() == 1) {
                 recNumber = "SecondRecommendation";
-            } else if (toReturn.size() != 0) {
+            } else if (!toReturn.isEmpty()) {
                 recNumber = "ThirdRecommendation";
             }
             
@@ -359,7 +361,7 @@ public class UserService {
             }
             if (toReturn.size() == 1) {
                 recNumber = "SecondRecommendation";
-            } else if (toReturn.size() != 0) {
+            } else if (!toReturn.isEmpty()) {
                 recNumber = "ThirdRecommendation";
             }
             // Make default recommendation if we weren't able to recommend from smart algorithm
