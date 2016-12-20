@@ -43,7 +43,7 @@ class RecommendationScreen extends Component {
   }
 
   render() {
-    return <Image source={require('../../img/background/bg-morning.jpg')} style = {styles.backgroundImage}>
+    return <Image source={require('../../img/background/bg-morning-tint.png')} style = {styles.backgroundImage}>
     {/*View Below is Settings Bar*/}  
       <View style= {styles.settingsContainer}>
         {this.settingsButton()}
@@ -66,7 +66,7 @@ class RecommendationScreen extends Component {
       <View style={styles.topWrapper}>
         <Text style={styles.topBarString}></Text>
           <TouchableHighlight
-          underlayColor="gray"
+          underlayColor='transparent'
           onPress={() => this.handleSettingsPress()}
           style={styles.topBarButton}>
             <View style={styles.topBarButtonView}>
@@ -117,25 +117,11 @@ class RecommendationScreen extends Component {
     } else {
       return (
         <View style={[styles.contentText, , {opacity: this.state.recOpacity}]}>
-          <Text style={styles.prettyRecText}>{this.state.Rec.top}</Text>
-          <Text style={styles.prettyRecText}>{this.state.Rec.pants}</Text>
-          <Text style={styles.prettyRecText}>{this.state.Rec.footwear}</Text>
-          <Text style={styles.prettyRecText}>{this.state.Rec.accessory}</Text>
-          <Text style={styles.prettyRecText}>{this.state.Rec.outerwear}</Text>
-          {/*<View>
-            <Text style={styles.contentTextLeft}>Top</Text>
-            <Text style={styles.contentTextLeft}>Pants</Text>
-            <Text style={styles.contentTextLeft}>Footwear</Text>
-            <Text style={styles.contentTextLeft}>Accessory</Text>
-            <Text style={styles.contentTextLeft}>Outerwear</Text>
-          </View>
-          <View>
-            <Text>: {this.state.Rec.top}</Text>
-            <Text>: {this.state.Rec.pants}</Text>
-            <Text>: {this.state.Rec.footwear}</Text>
-            <Text>: {this.state.Rec.accessory}</Text>
-            <Text>: {this.state.Rec.outerwear}</Text>
-          </View>*/}
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.top}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.pants}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.footwear}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.accessory}</Text>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.outerwear}</Text>
         </View>
       )
     }
@@ -143,29 +129,20 @@ class RecommendationScreen extends Component {
 
   arrowLeftButton(){
     return <TouchableHighlight
-      underlayColor="gray"
+      underlayColor='transparent'
       onPress = {() => this.requestClothing(-1)}
-      style={styles.backButton}>
-      <Image source={require('../../img/icon/left-arrow.png')} style = {styles.backImage} />
+      style={styles.navButton}>
+      <Image source={require('../../img/icon/left-arrow.png')} style = {styles.navImage} />
     </TouchableHighlight>
-  }
-
-  handleArrowLeft(){
-    console.log('Left Arrow was pressed');
   }
 
   arrowRightButton(){
     return <TouchableHighlight
-      underlayColor="gray"
+      underlayColor='transparent'
       onPress = {() => this.requestClothing(1)}
-      style={styles.backButton}>
-      <Image source={require('../../img/icon/left-arrow.png')} style = {[styles.backImage, styles.forwardButton]} />
+      style={styles.navButton}>
+      <Image source={require('../../img/icon/left-arrow.png')} style = {[styles.navImage, styles.forwardButton]} />
     </TouchableHighlight>
-  }
-
-  handleArrowRight(){
-    console.log('Right Arrow was pressed');
-    this.requestClothing(-1);
   }
 
   dressMeButton() {
@@ -189,7 +166,7 @@ class RecommendationScreen extends Component {
         </Text>
         <View style={styles.buttonWrapper}>
           <TouchableHighlight
-            underlayColor="gray"
+            underlayColor='transparent'
             onPress={() => this.handleRatings(-10)}
             style={styles.ratingButton}>
               <View style={styles.ratingButtonView}>
@@ -200,7 +177,7 @@ class RecommendationScreen extends Component {
               </View>
           </TouchableHighlight>
           <TouchableHighlight
-            underlayColor="gray"
+            underlayColor='transparent'
             onPress={() => this.handleRatings(0)}
             style={styles.ratingButton}>
               <View style={styles.ratingButtonView}>
@@ -211,7 +188,7 @@ class RecommendationScreen extends Component {
               </View>
           </TouchableHighlight>
           <TouchableHighlight
-            underlayColor="gray"
+            underlayColor='transparent'
             onPress={() => this.handleRatings(10)}
             style={styles.ratingButton}>
               <View style={styles.ratingButtonView}>
@@ -277,11 +254,50 @@ class RecommendationScreen extends Component {
       if ((this.choiceInt != 1 && option < 0) || (this.choiceInt != 3 && option > 0)) {
         this.choiceInt = this.choiceInt + option;
         if (this.choiceInt == 1) {
-          this.setState({Rec: this.recommendationJson.FirstRecommendation});
+          if (this.recommendationJson.FirstRecommendation != null){
+            this.setState({Rec: this.recommendationJson.FirstRecommendation});
+            this.setState({top: this.recommendationJson.FirstRecommendation.top.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({pants: this.recommendationJson.FirstRecommendation.pants.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({footwear: this.recommendationJson.FirstRecommendation.footwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({accessory: this.recommendationJson.FirstRecommendation.accessory.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({outerwear: this.recommendationJson.FirstRecommendation.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.fadeInRecommendation();
+          }
         } else if (this.choiceInt == 2) {
-          this.setState({Rec: this.recommendationJson.SecondRecommendation});
+          if (this.recommendationJson.SecondRecommendation != null){
+            this.setState({Rec: this.recommendationJson.SecondRecommendation});
+            this.setState({top: this.recommendationJson.SecondRecommendation.top.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({pants: this.recommendationJson.SecondRecommendation.pants.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({footwear: this.recommendationJson.SecondRecommendation.footwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({accessory: this.recommendationJson.SecondRecommendation.accessory.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({outerwear: this.recommendationJson.SecondRecommendation.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.fadeInRecommendation();
+          }
         } else {
-          this.setState({Rec: this.recommendationJson.ThirdRecommendation});
+          if (this.recommendationJson.ThirdRecommendation != null){
+            this.setState({Rec: this.recommendationJson.ThirdRecommendation});
+            this.setState({top: this.recommendationJson.ThirdRecommendation.top.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({pants: this.recommendationJson.ThirdRecommendation.pants.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({footwear: this.recommendationJson.ThirdRecommendation.footwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({accessory: this.recommendationJson.ThirdRecommendation.accessory.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.setState({outerwear: this.recommendationJson.ThirdRecommendation.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+              return letter.toUpperCase();})});
+            this.fadeInRecommendation();
+          }
         }
       }
     }
@@ -348,11 +364,6 @@ class RecommendationScreen extends Component {
       return letter.toUpperCase();})});
     this.setState({outerwear: this.state.Rec.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
       return letter.toUpperCase();})});
-    console.log(this.state.top);
-    console.log(this.state.pants);
-    console.log(this.state.footwear);
-    console.log(this.state.accessory);
-    console.log(this.state.outerwear);
   }
 
   border(color){
@@ -374,7 +385,6 @@ var styles = StyleSheet.create({
   },
   timeContainer: {
     flex: 2,
-    //backgroundColor: 'white'
   },
   topWrapper: {
     flexDirection: 'row',
@@ -440,7 +450,6 @@ var styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     borderRadius: 5,
-    //backgroundColor: 'cyan'
   },
   buttonText: {
     fontSize: 18,
@@ -470,13 +479,19 @@ var styles = StyleSheet.create({
   ratingButtonImage: {
 		height: 30,
 		width: 30,
-    tintColor: 'white'
+    tintColor: 'white',
   },
   ratingButtonText: {
     fontSize: 12,
     fontWeight: '600',
     textAlign: 'center',
-    color: 'white'
+    color: 'white',
+    shadowOffset:{
+      width: 1,
+      height: 1,
+    },
+    shadowColor: 'black',
+    shadowOpacity: 0.3,
   },
   optionButton: {
     width: 150,
@@ -544,24 +559,24 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
-    color: '#FFFFFF',
     shadowOffset:{
       width: 2,
       height: 2,
     },
-    shadowColor: '#DDDDDD',
-    shadowOpacity: 0.3,
+    shadowColor: '#111111',
+    shadowOpacity: 0.5,
   },
-  backImage: {
+  navImage: {
     height: 60,
     width: 60,
-    tintColor: '#FFFFFF'
+    tintColor: '#FFFFFF',
     },
-  backButton: {
+  navButton: {
     width: 70,
     height: 70,
     justifyContent: 'center',
     alignItems: 'center',
+    opacity: 0.8,
   }
 });
 

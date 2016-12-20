@@ -206,10 +206,10 @@ var styles = StyleSheet.create({
 		textAlign:'center',
 	},
     backImage: {
-		height: 50,
-		width: 50,
+		height: 30,
+		width: 30,
 		opacity: 0.7,
-		tintColor: '#FFFFFF'
+		tintColor: '#FFFFFF',
     },
 	backButton: {
 		width: 70,
