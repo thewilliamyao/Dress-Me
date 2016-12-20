@@ -74,7 +74,7 @@ export default class DressMe extends Component {
       case "Laundry" :
         return(
           <LaundryScreen
-            id = {route.id} token = {route.token} {...globalProps}/>
+            id = {route.id} token = {route.token} loc = {route.loc} {...globalProps}/>
         )
     }
   }
@@ -84,7 +84,7 @@ export default class DressMe extends Component {
       <Navigator
         initialRoute={{ident: "Login", statusBarHidden: true}}
         renderScene={this._renderScene}
-        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}/>
+        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromLeft}/>
     )
   } 
 }

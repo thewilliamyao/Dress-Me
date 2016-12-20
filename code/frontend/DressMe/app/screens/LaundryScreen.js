@@ -27,6 +27,10 @@ class LaundryScreen extends Component{
       };
     }
 
+  componentWillMount() {
+    this.setState();
+  }
+
   render(){
     return (
       <Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
@@ -94,7 +98,7 @@ class LaundryScreen extends Component{
   }
   
   handleResetLaundryPress() {
-
+    {this.componentWillMount()}
     fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/' + this.state.id, {
       method: 'PUT',
       headers: {
@@ -158,7 +162,15 @@ class LaundryScreen extends Component{
 	}
 
   handleBackPress() {
-    this.props.navigator.pop()
+    if(this.props.loc == 1){
+      this.props.navigator.pop()
+    } else {
+      this.props.navigator.push({
+        ident: "Recommendation",
+        id: this.state.id,
+        token: this.state.token
+      })
+    }
   }
 };
 

@@ -22,7 +22,7 @@ class RecommendationScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false, recOpacity: 0};
+    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false, recOpacity: 0, top: null, pants: null, footwear: null, accessory: null, outerwear: null};
   }
 
   componentWillUpdate() {
@@ -36,6 +36,10 @@ class RecommendationScreen extends Component {
 
   componentDidMount() {
     this.requestClothing(0);
+  }
+
+  componentWillMount() {
+    this.setState();
   }
 
   render() {
@@ -256,6 +260,7 @@ class RecommendationScreen extends Component {
   }
   
   requestClothing(option) {
+    {this.componentWillMount()}
     console.log(this.state.id);
     if (this.recommendationJson == null) {
       fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/' + this.state.id, {
@@ -269,7 +274,9 @@ class RecommendationScreen extends Component {
         .then((responseJson) => {
           this.recommendationJson = responseJson;
           this.choiceInt = 1;
+          console.log(responseJson.FirstRecommendation);
           this.setState({Rec: responseJson.FirstRecommendation});
+          this.setStrings();
           this.fadeInRecommendation();
         })
     } else {
@@ -287,6 +294,7 @@ class RecommendationScreen extends Component {
   }
 
   handleDressMePress() {
+    {this.componentWillMount()}
     console.log('Dress Me was pressed');
       fetch('https://dry-beyond-51182.herokuapp.com/api/v1/dirty/' + this.state.id, {
         method: 'PUT',
@@ -330,17 +338,27 @@ class RecommendationScreen extends Component {
     this.props.navigator.push({
      ident: "Laundry",
      id: this.state.id,
-     token: this.state.token
+     token: this.state.token,
+     loc: -1
     })    
   }
 
-  tempRender(){
-    <View>
-            <Text>
-              TRYING TO RERENDER
-            </Text>
-    </View>
-
+  setStrings() {
+    this.setState({top: this.state.Rec.top.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    this.setState({pants: this.state.Rec.pants.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    this.setState({footwear: this.state.Rec.footwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    this.setState({accessory: this.state.Rec.accessory.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    this.setState({outerwear: this.state.Rec.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    console.log(this.state.top);
+    console.log(this.state.pants);
+    console.log(this.state.footwear);
+    console.log(this.state.accessory);
+    console.log(this.state.outerwear);
   }
 
   border(color){
@@ -519,7 +537,7 @@ var styles = StyleSheet.create({
   topBarButtonView: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: 10,
     marginRight: 10
   },
   feedback: {
