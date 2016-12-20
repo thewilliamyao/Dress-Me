@@ -74,7 +74,7 @@ export default class DressMe extends Component {
       case "Laundry" :
         return(
           <LaundryScreen
-            id = {route.id} token = {route.token} {...globalProps}/>
+            id = {route.id} token = {route.token} loc = {route.loc} {...globalProps}/>
         )
     }
   }
