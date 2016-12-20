@@ -642,8 +642,8 @@ public class ClothesService {
 
     public static void updateTemp(int currId, String specificType, HashMap<String, Clothes> clothesMap, double adjustment) throws ClothesServiceException{
         try (Connection conn = db.open()) {
-            System.out.printf("UPDATING %s\n", specificType);
             if (specificType.equals("NONE")) return;
+            System.out.printf("item: %s, low: %f, high %f\n", specificType, clothesMap.get(specificType).getTempLow(), clothesMap.get(specificType).getTempHigh());
             String updateValue = "UPDATE clothes SET temp_high = :tempHigh, temp_low = :tempLow WHERE (user_id = :userId AND specific_type = :specificType)";
             conn.createQuery(updateValue)
                     .addColumnMapping("user_id", "userId")

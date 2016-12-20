@@ -46,7 +46,9 @@ public class Weather implements Comparable<DaySummary> {
     */
     // for now, return a weather object with the hardcoded location of baltimore.
     public Weather(double latitude, double longitude) {
-        ForecastIO fio = new ForecastIO("90d56a872c963f85162f81873b40fbba"); //instantiate the class with the API key.
+        // matt's api key: 90d56a872c963f85162f81873b40fbba
+        // eric's api key: 954bf995551fd3a5a10b410c7083738a
+        ForecastIO fio = new ForecastIO("954bf995551fd3a5a10b410c7083738a"); //instantiate the class with the API key.
         fio.setUnits(ForecastIO.UNITS_US);             //sets the units as SI - optional
         fio.getForecast(String.valueOf(latitude), String.valueOf(longitude)); // location of baltimore
 

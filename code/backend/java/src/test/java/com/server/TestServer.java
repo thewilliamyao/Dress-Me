@@ -605,24 +605,20 @@ public class TestServer {
         setupRecommendation();
         Response radd = request("GET", API_PREFIX + "recommendation/0", null);
         assertEquals(200, radd.httpStatus);
-        
-        
+        System.out.printf("first rec: %s\n", radd.content);
+
         // give some feedback?
-        RecommendationFeedback feedback = new RecommendationFeedback("t_shirt", "long_pants", "shoes", "NONE", "winter_coat", 0);
-        radd = request("POST", API_PREFIX + "feedback/0", feedback);
-        assertEquals(200, radd.httpStatus);
-        radd = request("POST", API_PREFIX + "feedback/0", feedback);
-        assertEquals(200, radd.httpStatus);
-        radd = request("POST", API_PREFIX + "feedback/0", feedback);
-        assertEquals(200, radd.httpStatus);
-        radd = request("POST", API_PREFIX + "feedback/0", feedback);
-        assertEquals(200, radd.httpStatus);
-        radd = request("POST", API_PREFIX + "feedback/0", feedback);
-        assertEquals(200, radd.httpStatus);
-        radd = request("POST", API_PREFIX + "feedback/0", feedback);
-        assertEquals(200, radd.httpStatus);
+        RecommendationFeedback feedback = new RecommendationFeedback("long_sleeve", "long_pants", "shoes", "scarf", "winter_coat", 10);
+        for (int i = 0; i < 1; i++) {
+            radd = request("POST", API_PREFIX + "feedback/0", feedback);
+            assertEquals(200, radd.httpStatus);
+        }
+        
+
         radd = request("GET", API_PREFIX + "recommendation/0", null);
         assertEquals(200, radd.httpStatus);
+        System.out.printf("new rec: %s\n", radd.content);
+        
     }
 
     //------------------------------------------------------------------------//

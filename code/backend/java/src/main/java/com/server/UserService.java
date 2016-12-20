@@ -268,6 +268,7 @@ public class UserService {
     */
     public HashMap<String, Recommendation> getRecommendation(int currId) throws UserServiceException, LocationService.LocationServiceException,
             ClothesService.ClothesServiceException {
+        System.out.printf("recommending for id: %d\n", currId);
         // get the location lat and long
         Location currLocation = LocationService.getLocation(currId);
 
@@ -317,10 +318,10 @@ public class UserService {
         for (DaySummary d : pastDays) {
             // Compare to current weather
             Integer similarity = Integer.valueOf(currWeather.compareTo(d));
-	    if (similarity < 10) {
-		similarityQueue.add(similarity);
-		similarList.put(similarity, d);
-	    }
+            if (similarity < 10) {
+                similarityQueue.add(similarity);
+                similarList.put(similarity, d);
+            }
         }
 
         Integer head = similarityQueue.poll();
@@ -450,7 +451,7 @@ public class UserService {
                         }
                     }               
                 } else { // No possible replacements left. Recommend original.
-                    selection = new Clothes("NONE", "NONE");
+                    selection = new Clothes("NONE", item.getType());
                 }
                 outfit.setItem(selection);
             }
@@ -462,6 +463,7 @@ public class UserService {
               HashMap<Clothes, Integer> ownedMap, HashMap<Clothes, Integer> dirtyMap,
                         Weather weather) {
     
+        System.out.printf("USING DEFAULT\n");
         String pantsRecommendation = "NONE";
         String shirtRecommendation = "NONE";
         String outwearRecommendation = "NONE";
@@ -641,6 +643,7 @@ public class UserService {
         String outerwear = obj.get("outerwear").getAsString();
         // get adjustment value
         double adjustment = obj.get("adjustment").getAsDouble();
+        System.out.printf("FEEDBACK ID: %d, %s, %s, %s, %s, %s, %f\n", currId, top, pants, footwear, accessory, outerwear, adjustment);
         // now fetch the weather for the day
         Location currLocation = LocationService.getLocation(currId);
         Weather currWeather = new Weather(currLocation.getLatitude(), currLocation.getLongitude());
