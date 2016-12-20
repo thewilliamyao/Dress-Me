@@ -84,7 +84,7 @@ public class TestServer {
         assertNotEquals(token.getToken(), "");
         currToken = token.getToken();
     }
-
+/*
     @Test
     public void testInvalidToken() throws Exception {
         testLogin();
@@ -563,7 +563,7 @@ public class TestServer {
     //------------------------------------------------------------------------//
     // Tests for Recommendation
     //------------------------------------------------------------------------//
-
+*/
     public void setupRecommendation() throws Exception {
         // test login
         testLogin();
@@ -598,7 +598,6 @@ public class TestServer {
         radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
         closetUpdate.type = "sandals";
         radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
-        System.out.printf("Closet: %s\n", radd.content);
     }
 
     @Test

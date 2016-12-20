@@ -1,7 +1,7 @@
 package com.server;
 
 /**
-* The Clothes class
+* Class to hold fields relevant to an article of clothing. 
 */
 public class Clothes{
     /**The id of the user that this clothes item belongs to*/

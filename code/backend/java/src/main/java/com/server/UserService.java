@@ -628,7 +628,7 @@ public class UserService {
                       accessoryRecommendation, outwearRecommendation);  
     }
 
-    public void giveFeedback(int currId, String body) throws LocationService.LocationServiceException, UserServiceException {
+    public void giveFeedback(int currId, String body) throws LocationService.LocationServiceException, UserServiceException, ClothesService.ClothesServiceException {
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
         // grab recommendation
@@ -642,6 +642,7 @@ public class UserService {
         // now fetch the weather for the day
         Location currLocation = LocationService.getLocation(currId);
         Weather currWeather = new Weather(currLocation.getLatitude(), currLocation.getLongitude());
+        HashMap<String, Clothes> clothesMap = ClothesService.getSpecificTypeMap(currId);
         // now store the daySummary
         try (Connection conn = db.open()) {
             String summaryUpdate = "INSERT INTO day_summaries (day_summary_id, user_id, max_temp, max_apparent_temp, top, pants, footwear, accessory, outerwear)" + "VALUES (:daySummaryId, :userId, :maxTemp, :maxApparentTemp, :top, :pants, :footwear, :accessory, :outerwear)";
@@ -657,14 +658,20 @@ public class UserService {
                     .addColumnMapping("outerwear", "outerwear")
                     .addParameter("daySummaryId", dayCounter++)
                     .addParameter("userId", currId)
-                    .addParameter("maxTemp", currWeather.getMaxTemp() + adjustment)
-                    .addParameter("maxApparentTemp", currWeather.getMaxApparentTemp() + adjustment)
+                    .addParameter("maxTemp", currWeather.getMaxTemp() - adjustment)
+                    .addParameter("maxApparentTemp", currWeather.getMaxApparentTemp() - adjustment)
                     .addParameter("top", top)
                     .addParameter("pants", pants)
                     .addParameter("footwear", footwear)
                     .addParameter("accessory", accessory)
                     .addParameter("outerwear", outerwear)
                     .executeUpdate();
+                // update all max and min based on temp
+                ClothesService.updateTemp(currId, top, clothesMap, adjustment);
+                ClothesService.updateTemp(currId, pants, clothesMap, adjustment);
+                ClothesService.updateTemp(currId, footwear, clothesMap,adjustment);
+                ClothesService.updateTemp(currId, accessory, clothesMap, adjustment);
+                ClothesService.updateTemp(currId, outerwear, clothesMap, adjustment);
         } catch (Sql2oException ex) {
             logger.error("UserService.giveFeedback: Failed to add day_summmary");
             throw new UserServiceException("UserService.giveFeedback: Failed to add day_summary", ex);

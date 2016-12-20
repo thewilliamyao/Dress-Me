@@ -202,6 +202,35 @@ public class ClothesService {
         }
     }
 
+    public static HashMap<String, Clothes> getSpecificTypeMap(int id) throws ClothesServiceException {
+        String sqlClothes = "SELECT * FROM clothes WHERE user_id = :userId";
+        HashMap<String, Clothes> map = new HashMap<String, Clothes>();
+        try (Connection conn = db.open()) {
+            List<Clothes> allClothes = 
+                conn.createQuery(sqlClothes)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("clothes_id", "clothesId")
+                    .addColumnMapping("type", "type")
+                    .addColumnMapping("specific_type", "specificType")
+                    .addColumnMapping("number_owned", "numberOwned")
+                    .addColumnMapping("number_dirty", "numberDirty")
+                    .addColumnMapping("temp_high", "tempHigh")
+                    .addColumnMapping("temp_low", "tempLow")
+                    .addColumnMapping("times_worn", "timesWorn")
+                    .addColumnMapping("max_times_worn", "maxTimesWorn")
+                    .addParameter("userId", id)
+                    .executeAndFetch(Clothes.class);
+            for (Clothes c : allClothes) {
+                map.put(c.getSpecificType(), c);
+            }
+
+        } catch (Sql2oException ex) {
+            logger.error("ClothesService.getClothesMap: Failed to get clothes map", ex);
+            throw new ClothesServiceException("ClothesService.getClothesMap: Failed to get clothes map", ex);
+        }
+        return map;
+    }
+
     /**
     * Returns a map of clothes items to the number of each item owned.
     * @param id the id of the user.
@@ -608,6 +637,33 @@ public class ClothesService {
         } catch (Sql2oException ex) {
             logger.error("ClothesService.markClean: Failed to update clean clothes", ex);
             throw new ClothesServiceException("ClothesService.markClean: Failed to update clean clothes", ex);
+        }
+    }
+
+    public static void updateTemp(int currId, String specificType, HashMap<String, Clothes> clothesMap, double adjustment) throws ClothesServiceException{
+        try (Connection conn = db.open()) {
+            System.out.printf("UPDATING %s\n", specificType);
+            if (specificType.equals("NONE")) return;
+            String updateValue = "UPDATE clothes SET temp_high = :tempHigh, temp_low = :tempLow WHERE (user_id = :userId AND specific_type = :specificType)";
+            conn.createQuery(updateValue)
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("clothes_id", "clothesId")
+                    .addColumnMapping("type", "type")
+                    .addColumnMapping("specific_type", "specificType")
+                    .addColumnMapping("number_owned", "numberOwned")
+                    .addColumnMapping("number_dirty", "numberDirty")
+                    .addColumnMapping("temp_high", "tempHigh")
+                    .addColumnMapping("temp_low", "tempLow")
+                    .addColumnMapping("times_worn", "timesWorn")
+                    .addColumnMapping("max_times_worn", "maxTimesWorn")
+                    .addParameter("userId", currId)
+                    .addParameter("specificType", specificType)
+                    .addParameter("tempLow", clothesMap.get(specificType).getTempLow() - adjustment)
+                    .addParameter("tempHigh", clothesMap.get(specificType).getTempHigh() - adjustment)
+                    .executeUpdate();
+        } catch (Sql2oException ex) {
+            logger.error("ClothesService.updateTemp: Failed to update temp");
+            throw new ClothesServiceException("ClothesService.updateTemp: Failed to update temp", ex);
         }
     }
 
