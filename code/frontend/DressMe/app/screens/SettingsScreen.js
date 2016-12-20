@@ -86,13 +86,13 @@ class SettingsScreen extends Component{
     }
 
     handleBackPress() {
-        this.props.navigator.pop()
-        this.forceUpdate();
-        {/*this.props.navigator.push({
+        // this.props.navigator.pop()
+        // this.forceUpdate();
+        this.props.navigator.push({
             ident: "Recommendation",
             id: this.state.id,
             token: this.state.token
-        })*/}
+        })
     }
 
     backButton() {
