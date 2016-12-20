@@ -22,7 +22,18 @@ class RecommendationScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false, recOpacity: 0, top: null, pants: null, footwear: null, accessory: null, outerwear: null};
+    this.state = {Rec: null, 
+      id: this.props.id, 
+      token: this.props.token, 
+      shouldClean: false, 
+      recOpacity: 0, 
+      top: null, 
+      pants: null, 
+      footwear: null, 
+      accessory: null, 
+      outerwear: null,
+      dressMeOpacity: 1,
+      ratingOpacity: 1};
   }
 
   componentWillUpdate() {
@@ -34,13 +45,28 @@ class RecommendationScreen extends Component {
     this.setState({recOpacity: 1})
   }
 
+  fadeOutDressMe() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    this.setState({dressMeOpacity: 0})
+  }
+
+  fadeOutRating() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    this.setState({ratingOpacity: 0})
+  }
+
   componentDidMount() {
     this.requestClothing(0);
   }
 
   componentWillMount() {
+    console.log("component will mount")
     this.forceUpdate();
   }
+
+  // shouldComponentUpdate() {
+  //   this.forceUpdate();
+  // }
 
   render() {
     return <Image source={require('../../img/background/bg-morning-tint.png')} style = {styles.backgroundImage}>
@@ -149,7 +175,7 @@ class RecommendationScreen extends Component {
     return <TouchableHighlight
       underlayColor="gray"
       onPress={() => this.handleDressMePress()}
-      style={styles.optionButton}>
+      style={[styles.optionButton, {opacity: this.state.dressMeOpacity}]}>
         <View style={styles.optionButtonView}>
           <Text style={styles.optionButtonText}>
             Dress Me!
@@ -160,7 +186,7 @@ class RecommendationScreen extends Component {
 
   ratingButtons() {
     return (
-      <View style= {styles.timeContainer}>
+      <View style= {[styles.timeContainer, {opacity: this.state.ratingOpacity}]}>
         <Text style={styles.feedback}>
           -Feedback-
         </Text>
@@ -178,7 +204,7 @@ class RecommendationScreen extends Component {
           </TouchableHighlight>
           <TouchableHighlight
             underlayColor='transparent'
-            onPress={() => this.handleRatings(0)}
+            onPress={() => this.handlePerfectRating()}
             style={styles.ratingButton}>
               <View style={styles.ratingButtonView}>
                 <Image source={require('../../img/icon/perfect.png')} style = {styles.ratingButtonImage} />
@@ -203,37 +229,39 @@ class RecommendationScreen extends Component {
     )
   }
 
-  handleRatings(rate) {
-    console.log(rate)
-    fetch('https://dry-beyond-51182.herokuapp.com/api/v1/feedback' + this.state.id, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'token': this.state.token
-        },
-        body: JSON.stringify({
-            top: this.state.Rec.top,
-            pants:  this.state.Rec.pants,
-            footwear:  this.state.Rec.footwear,
-            accessory: this.state.Rec.accessory,
-            outerwear: this.state.Rec.outerwear,
-            adjustment: rate
-        })
-      })
+  handlePerfectRating() {
+    this.fadeOutRating();
+    this.handleRatings(0);
   }
 
-  handleRateMePress(){
-    console.log("Pressed Rate")
-    this.props.navigator.push({
-            ident: "Rate"
+  handleRatings(rate) {
+    if (this.state.ratingOpacity != 0) {
+      console.log(rate)
+      fetch('https://dry-beyond-51182.herokuapp.com/api/v1/feedback/' + this.state.id, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'token': this.state.token
+          },
+          body: JSON.stringify({
+              top: this.state.Rec.top,
+              pants:  this.state.Rec.pants,
+              footwear:  this.state.Rec.footwear,
+              accessory: this.state.Rec.accessory,
+              outerwear: this.state.Rec.outerwear,
+              adjustment: rate
+          })
+        }).then((response) => {
+          console.log('hey you')
+          this.requestClothing(-1);
         })
+    }
   }
   
   requestClothing(option) {
-    {this.componentWillMount()}
     console.log(this.state.id);
-    if (this.recommendationJson == null) {
+    if (this.recommendationJson == null || option == -1) {
       fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/' + this.state.id, {
         method: 'GET',
         headers: {
@@ -249,6 +277,7 @@ class RecommendationScreen extends Component {
           this.setState({Rec: responseJson.FirstRecommendation});
           this.setStrings();
           this.fadeInRecommendation();
+          {this.componentWillMount()}
         })
     } else {
       if ((this.choiceInt != 1 && option < 0) || (this.choiceInt != 3 && option > 0)) {
@@ -304,8 +333,7 @@ class RecommendationScreen extends Component {
   }
 
   handleDressMePress() {
-    {this.componentWillMount()}
-    console.log('Dress Me was pressed');
+    if (this.dressMeOpacity != 0) {
       fetch('https://dry-beyond-51182.herokuapp.com/api/v1/dirty/' + this.state.id, {
         method: 'PUT',
         headers: {
@@ -324,13 +352,13 @@ class RecommendationScreen extends Component {
         .then((responseJson) => {
           this.temp = responseJson
           this.setState({shouldClean: responseJson});
-          console.log(responseJson);
+          this.fadeOutDressMe();
         })
       if(this.state.shouldClean) {
-        console.log("We should do laundry")
         {this.sendAlert()}
         this.temp = false;
       }
+    }
   }
 
   sendAlert(){
