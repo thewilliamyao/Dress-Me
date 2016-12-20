@@ -28,7 +28,7 @@ class LaundryScreen extends Component{
     }
 
   componentWillMount() {
-    this.setState();
+    this.forceUpdate();
   }
 
   render(){
