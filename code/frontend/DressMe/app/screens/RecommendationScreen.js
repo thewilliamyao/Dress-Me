@@ -34,11 +34,6 @@ class RecommendationScreen extends Component {
     this.setState({recOpacity: 1})
   }
 
-  fadeOutRecommendation() {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-    this.setState({recOpacity: 0})
-  }
-
   componentDidMount() {
     this.requestClothing(0);
   }
@@ -48,7 +43,7 @@ class RecommendationScreen extends Component {
   }
 
   render() {
-    return <Image source={require('../../img/background/bg-morning.jpg')} style = {styles.backgroundImage}>
+    return <Image source={require('../../img/background/bg-morning-tint.png')} style = {styles.backgroundImage}>
     {/*View Below is Settings Bar*/}  
       <View style= {styles.settingsContainer}>
         {this.settingsButton()}
@@ -71,7 +66,7 @@ class RecommendationScreen extends Component {
       <View style={styles.topWrapper}>
         <Text style={styles.topBarString}></Text>
           <TouchableHighlight
-          underlayColor="gray"
+          underlayColor='transparent'
           onPress={() => this.handleSettingsPress()}
           style={styles.topBarButton}>
             <View style={styles.topBarButtonView}>
@@ -97,16 +92,16 @@ class RecommendationScreen extends Component {
   }
 
   middleDisplay() {
-    return <View style={[styles.displayContainer,this.border('lime')]}>
-      <View style={[styles.midLeft, styles.arrowWrapper, this.border('orange')]}>
+    return <View style={styles.displayContainer}>
+      <View style={[styles.midLeft, styles.arrowWrapper]}>
         {this.arrowLeftButton()}
       </View>
 
-      <View style={[styles.midMid, this.border('orange')]}>
+      <View style={styles.midMid}>
         {this.middleContent()}
       </View>
 
-      <View style={[styles.midRight, styles.arrowWrapper, this.border('orange')]}>
+      <View style={[styles.midRight, styles.arrowWrapper]}>
         {this.arrowRightButton()}
       </View>
     </View>
@@ -127,20 +122,6 @@ class RecommendationScreen extends Component {
           <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.footwear}</Text>
           <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.accessory}</Text>
           <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.outerwear}</Text>
-          {/*<View>
-            <Text style={styles.contentTextLeft}>Top</Text>
-            <Text style={styles.contentTextLeft}>Pants</Text>
-            <Text style={styles.contentTextLeft}>Footwear</Text>
-            <Text style={styles.contentTextLeft}>Accessory</Text>
-            <Text style={styles.contentTextLeft}>Outerwear</Text>
-          </View>
-          <View>
-            <Text>: {this.state.Rec.top}</Text>
-            <Text>: {this.state.Rec.pants}</Text>
-            <Text>: {this.state.Rec.footwear}</Text>
-            <Text>: {this.state.Rec.accessory}</Text>
-            <Text>: {this.state.Rec.outerwear}</Text>
-          </View>*/}
         </View>
       )
     }
@@ -148,25 +129,19 @@ class RecommendationScreen extends Component {
 
   arrowLeftButton(){
     return <TouchableHighlight
-      underlayColor="gray"
+      underlayColor='transparent'
       onPress = {() => this.requestClothing(-1)}
-      style= {[styles.triangle,styles.triangleRotLeft]}
-      > 
-        <Text>
-          Back
-        </Text>
+      style={styles.navButton}>
+      <Image source={require('../../img/icon/left-arrow.png')} style = {styles.navImage} />
     </TouchableHighlight>
   }
 
   arrowRightButton(){
     return <TouchableHighlight
-      underlayColor="gray"
+      underlayColor='transparent'
       onPress = {() => this.requestClothing(1)}
-      style= {[styles.triangleRotRight, styles.triangle]}
-      > 
-        <Text>
-          Forward
-        </Text>
+      style={styles.navButton}>
+      <Image source={require('../../img/icon/left-arrow.png')} style = {[styles.navImage, styles.forwardButton]} />
     </TouchableHighlight>
   }
 
@@ -191,7 +166,7 @@ class RecommendationScreen extends Component {
         </Text>
         <View style={styles.buttonWrapper}>
           <TouchableHighlight
-            underlayColor="gray"
+            underlayColor='transparent'
             onPress={() => this.handleRatings(-10)}
             style={styles.ratingButton}>
               <View style={styles.ratingButtonView}>
@@ -202,7 +177,7 @@ class RecommendationScreen extends Component {
               </View>
           </TouchableHighlight>
           <TouchableHighlight
-            underlayColor="gray"
+            underlayColor='transparent'
             onPress={() => this.handleRatings(0)}
             style={styles.ratingButton}>
               <View style={styles.ratingButtonView}>
@@ -213,7 +188,7 @@ class RecommendationScreen extends Component {
               </View>
           </TouchableHighlight>
           <TouchableHighlight
-            underlayColor="gray"
+            underlayColor='transparent'
             onPress={() => this.handleRatings(10)}
             style={styles.ratingButton}>
               <View style={styles.ratingButtonView}>
@@ -409,7 +384,7 @@ var styles = StyleSheet.create({
     flex: 1
   },
   timeContainer: {
-    flex: 2
+    flex: 2,
   },
   topWrapper: {
     flexDirection: 'row',
@@ -418,7 +393,8 @@ var styles = StyleSheet.create({
   },
   displayContainer: {
     flex: 9,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginTop: 10
   },
   dressMeContainer: {
     flex: 3
@@ -464,28 +440,9 @@ var styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center'
   },
-  triangle: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderLeftWidth: 25,
-    borderRightWidth: 25,
-    borderBottomWidth: 50,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  triangleRotRight: {
+  forwardButton: {
     transform: [
-      {rotate: '90deg'}
-    ]
-  },
-  triangleRotLeft: {
-    transform: [
-      {rotate: '-90deg'}
+      {rotate: '180deg'}
     ]
   },
   linearGradient: {
@@ -493,7 +450,6 @@ var styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     borderRadius: 5,
-    //backgroundColor: 'cyan'
   },
   buttonText: {
     fontSize: 18,
@@ -523,11 +479,19 @@ var styles = StyleSheet.create({
   ratingButtonImage: {
 		height: 30,
 		width: 30,
+    tintColor: 'white',
   },
   ratingButtonText: {
     fontSize: 12,
     fontWeight: '600',
-    textAlign: 'center'
+    textAlign: 'center',
+    color: 'white',
+    shadowOffset:{
+      width: 1,
+      height: 1,
+    },
+    shadowColor: 'black',
+    shadowOpacity: 0.3,
   },
   optionButton: {
     width: 150,
@@ -563,6 +527,8 @@ var styles = StyleSheet.create({
   topBarButtonImage: {
     height: 30,
     width: 30,
+    tintColor: 'white',
+    opacity: 0.8
   },
   topBarButtonView: {
     alignItems: 'center',
@@ -571,6 +537,7 @@ var styles = StyleSheet.create({
     marginRight: 10
   },
   feedback: {
+    opacity: 0,
     paddingTop: 5,
     textAlign: 'center'
   },
@@ -598,7 +565,18 @@ var styles = StyleSheet.create({
     },
     shadowColor: '#111111',
     shadowOpacity: 0.5,
-    //backgroundColor: '#111111',
+  },
+  navImage: {
+    height: 60,
+    width: 60,
+    tintColor: '#FFFFFF',
+    },
+  navButton: {
+    width: 70,
+    height: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.8,
   }
 });
 
