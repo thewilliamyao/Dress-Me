@@ -21,7 +21,7 @@ class RecommendationScreen extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false};
+    this.state = {Rec: null, id: this.props.id, token: this.props.token, shouldClean: false, RecString: null, top: null, pants: null, footwear: null, accessory: null, outerwear: null};
   }
   
   componentDidMount() {
@@ -254,7 +254,9 @@ class RecommendationScreen extends Component {
         .then((responseJson) => {
           this.recommendationJson = responseJson;
           this.choiceInt = 1;
+          console.log(responseJson.FirstRecommendation);
           this.setState({Rec: responseJson.FirstRecommendation});
+          this.setStrings();
         })
     } else {
       if ((this.choiceInt != 1 && option < 0) || (this.choiceInt != 3 && option > 0)) {
@@ -318,13 +320,22 @@ class RecommendationScreen extends Component {
     })    
   }
 
-  tempRender(){
-    <View>
-            <Text>
-              TRYING TO RERENDER
-            </Text>
-    </View>
-
+  setStrings() {
+    this.setState({top: this.state.Rec.top.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    this.setState({pants: this.state.Rec.pants.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    this.setState({footwear: this.state.Rec.footwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    this.setState({accessory: this.state.Rec.accessory.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    this.setState({outerwear: this.state.Rec.outerwear.replace(/_/i, ' ').replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();})});
+    console.log(this.state.top);
+    console.log(this.state.pants);
+    console.log(this.state.footwear);
+    console.log(this.state.accessory);
+    console.log(this.state.outerwear);
   }
 
   border(color){
