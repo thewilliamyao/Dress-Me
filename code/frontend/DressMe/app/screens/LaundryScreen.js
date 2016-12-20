@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//var RootNav = require('./laundry.ios');
 import {
   AppRegistry,
   StyleSheet,
@@ -28,9 +27,9 @@ class LaundryScreen extends Component{
       };
     }
 
-    // componentWillMount() {
-    //  this.getCloset();
-    // }
+  componentWillMount() {
+    this.forceUpdate();
+  }
 
   render(){
     return (
@@ -84,17 +83,8 @@ class LaundryScreen extends Component{
           
           }).then((response) => response.json())
             .then((responseJson) => {
-                console.log(responseJson.boots);
                 this.setState({LaundryList: responseJson});
-                console.log(this.state.LaundryList.boots);
-                console.log(this.state.LaundryList);
-                // console.log(itemTypes[0]);
-                // parseClosetJson()
-                // console.log(closetJson);
                 {this.getNums()}
-                // var tempArray = this.closet();
-                // console.log("time to print");
-                // return tempArray;
             })
         } 
   }
@@ -108,7 +98,7 @@ class LaundryScreen extends Component{
   }
   
   handleResetLaundryPress() {
-
+    {this.componentWillMount()}
     fetch('https://dry-beyond-51182.herokuapp.com/api/v1/clean/' + this.state.id, {
       method: 'PUT',
       headers: {
@@ -129,17 +119,8 @@ class LaundryScreen extends Component{
           
           }).then((response) => response.json())
             .then((responseJson) => {
-                console.log(responseJson.boots);
                 this.setState({LaundryList: responseJson});
-                console.log(this.state.LaundryList.boots);
-                console.log(this.state.LaundryList);
-                // console.log(itemTypes[0]);
-                // parseClosetJson()
-                // console.log(closetJson);
                 {this.getNums()}
-                // var tempArray = this.closet();
-                // console.log("time to print");
-                // return tempArray;
             })
 
     
@@ -181,7 +162,15 @@ class LaundryScreen extends Component{
 	}
 
   handleBackPress() {
-    this.props.navigator.pop()
+    if(this.props.loc == 1){
+      this.props.navigator.pop()
+    } else {
+      this.props.navigator.push({
+        ident: "Recommendation",
+        id: this.state.id,
+        token: this.state.token
+      })
+    }
   }
 };
 
@@ -190,14 +179,13 @@ var styles = StyleSheet.create({
 		height: 460
 	},
 	backgroundImage: {
-        flex: 1,
-        height: null,
-        width: null,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
+    flex: 1,
+    height: null,
+    width: null,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
 		flexDirection: 'column'
 		
-        //resizeMode: 'cover', // or 'stretch'
     },
 	title: {
 		paddingTop: 20,

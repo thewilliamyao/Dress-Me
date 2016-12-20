@@ -66,7 +66,8 @@ class SettingsScreen extends Component{
         this.props.navigator.push({
             ident: "Laundry",
             id: this.state.id,
-            token: this.state.token
+            token: this.state.token,
+            loc: 1
         })
     }
 
@@ -74,7 +75,7 @@ class SettingsScreen extends Component{
         this.props.navigator.push({
             ident: "Closet",
             id: this.state.id,
-            token: this.state.token
+            token: this.state.token,
         })
     }
 
@@ -86,7 +87,7 @@ class SettingsScreen extends Component{
 
     handleBackPress() {
         this.props.navigator.pop()
-        
+        this.forceUpdate();
         {/*this.props.navigator.push({
             ident: "Recommendation",
             id: this.state.id,
@@ -117,14 +118,6 @@ class SettingsScreen extends Component{
 	}
 }
 
-{/*}
-LoginScreen.propTypes = {
-    title: PropTypes.string.isRequired,
-    onForward: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired
-};
-*/}
-
 var styles = StyleSheet.create({
     backgroundImage: {
         flex: 1,
@@ -132,7 +125,6 @@ var styles = StyleSheet.create({
         width: null,
         justifyContent: 'center',
         alignItems: 'center'
-        //resizeMode: 'cover', // or 'stretch'
     },
     container: {
         flex: 1,
@@ -214,8 +206,8 @@ var styles = StyleSheet.create({
 		textAlign:'center',
 	},
     backImage: {
-		height: 30,
-		width: 30,
+		height: 50,
+		width: 50,
 		opacity: 0.7,
 		tintColor: '#FFFFFF'
     },

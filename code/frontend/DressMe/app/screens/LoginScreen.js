@@ -171,6 +171,7 @@ export default class LoginScreen extends Component{
                 id: this.state.id,
                 token: this.state.token
             })
+            this.forceUpdate();
         }
         else {
             console.log("Failed Login")
@@ -185,10 +186,7 @@ export default class LoginScreen extends Component{
             sceneConfig: Navigator.SceneConfigs.floatFromBottom
         }) 
     }
-
-
-
-}{/*This is the end of class brack*/}
+}
 
 
 var styles = StyleSheet.create({
@@ -252,7 +250,6 @@ var styles = StyleSheet.create({
         },
         shadowColor: 'black',
         shadowOpacity: 0.5,
-        // backgroundColor: '#FFFFFF' 
     },
     loginField: {
         marginLeft: 20,

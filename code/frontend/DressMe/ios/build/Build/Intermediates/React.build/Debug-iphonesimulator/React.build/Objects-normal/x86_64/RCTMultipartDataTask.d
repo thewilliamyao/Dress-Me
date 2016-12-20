@@ -1,4 +1,4 @@
 dependencies: \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTMultipartDataTask.m \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTMultipartDataTask.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTMultipartStreamReader.h
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTMultipartDataTask.m \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTMultipartDataTask.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTMultipartStreamReader.h

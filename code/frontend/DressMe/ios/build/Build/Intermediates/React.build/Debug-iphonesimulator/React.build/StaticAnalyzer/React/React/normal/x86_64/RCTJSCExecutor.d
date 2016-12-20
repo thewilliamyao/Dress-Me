@@ -1,24 +1,24 @@
 dependencies: \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Executors/RCTJSCExecutor.mm \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Executors/RCTJSCExecutor.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTJavaScriptExecutor.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTBridgeModule.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTDefines.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTInvalidating.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTAssert.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTBridge+Private.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTBridge.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTBridgeDelegate.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTJavaScriptLoader.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTFrameUpdate.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Modules/RCTDevMenu.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTLog.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Profiler/RCTProfile.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTPerformanceLogger.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTUtils.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Profiler/RCTJSCProfiler.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Modules/RCTRedBox.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTErrorCustomizer.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Modules/RCTSourceCode.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Executors/RCTJSCWrapper.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Executors/RCTJSCErrorHandling.h
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Executors/RCTJSCExecutor.mm \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Executors/RCTJSCExecutor.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTJavaScriptExecutor.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTBridgeModule.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTDefines.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTInvalidating.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTAssert.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTBridge+Private.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTBridge.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTBridgeDelegate.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTJavaScriptLoader.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTFrameUpdate.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Modules/RCTDevMenu.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTLog.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Profiler/RCTProfile.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTPerformanceLogger.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTUtils.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Profiler/RCTJSCProfiler.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Modules/RCTRedBox.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTErrorCustomizer.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Modules/RCTSourceCode.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Executors/RCTJSCWrapper.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Executors/RCTJSCErrorHandling.h

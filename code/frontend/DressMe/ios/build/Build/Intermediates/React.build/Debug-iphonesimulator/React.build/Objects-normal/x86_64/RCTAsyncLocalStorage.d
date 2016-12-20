@@ -1,16 +1,16 @@
 dependencies: \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Modules/RCTAsyncLocalStorage.m \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Modules/RCTAsyncLocalStorage.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTBridgeModule.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTDefines.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTInvalidating.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTConvert.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/CSSLayout/CSSLayout.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/CSSLayout/CSSMacros.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTAnimationType.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTBorderStyle.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTTextDecorationLineType.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTLog.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTAssert.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Views/RCTPointerEvents.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/React/Base/RCTUtils.h
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Modules/RCTAsyncLocalStorage.m \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Modules/RCTAsyncLocalStorage.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTBridgeModule.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTDefines.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTInvalidating.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTConvert.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/CSSLayout/CSSLayout.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/CSSLayout/CSSMacros.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Views/RCTAnimationType.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Views/RCTBorderStyle.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Views/RCTTextDecorationLineType.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTLog.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTAssert.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Views/RCTPointerEvents.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/React/Base/RCTUtils.h

@@ -58,9 +58,8 @@ class ClosetSetup extends Component{
         return (
         <Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
             <View style={styles.title}>
-                {/*{this.backButton()}*/}
-                <Text style={styles.titleText}>
-                    C l o s e t
+                <Text style={styles.titleText} >
+                    C l o s e t S e t u p
                 </Text>
                 {this.invisBlock()}
             </View>
@@ -247,14 +246,18 @@ var styles = StyleSheet.create({
     title: {
         paddingTop: 20,
         paddingBottom: 20,
-        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',        
     },
     titleText: {
         flex: 1,
         fontSize: 36,
+        paddingLeft: 10,
         fontWeight: '700',
         color: '#FFFFFF',
         textAlign:'center',
+        justifyContent: 'space-around'
     },
     closetItems: {
         width: 300,

@@ -1,6 +1,6 @@
 dependencies: \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/Libraries/Image/RCTImageViewManager.m \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/Libraries/Image/RCTImageViewManager.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/Libraries/Image/RCTImageViewManager.m \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/Libraries/Image/RCTImageViewManager.h \
   ../../React/Views/RCTViewManager.h ../../React/Base/RCTBridgeModule.h \
   ../../React/Base/RCTDefines.h ../../React/Base/RCTConvert.h \
   ../../React/CSSLayout/CSSLayout.h ../../React/CSSLayout/CSSMacros.h \
@@ -14,9 +14,9 @@ dependencies: \
   ../../React/Base/RCTJavaScriptLoader.h \
   ../../React/Base/RCTFrameUpdate.h ../../React/Base/RCTInvalidating.h \
   ../../React/Views/UIView+React.h ../../React/Views/RCTComponent.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/Libraries/Image/RCTImageLoader.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/Libraries/Image/RCTImageLoader.h \
   ../../React/Base/RCTURLRequestHandler.h \
   ../../React/Base/RCTURLRequestDelegate.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/Libraries/Image/RCTResizeMode.h \
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/Libraries/Image/RCTResizeMode.h \
   ../../React/Base/RCTImageSource.h \
-  /Users/mtsai_usa/Programming/OOSE/Project/DressMe/node_modules/react-native/Libraries/Image/RCTImageView.h
+  /Users/alwin/Documents/Non-Default/Academics/Courses/Johns\ Hopkins\ University/Graduate/Fall\ 2016/Object-Oriented-Software-Engineering-EN.600.421/Project\ Work/2016-group-5/code/frontend/DressMe/node_modules/react-native/Libraries/Image/RCTImageView.h
