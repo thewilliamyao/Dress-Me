@@ -171,6 +171,7 @@ export default class LoginScreen extends Component{
                 id: this.state.id,
                 token: this.state.token
             })
+            this.forceUpdate();
         }
         else {
             console.log("Failed Login")

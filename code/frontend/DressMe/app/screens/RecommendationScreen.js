@@ -28,6 +28,10 @@ class RecommendationScreen extends Component {
     this.requestClothing(0);
   }
 
+  componentWillMount() {
+    this.setState();
+  }
+
   render() {
     return <Image source={require('../../img/background/bg-morning.jpg')} style = {styles.backgroundImage}>
     {/*View Below is Settings Bar*/}  
@@ -241,6 +245,7 @@ class RecommendationScreen extends Component {
   }
   
   requestClothing(option) {
+    {this.componentWillMount()}
     console.log(this.state.id);
     if (this.recommendationJson == null) {
       fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/' + this.state.id, {
@@ -273,6 +278,7 @@ class RecommendationScreen extends Component {
   }
 
   handleDressMePress() {
+    {this.componentWillMount()}
     console.log('Dress Me was pressed');
       fetch('https://dry-beyond-51182.herokuapp.com/api/v1/dirty/' + this.state.id, {
         method: 'PUT',
@@ -316,7 +322,8 @@ class RecommendationScreen extends Component {
     this.props.navigator.push({
      ident: "Laundry",
      id: this.state.id,
-     token: this.state.token
+     token: this.state.token,
+     loc: -1
     })    
   }
 

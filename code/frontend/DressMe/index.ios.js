@@ -27,6 +27,11 @@ import FeedbackScreen from './app/screens/FeedbackScreen'
 //import TabScreen from './app/screens/TabScreen'
 
 export default class DressMe extends Component {
+
+  componentWillMount() {
+    StatusBar.setHidden(true);
+  }
+
   _renderScene(route, navigator) {
     var globalProps = {navigator}
 
@@ -69,7 +74,7 @@ export default class DressMe extends Component {
       case "Laundry" :
         return(
           <LaundryScreen
-            id = {route.id} token = {route.token} {...globalProps}/>
+            id = {route.id} token = {route.token} loc = {route.loc} {...globalProps}/>
         )
     }
   }
@@ -77,9 +82,9 @@ export default class DressMe extends Component {
   render() {
     return (
       <Navigator
-        initialRoute={{ident: "Login", statusBarHidden: true, transition: 1}}
+        initialRoute={{ident: "Login", statusBarHidden: true}}
         renderScene={this._renderScene}
-        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}/>
+        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromLeft}/>
     )
   } 
 }
