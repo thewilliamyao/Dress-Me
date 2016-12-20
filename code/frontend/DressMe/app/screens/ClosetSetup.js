@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//var RootNav = require('./laundry.ios');
 import {
   AppRegistry,
   StyleSheet,
@@ -30,8 +29,6 @@ var CustomLayoutSpring = {
     },
 };
 
-// var this.state.itemNum = []
-
 class ClosetSetup extends Component{
     static closetJson = null;
 
@@ -49,10 +46,6 @@ class ClosetSetup extends Component{
           buttonMarginLeft: 0,
         };
     }
-
-    // componentWillMount() {
-    //  this.getCloset();
-    // }
 
     render(){
         return (
@@ -85,8 +78,6 @@ class ClosetSetup extends Component{
         for (var i = 0; i < 15; i++){
             var itemType = itemTypes[i];
             var number = this.state.itemNum[i];
-            // console.log(number);
-            console.log(this.state.itemNum[i]);
             closetItems.push(
                 <ClosetItem style={styles.closetElement} key={i} type={itemType} amount={this.state.itemNum[i]} id={this.state.id} token={this.state.token} which={'closet/'} />
             )
@@ -105,31 +96,13 @@ class ClosetSetup extends Component{
             
             }).then((response) => response.json())
                 .then((responseJson) => {
-                    console.log(responseJson.boots);
                     this.setState({ClosetList: responseJson});
-                    console.log(this.state.ClosetList.boots);
-                    console.log(this.state.ClosetList);
-                    // console.log(itemTypes[0]);
-                    // parseClosetJson()
-                    // console.log(closetJson);
                     {this.getNums()}
-                    // var tempArray = this.closet();
-                    // console.log("time to print");
-                    // return tempArray;
                 })
         }   
     }
 
     getNums(){
-        // var itemNum = this.state.itemNum.slice();
-        // itemTypes.map((item) => {
-        //  itemNum.push(this.state.ClosetList[item]);
-        //  this.setState({ itemNum: itemNum })
-        // })
-        // console.log("here");
-        // this.state.itemNum.map((item) => {
-        //  console.log(item);
-        // })
         for (var i = 0; i < 15; i++) {
             var itemNum = this.state.itemNum.slice();
             itemNum[i] = (this.state.ClosetList[itemTypes[i]]);
@@ -141,8 +114,6 @@ class ClosetSetup extends Component{
         return <TouchableHighlight
         underlayColor="gray"
         onPress={() => this.handleSetupPress()}
-        //onPressIn={() => this.closetButtonAnimation()}
-        //onPressOut={() => this.closetButtonReturnAnimation()}
         style={[styles.updateButton,
              {width: this.state.buttonWidth, 
                  height: this.state.buttonHeight, 
@@ -155,18 +126,6 @@ class ClosetSetup extends Component{
 
         </TouchableHighlight>
     }
-
-    //Animation needs a little work, might take out
-
-    // closetButtonAnimation() {
-    //  LayoutAnimation.configureNext(CustomLayoutSpring);
-    //  this.setState({buttonMarginLeft: -2.5, buttonMarginTop: -2.5, buttonWidth: 145, buttonHeight: 45})
-    // }
-
-    // closetButtonReturnAnimation() {
-    //  LayoutAnimation.configureNext(CustomLayoutSpring);
-    //  this.setState({buttonMarginLeft: 0, buttonMarginTop: 0, buttonWidth: 140, buttonHeight: 40})
-    // }
 
     setupButton() {
         return <TouchableHighlight
@@ -191,7 +150,6 @@ class ClosetSetup extends Component{
     }
 
     handleSetupPress() {
-        {/*this.props.navigator.pop()*/}
         this.props.navigator.push({
                 ident: "Recommendation",
                 id: this.state.id,
@@ -242,7 +200,6 @@ var styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'column'
         
-        //resizeMode: 'cover', // or 'stretch'
     },
     title: {
         paddingTop: 20,

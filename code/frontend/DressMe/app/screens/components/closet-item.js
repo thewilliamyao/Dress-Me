@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//var RootNav = require('./laundry.ios');
 import {
   AppRegistry,
   StyleSheet,

@@ -62,8 +62,6 @@ class LaundryScreen extends Component{
     for (var i = 0; i < 15; i++){
       var itemType = itemTypes[i];
       var number = this.state.itemNum[i];
-      // console.log(number);
-      console.log(this.state.itemNum[i]);
       closetItems.push(
         <ClosetItem key={i} type={itemType} amount={this.state.itemNum[i]} id={this.state.id} token={this.state.token} which={'laundry/'}/>
       )
@@ -110,17 +108,17 @@ class LaundryScreen extends Component{
     })
 
     fetch('https://dry-beyond-51182.herokuapp.com/api/v1/laundry/' + this.props.id, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'token': this.props.token
-            }
-          
-          }).then((response) => response.json())
-            .then((responseJson) => {
-                this.setState({LaundryList: responseJson});
-                {this.getNums()}
-            })
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+          'token': this.props.token
+      }
+    
+    }).then((response) => response.json())
+      .then((responseJson) => {
+          this.setState({LaundryList: responseJson});
+          {this.getNums()}
+      })
 
     
   }
@@ -216,8 +214,8 @@ var styles = StyleSheet.create({
             width: 2,
             height: 2,
         },
-        shadowColor: 'black',
-        shadowOpacity: 0.5,
+    shadowColor: 'black',
+    shadowOpacity: 0.5,
 		borderWidth: 2,
 		borderColor: '#FFFFFF'
 	},

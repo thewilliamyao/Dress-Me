@@ -49,16 +49,6 @@ export default class LoginScreen extends Component{
         this.state = {text: 'Email', text1: 'Password', id: -1, token: 'Blah', userBoxWidth: 280, userBoxHeight: 70, userZ: 0, passBoxWidth: 280, passBoxHeight: 70, passZ: -10}
     }
 
-    //Need to figure this out later
-    _onSomethingElse() {
-        dismissKeyboard();
-    }
-
-    componentWillMount() {
-        // Animate creation
-        //LayoutAnimation.configureNext(CustomReturnSpring);
-    }
-
     _onFocusUser() {
         LayoutAnimation.configureNext(CustomLayoutSpring);
         this.setState({userBoxHeight: 90, userBoxWidth: 300, userOffset: -10, userZ: 3})
@@ -209,7 +199,6 @@ var styles = StyleSheet.create({
         width: null,
         justifyContent: 'center',
         alignItems: 'center'
-        //resizeMode: 'cover', // or 'stretch'
     },
     titleContainer: {
         flex: 1,

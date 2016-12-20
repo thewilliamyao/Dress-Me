@@ -1,8 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
 'use strict'
 import React, { Component } from 'react';
 import {
@@ -23,8 +18,6 @@ import LaundryScreen from './app/screens/LaundryScreen'
 import LoginScreen from './app/screens/LoginScreen'
 import RegisterScreen from './app/screens/RegisterScreen'
 import SettingsScreen from './app/screens/SettingsScreen'
-import FeedbackScreen from './app/screens/FeedbackScreen'
-//import TabScreen from './app/screens/TabScreen'
 
 export default class DressMe extends Component {
 
@@ -59,11 +52,6 @@ export default class DressMe extends Component {
       case "Settings" :
         return(
           <SettingsScreen
-            id = {route.id} token = {route.token} {...globalProps}/>
-        )
-      case "Rate" :
-        return(
-          <FeedbackScreen
             id = {route.id} token = {route.token} {...globalProps}/>
         )
       case "Closet" :

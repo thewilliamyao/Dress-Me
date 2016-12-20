@@ -13,7 +13,6 @@ import {
   AlertIOS,
   LayoutAnimation
 } from 'react-native';
-// var Rec = null
 class RecommendationScreen extends Component {
 
   static recommendationJson = null;
@@ -64,10 +63,6 @@ class RecommendationScreen extends Component {
     this.forceUpdate();
   }
 
-  // shouldComponentUpdate() {
-  //   this.forceUpdate();
-  // }
-
   render() {
     return <Image source={require('../../img/background/bg-morning-tint.png')} style = {styles.backgroundImage}>
     {/*View Below is Settings Bar*/}  
@@ -76,7 +71,7 @@ class RecommendationScreen extends Component {
       </View>
     {/*View Below is ratingButtons*/}
         {this.ratingButtons()}
-    {/*View Below is Dress up Guy*/}
+    {/*View Below is Dress up Recommendations*/}
       <View style= {styles.displayContainer}>
         {this.middleDisplay()}
       </View>
