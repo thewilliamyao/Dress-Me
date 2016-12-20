@@ -134,15 +134,15 @@ class RecommendationScreen extends Component {
   }
 
   middleContent() {
-    if (!this.state.Rec) {
+    if (this.state.Rec == null) {
       return (
-        <View style={[styles.contentText, , {opacity: this.state.recOpacity}]}>
-          <Text style={styles.prettyRecText}>Loading...</Text>
+        <View style={styles.contentText}>
+          <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>Loading...</Text>
         </View>
       )
     } else {
       return (
-        <View style={[styles.contentText, , {opacity: this.state.recOpacity}]}>
+        <View style={[styles.contentText, {opacity: this.state.recOpacity}]}>
           <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.top}</Text>
           <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.pants}</Text>
           <Text style={[styles.prettyRecText, {color: '#FFFFFF'}]}>{this.state.footwear}</Text>
@@ -254,14 +254,14 @@ class RecommendationScreen extends Component {
           })
         }).then((response) => {
           console.log('hey you')
-          this.requestClothing(-1);
+          this.requestClothing(-10);
         })
     }
   }
   
   requestClothing(option) {
     console.log(this.state.id);
-    if (this.recommendationJson == null || option == -1) {
+    if (this.recommendationJson == null || option == -10) {
       fetch('https://dry-beyond-51182.herokuapp.com/api/v1/recommendation/' + this.state.id, {
         method: 'GET',
         headers: {
@@ -353,11 +353,13 @@ class RecommendationScreen extends Component {
           this.temp = responseJson
           this.setState({shouldClean: responseJson});
           this.fadeOutDressMe();
+          this.requestClothing(-10);
+        }).then(() => {
+          if(this.state.shouldClean) {
+            {this.sendAlert()}
+            this.temp = false;
+          }
         })
-      if(this.state.shouldClean) {
-        {this.sendAlert()}
-        this.temp = false;
-      }
     }
   }
 
