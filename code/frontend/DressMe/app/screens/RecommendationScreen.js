@@ -92,16 +92,16 @@ class RecommendationScreen extends Component {
   }
 
   middleDisplay() {
-    return <View style={[styles.displayContainer,this.border('lime')]}>
-      <View style={[styles.midLeft, styles.arrowWrapper, this.border('orange')]}>
+    return <View style={styles.displayContainer}>
+      <View style={[styles.midLeft, styles.arrowWrapper]}>
         {this.arrowLeftButton()}
       </View>
 
-      <View style={[styles.midMid, this.border('orange')]}>
+      <View style={styles.midMid}>
         {this.middleContent()}
       </View>
 
-      <View style={[styles.midRight, styles.arrowWrapper, this.border('orange')]}>
+      <View style={[styles.midRight, styles.arrowWrapper]}>
         {this.arrowRightButton()}
       </View>
     </View>
@@ -145,11 +145,8 @@ class RecommendationScreen extends Component {
     return <TouchableHighlight
       underlayColor="gray"
       onPress = {() => this.requestClothing(-1)}
-      style= {[styles.triangle,styles.triangleRotLeft]}
-      > 
-        <Text>
-          Back
-        </Text>
+      style={styles.backButton}>
+      <Image source={require('../../img/icon/left-arrow.png')} style = {styles.backImage} />
     </TouchableHighlight>
   }
 
@@ -161,11 +158,8 @@ class RecommendationScreen extends Component {
     return <TouchableHighlight
       underlayColor="gray"
       onPress = {() => this.requestClothing(1)}
-      style= {[styles.triangleRotRight, styles.triangle]}
-      > 
-        <Text>
-          Forward
-        </Text>
+      style={styles.backButton}>
+      <Image source={require('../../img/icon/left-arrow.png')} style = {[styles.backImage, styles.forwardButton]} />
     </TouchableHighlight>
   }
 
@@ -379,7 +373,8 @@ var styles = StyleSheet.create({
     flex: 1
   },
   timeContainer: {
-    flex: 2
+    flex: 2,
+    //backgroundColor: 'white'
   },
   topWrapper: {
     flexDirection: 'row',
@@ -388,7 +383,8 @@ var styles = StyleSheet.create({
   },
   displayContainer: {
     flex: 9,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginTop: 10
   },
   dressMeContainer: {
     flex: 3
@@ -434,28 +430,9 @@ var styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center'
   },
-  triangle: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderLeftWidth: 25,
-    borderRightWidth: 25,
-    borderBottomWidth: 50,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  triangleRotRight: {
+  forwardButton: {
     transform: [
-      {rotate: '90deg'}
-    ]
-  },
-  triangleRotLeft: {
-    transform: [
-      {rotate: '-90deg'}
+      {rotate: '180deg'}
     ]
   },
   linearGradient: {
@@ -493,11 +470,13 @@ var styles = StyleSheet.create({
   ratingButtonImage: {
 		height: 30,
 		width: 30,
+    tintColor: 'white'
   },
   ratingButtonText: {
     fontSize: 12,
     fontWeight: '600',
-    textAlign: 'center'
+    textAlign: 'center',
+    color: 'white'
   },
   optionButton: {
     width: 150,
@@ -533,6 +512,8 @@ var styles = StyleSheet.create({
   topBarButtonImage: {
     height: 30,
     width: 30,
+    tintColor: 'white',
+    opacity: 0.8
   },
   topBarButtonView: {
     alignItems: 'center',
@@ -541,6 +522,7 @@ var styles = StyleSheet.create({
     marginRight: 10
   },
   feedback: {
+    opacity: 0,
     paddingTop: 5,
     textAlign: 'center'
   },
@@ -569,6 +551,17 @@ var styles = StyleSheet.create({
     },
     shadowColor: '#DDDDDD',
     shadowOpacity: 0.3,
+  },
+  backImage: {
+    height: 60,
+    width: 60,
+    tintColor: '#FFFFFF'
+    },
+  backButton: {
+    width: 70,
+    height: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 });
 
