@@ -66,7 +66,8 @@ class SettingsScreen extends Component{
         this.props.navigator.push({
             ident: "Laundry",
             id: this.state.id,
-            token: this.state.token
+            token: this.state.token,
+            loc: 1
         })
     }
 
@@ -74,7 +75,7 @@ class SettingsScreen extends Component{
         this.props.navigator.push({
             ident: "Closet",
             id: this.state.id,
-            token: this.state.token
+            token: this.state.token,
         })
     }
 
@@ -85,12 +86,13 @@ class SettingsScreen extends Component{
     }
 
     handleBackPress() {
-        {/*this.props.navigator.pop()*/}
-        this.props.navigator.push({
+        this.props.navigator.pop()
+        this.forceUpdate();
+        {/*this.props.navigator.push({
             ident: "Recommendation",
             id: this.state.id,
             token: this.state.token
-        })
+        })*/}
     }
 
     backButton() {
