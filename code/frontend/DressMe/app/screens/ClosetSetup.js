@@ -58,8 +58,9 @@ class ClosetSetup extends Component{
         return (
         <Image source={require('../../img/background/bg-mahogany.jpg')} style = {styles.backgroundImage}>
             <View style={styles.title}>
+                {this.invisBlock()}
                 <Text style={styles.titleText} >
-                    C l o s e t S e t u p
+                    S e t u p
                 </Text>
                 {this.invisBlock()}
             </View>
