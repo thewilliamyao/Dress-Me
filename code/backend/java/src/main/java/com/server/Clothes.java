@@ -28,6 +28,11 @@ public class Clothes{
     /**
      *   Minimal constructor for a single items of clothing.
      */
+    public Clothes (String specificType, String type) {
+        this.specificType = specificType;
+        this.type = type;
+    }
+
     public Clothes (String specificType) {
         this.specificType = specificType;
     }
@@ -54,16 +59,25 @@ public class Clothes{
         System.out.println("userId: " + userId + ", type: " + type + ", specificType: " + specificType + ", numberOwned: " + numberOwned);
     }
 
-    /**
-    * Returns the user Id.
-    * @return the id of the user
-    */
-    public boolean equals(Clothes c) {
-        return this.specificType.equals(c.getSpecificType());
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!Clothes.class.isAssignableFrom(o.getClass())) {
+            return false;
+        }
+        final Clothes other = (Clothes) o;
+        return this.specificType.equals(other.specificType);
     }
 
+    @Override
+    public String toString() {
+        return this.specificType;
+    }
+    @Override
     public int hashCode() {
-        return specificType.hashCode();
+        return this.specificType.hashCode();
     }
 
     public int getUserId() {

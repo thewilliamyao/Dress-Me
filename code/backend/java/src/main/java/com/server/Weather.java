@@ -32,6 +32,7 @@ public class Weather implements Comparable<DaySummary> {
     *   @param apparentTempreature  The location apperent temperature
     */
     // TODO remove this; deprecated until we add in minTemp and minApparentTemp
+    /*
     public Weather(Double windSpeed, Double humidity, String precipType,
         Double precipProbability, Double precipIntensity, Double temperature, Double apparentTemperature) {
         this.windSpeed = windSpeed;
@@ -42,7 +43,7 @@ public class Weather implements Comparable<DaySummary> {
         this.maxTemp = temperature;
         this.maxApparentTemp = apparentTemperature;
     }
-
+    */
     // for now, return a weather object with the hardcoded location of baltimore.
     public Weather(double latitude, double longitude) {
         ForecastIO fio = new ForecastIO("90d56a872c963f85162f81873b40fbba"); //instantiate the class with the API key.
@@ -77,20 +78,20 @@ public class Weather implements Comparable<DaySummary> {
     }
 
     public int compareTo(DaySummary d) {
-	// Factors being compared: temperature, apparentTemp, humidity, windSpeed?, precipIntensity
-	// Take precipChance into consideration in algorithm, but not similarity index b/c it is due to chance
+        // Factors being compared: temperature, apparentTemp, humidity, windSpeed?, precipIntensity
+        // Take precipChance into consideration in algorithm, but not similarity index b/c it is due to chance
 
-	int tempDiff = (int) (Math.round(this.maxTemp - d.getMaxTemp()));
-	int apparentTempDiff = (int) (Math.round(this.maxApparentTemp - d.getMaxApparentTemp()));
+        int tempDiff = (int) (Math.round(this.maxTemp - d.getMaxTemp()));
+        int apparentTempDiff = (int) (Math.round(this.maxApparentTemp - d.getMaxApparentTemp()));
 
-	return tempDiff + apparentTempDiff;
-	//int maxFactor = Math.max(Math.abs(tempDiff), Math.abs(apparentTempDiff));
-	
-	//int humidityDiff = (int) (Math.round(this.humidity - w.getHumidity()));		
+        return tempDiff + apparentTempDiff;
+        //int maxFactor = Math.max(Math.abs(tempDiff), Math.abs(apparentTempDiff));
+        
+        //int humidityDiff = (int) (Math.round(this.humidity - w.getHumidity()));       
     }
 
     public double getComparisonValue() {
-	return this.maxTemp + this.maxApparentTemp;
+        return this.maxTemp + this.maxApparentTemp;
     }
 
     public double getWindSpeed() {
@@ -109,10 +110,10 @@ public class Weather implements Comparable<DaySummary> {
         return this.precipIntensity;
     }
     public double getMaxTemp() {
-        return this.maxTemp;
+        return this.maxTemp.doubleValue();
     }
     public double getMaxApparentTemp() {
-        return this.maxApparentTemp;
+        return this.maxApparentTemp.doubleValue();
     }
     public double getMinTemp() {
         return this.minTemp;
