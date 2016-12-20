@@ -21,30 +21,12 @@ public class Weather implements Comparable<DaySummary> {
     private Double minTemp;         // min temp in degrees Fahrenheit
     private Double minApparentTemp; // min "feels like" temp in Fahrenheit
 
-    /**
-    *   Constructor for weather.
-    *   @param windSpeed            The speed of the wind.
-    *   @param humidity             The location humidity.
-    *   @param precipType           The location precipitation type.
-    *   @param precipProbability    The location precipitation probability.
-    *   @param precipIntensity      The location precipitation Intensity.
-    *   @param temperature          The location temperature.
-    *   @param apparentTempreature  The location apperent temperature
-    */
-    // TODO remove this; deprecated until we add in minTemp and minApparentTemp
-    /*
-    public Weather(Double windSpeed, Double humidity, String precipType,
-        Double precipProbability, Double precipIntensity, Double temperature, Double apparentTemperature) {
-        this.windSpeed = windSpeed;
-        this.humidity = humidity;
-        this.precipType = precipType;
-        this.precipProbability = precipProbability;
-        this.precipIntensity = precipIntensity;
-        this.maxTemp = temperature;
-        this.maxApparentTemp = apparentTemperature;
-    }
-    */
     // for now, return a weather object with the hardcoded location of baltimore.
+    /**
+    * Generates a weather object using the params and the ForecastIOLib.
+    * @param latitude the latitude of the user.
+    * @param longitue the longitude of the user.
+    */
     public Weather(double latitude, double longitude) {
         // matt's api key: 90d56a872c963f85162f81873b40fbba
         // eric's api key: 954bf995551fd3a5a10b410c7083738a

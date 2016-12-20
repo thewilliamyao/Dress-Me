@@ -112,7 +112,7 @@ public class LocationService {
     /**
     * Updates the location of a user.
     * @param id the id of a user.
-    * @body the json form of the update, {latitude: x, longitude: y}.
+    * @param body the json form of the update, {latitude: x, longitude: y}.
     * @return the new location of the user.
     */
     public Location updateLocation(String id, String body) throws LocationServiceException {

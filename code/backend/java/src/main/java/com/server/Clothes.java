@@ -27,6 +27,8 @@ public class Clothes{
 
     /**
      *   Minimal constructor for a single items of clothing.
+     * @param specificType the specific type of clothing
+     * @param type the general type (top, pants, footwear, outerwear, accessory)
      */
     public Clothes (String specificType, String type) {
         this.specificType = specificType;

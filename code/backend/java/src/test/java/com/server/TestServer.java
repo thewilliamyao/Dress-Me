@@ -84,7 +84,7 @@ public class TestServer {
         assertNotEquals(token.getToken(), "");
         currToken = token.getToken();
     }
-/*
+
     @Test
     public void testInvalidToken() throws Exception {
         testLogin();
@@ -563,7 +563,6 @@ public class TestServer {
     //------------------------------------------------------------------------//
     // Tests for Recommendation
     //------------------------------------------------------------------------//
-*/
     public void setupRecommendation() throws Exception {
         // test login
         testLogin();

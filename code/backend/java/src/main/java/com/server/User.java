@@ -10,9 +10,12 @@ public class User {
     /**User account password.*/
     private String password;
 
-    /**User's current location*/
-    // private Location currrentLocation;
-
+    /**
+    * Creates a new user.
+    * @param userId the id for the user.
+    * @param email the email for the user.
+    * @param password the password for the user.
+    */
     public User(int userId, String email, String password) {
         this.userId = userId;
         this.email = email;
@@ -20,6 +23,8 @@ public class User {
     }
     /**
     *   Constructor for User
+    *   @param email the email for the user.
+    *   @param password the password for the user.
     */
     public User(String email, String password) {
         this.email = email;
@@ -32,7 +37,7 @@ public class User {
 
     /**
     *   Sets the user's Id
-    *   @param id, the user's id
+    *   @param id the user's id
     */
     public void setUserId(int id) {
         this.userId = id;
@@ -51,51 +56,14 @@ public class User {
     *   @return the user's email.
     */
     public String getEmail(){
-    return email;
+        return email;
     }
     
-    /**
-    *   Lets user change their email.
-    *   @param s the new email
-    */
-    public void updateEmail(String s){
-
-    }
-
     /**
     *   Get the user's password. For testing purposes only.
     *   @return the user's password.
     */
     public String getPassword(){
         return password;
-    }
-    
-    /**
-    *   Lets user change their password.
-    *   @param s the new password
-    */
-    public void updatePassword(String s){
-
-    }
-
-    /**
-    *   Lets user update their current location.
-    *   @param x the user longitude.
-    *   @param y the user latitude.
-    */
-    public void setLocation(double x, double y){
-
-    }
-
-    /**
-    *   Retrieves user's location.
-    *   @return the user's location.
-    */
-    public Location getLocation(){
-        return null;
-    }
-
-    public Recommendation getRecommendation() {
-        return null;
     }
 }

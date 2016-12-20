@@ -5,6 +5,7 @@ import java.util.HashMap;
  * Class containing data for a day summarizing weather and clothes worn
  */
 public class DaySummary {
+    /**id fields*/
     private int daySummaryId;
     private int userId;
     /** Day's max temperature.*/    
@@ -17,14 +18,6 @@ public class DaySummary {
     private String footwear;
     private String accessory;
     private String outerwear;
-//    private Recommendation outfit;
-
-    /*public DaySummary(int userId, Weather weather, Recommendation rec) {
-    this.userId = userId;
-    this.maxTemp = weather.getMaxTemp();
-    this.maxApparentTemp = weather.getMaxApparentTemp();
-    this.outfit = rec.clone();
-    }*/
 
     public DaySummary(int daySummaryId, int userId, double maxTemp, double maxApparentTemp, String top, String pants,
               String footwear, String accessory, String outerwear) {
@@ -37,7 +30,6 @@ public class DaySummary {
         this.footwear = footwear;
         this.accessory = accessory;
         this.outerwear = outerwear;
-        //this.outfit = new Recommendation(top, pants, footwear, accessory, outerwear);
     }
 
     public String toString() {
@@ -109,7 +101,7 @@ public class DaySummary {
     }
     /**
      *   Sets the user ID.
-     *   @param the new user ID.
+     *   @param userId the new user ID.
      */
     public void setUserId(int userId) {
         this.userId = userId;
@@ -117,7 +109,7 @@ public class DaySummary {
 
     /**
      *   Sets the max temperature.
-     *   @param the new max temperature.
+     *   @param maxTemp the new max temperature.
      */
     public void setMaxTemp(Double maxTemp) {
         this.maxTemp = maxTemp;
@@ -130,14 +122,4 @@ public class DaySummary {
     public void setMaxApparentTemp(Double maxApparentTemp) {
         this.maxApparentTemp = maxApparentTemp;
     }
-
-    /**
-     *   Sets the outfit.
-     *   @param the Recommendation object representing this outfit.
-     */
-    /*
-    public void setOutfit(Recommendation outfit) {
-        this.outfit = outfit;
-    }
-    */
 }

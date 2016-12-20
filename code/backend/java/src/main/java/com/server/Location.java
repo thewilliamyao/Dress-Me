@@ -13,6 +13,8 @@ public class Location{
 
     /**
     *   Location constructor.
+    *   @param userId the id of the user.
+    *   @param locationId the new Id for the location.
     *   @param x User latitude.
     *   @param y User longitude.
     */
