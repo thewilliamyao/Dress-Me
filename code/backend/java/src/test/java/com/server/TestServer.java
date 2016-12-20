@@ -559,11 +559,72 @@ public class TestServer {
         assertEquals(200, radd.httpStatus);
         assertEquals(expectedCloset, actualCloset);
     }
+
     //------------------------------------------------------------------------//
     // Tests for Recommendation
     //------------------------------------------------------------------------//
 
-    // TODO
+    public void setupRecommendation() throws Exception {
+        // test login
+        testLogin();
+        // setup basic closet with 10 of each item
+        ClosetUpdateJson closetUpdate = new ClosetUpdateJson("t_shirt", 5);
+        Response radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "tank_top";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "long_sleeve";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "shorts";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "long_pants";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "hoodie";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "windbreaker";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "sweater";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "winter_coat";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "rain_jacket";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "shoes";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "boots";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "scarf";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "umbrella";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        closetUpdate.type = "sandals";
+        radd = request("PUT", API_PREFIX + "closet/0", closetUpdate);
+        System.out.printf("Closet: %s\n", radd.content);
+    }
+
+    @Test
+    public void getRecommendationTest() throws Exception {
+        setupRecommendation();
+        Response radd = request("GET", API_PREFIX + "recommendation/0", null);
+        assertEquals(200, radd.httpStatus);
+        
+        
+        // give some feedback?
+        RecommendationFeedback feedback = new RecommendationFeedback("t_shirt", "long_pants", "shoes", "NONE", "winter_coat", 0);
+        radd = request("POST", API_PREFIX + "feedback/0", feedback);
+        assertEquals(200, radd.httpStatus);
+        radd = request("POST", API_PREFIX + "feedback/0", feedback);
+        assertEquals(200, radd.httpStatus);
+        radd = request("POST", API_PREFIX + "feedback/0", feedback);
+        assertEquals(200, radd.httpStatus);
+        radd = request("POST", API_PREFIX + "feedback/0", feedback);
+        assertEquals(200, radd.httpStatus);
+        radd = request("POST", API_PREFIX + "feedback/0", feedback);
+        assertEquals(200, radd.httpStatus);
+        radd = request("POST", API_PREFIX + "feedback/0", feedback);
+        assertEquals(200, radd.httpStatus);
+        radd = request("GET", API_PREFIX + "recommendation/0", null);
+        assertEquals(200, radd.httpStatus);
+    }
 
     //------------------------------------------------------------------------//
     // Generic Helper Methods and classes
@@ -595,6 +656,24 @@ public class TestServer {
 		}
         return new Response(http.getResponseCode(), responseBody);
 
+    }
+
+    private static class RecommendationFeedback {
+        public String top;
+        public String pants;
+        public String footwear;
+        public String accessory;
+        public String outerwear;
+        public int adjustment;
+
+        public RecommendationFeedback(String top, String pants, String footwear, String accessory, String outerwear, int adjustment) {
+            this.top = top;
+            this.pants = pants;
+            this.footwear = footwear;
+            this.accessory = accessory;
+            this.outerwear = outerwear;
+            this.adjustment = adjustment;
+        }
     }
 
     private static class UserJson {
@@ -779,6 +858,8 @@ public class TestServer {
             sql = "DROP TABLE IF EXISTS clothes";
             conn.createQuery(sql).executeUpdate();
             sql = "DROP TABLE IF EXISTS locations";
+            conn.createQuery(sql).executeUpdate();
+            sql = "DROP TABLE IF EXISTS day_summaries";
             conn.createQuery(sql).executeUpdate();
         }
     }

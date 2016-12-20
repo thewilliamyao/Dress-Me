@@ -29,13 +29,13 @@ public class Recommendation {
     }
 
     public List<Clothes> asClothesList() {
-    List<Clothes> outfit = new ArrayList<>();
-    outfit.add(new Clothes(this.top));
-    outfit.add(new Clothes(this.pants));
-    outfit.add(new Clothes(this.footwear));
-    outfit.add(new Clothes(this.accessory));
-    outfit.add(new Clothes(this.outerwear));
-    return outfit;
+        List<Clothes> outfit = new ArrayList<>();
+        outfit.add(new Clothes(this.top, "top"));
+        outfit.add(new Clothes(this.pants, "pants"));
+        outfit.add(new Clothes(this.footwear, "footwear"));
+        outfit.add(new Clothes(this.accessory, "accessory"));
+        outfit.add(new Clothes(this.outerwear, "outerwear"));
+        return outfit;
     }
 
     public void setItem(Clothes item) {
@@ -62,7 +62,32 @@ public class Recommendation {
         }
     }
 
-    public boolean equals(Recommendation r) {
+    public boolean hasItem(Clothes item) {
+        switch (item.getType()) {
+            case "top":
+                return this.top.equals(item.getSpecificType());
+            case "pants":
+                return this.pants.equals(item.getSpecificType());
+            case "footwear":
+                return this.footwear.equals(item.getSpecificType());
+            case "accessory":
+                return this.accessory.equals(item.getSpecificType());
+            case "outerwear":
+                return this.outerwear.equals(item.getSpecificType());
+            default:
+                System.out.println("Invalid clothing item.\n");
+                return false;
+        }
+    }
+
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!Recommendation.class.isAssignableFrom(o.getClass())) {
+            return false;
+        }
+        final Recommendation r = (Recommendation) o;
         return this.asClothesList().equals(r.asClothesList());
     }
     

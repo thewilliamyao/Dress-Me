@@ -68,6 +68,29 @@ public class UserController {
             } catch (UserService.UserServiceException ex) {
                 logger.error("Failed to generate recommendation");
                 response.status(420);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                response.status(600);
+            }
+            return Collections.EMPTY_MAP;
+        }, new JsonTransformer());
+
+        // send feedback for a day
+        post(API_CONTEXT + "/feedback/:userId", "application/json", (request, response) -> {
+            try {
+                int currId = Integer.parseInt(request.params(":userId"));
+                if (!LoginToken.verify(request.headers("token"), currId)) {
+                    response.status(403);
+                    return Collections.EMPTY_MAP;
+                }
+                userService.giveFeedback(Integer.parseInt(request.params(":userId")), request.body());
+                response.status(200);
+            } catch (UserService.UserServiceException ex) {
+                logger.error("Failed to send feedback");
+                response.status(420);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                response.status(600);
             }
             return Collections.EMPTY_MAP;
         }, new JsonTransformer());

@@ -38,6 +38,7 @@ public class UserService {
     private static final int MAX_LOOPS = 10;
     private Sql2o db;
     private static int userCounter = 0; // counter for free value of the id
+    private static int dayCounter = 0; // counter for free value of the id
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     /*
@@ -61,6 +62,7 @@ public class UserService {
         //program to mostly self-contained. But this is not always what you want;
         //sometimes you want to create the schema externally via a script.
         try (Connection conn = db.open()) {
+            // create table for user
             String sqlUser = "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, " +
                          "                                 email TEXT, password TEXT)" ;
             conn.createQuery(sqlUser).executeUpdate();
@@ -75,10 +77,33 @@ public class UserService {
             } else {
                 userCounter = 0;
             }
+            // create table for daySummary
+            String sqlSummary = "CREATE TABLE IF NOT EXISTS day_summaries (day_summary_id INTEGER PRIMARY KEY, user_id INTEGER, " +
+                            "                               max_temp DECIMAL, max_apparent_temp DECIMAL, top TEXT, pants TEXT, " +
+                            "                               footwear TEXT, accessory TEXT, outerwear TEXT)";
+            conn.createQuery(sqlSummary).executeUpdate();
+            String sqlSummaryId = "SELECT MAX(day_summary_id) FROM day_summaries";
+            Integer latestDaySummary = conn.createQuery(sqlSummaryId)
+                                    .addColumnMapping("day_summary_id", "daySummaryId")
+                                    .addColumnMapping("user_id", "userId")
+                                    .addColumnMapping("max_temp", "maxTemp")
+                                    .addColumnMapping("max_apparent_temp", "maxApparentTemp")
+                                    .addColumnMapping("top", "top")
+                                    .addColumnMapping("pants", "pants")
+                                    .addColumnMapping("footwear", "footwear")
+                                    .addColumnMapping("accessory", "accessory")
+                                    .addColumnMapping("outerwear", "outerwear")
+                                    .executeAndFetchFirst(Integer.class);
+            if (latestDaySummary != null) {
+                dayCounter = latestDaySummary.intValue() + 1;
+            } else {
+                dayCounter = 0;
+            }
         } catch(Sql2oException ex) {
             logger.error("Failed to create schema at startup", ex);
             throw new UserServiceException("Failed to create schema at startup", ex);
         }
+
     }
 
     public void reset() throws UserServiceException {
@@ -262,9 +287,29 @@ public class UserService {
         // When user gives feedback at the end of the day, front end should send comparison critera
         // to back end for storage in database.
             
-        // TODO: replace this so it actually gets something from the database
+        // get daySummary from database
+        String sqlDaySummary = "SELECT * FROM day_summaries WHERE (user_id = :userId)";
+        List<DaySummary> pastDays;
+        try (Connection conn = db.open()) {
+            pastDays = 
+                conn.createQuery(sqlDaySummary)
+                    .addColumnMapping("day_summary_id", "daySummaryId")
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("max_temp", "maxTemp")
+                    .addColumnMapping("max_apparent_temp", "maxApparentTemp")
+                    .addColumnMapping("top", "top")
+                    .addColumnMapping("pants", "pants")
+                    .addColumnMapping("footwear", "footwear")
+                    .addColumnMapping("accessory", "accessory")
+                    .addColumnMapping("outerwear", "outerwear")
+                    .addParameter("userId", currId)
+                    .executeAndFetch(DaySummary.class);
+        } catch (Sql2oException ex) {
+            logger.error("UserService.getRecommendation: Failed to get day_summaries", ex);
+            throw new UserServiceException("UserService.giveFeedback: Failed to get day_summaries", ex);
+        }
         
-        ArrayList<DaySummary> pastDays = new ArrayList<>();
+        // ArrayList<DaySummary> pastDays = new ArrayList<>();
         HashMap<String, Recommendation> toReturn = new HashMap<String, Recommendation>();
         PriorityQueue<Integer> similarityQueue = new PriorityQueue<>(MAX_DAYS);
         HashMap<Integer, DaySummary> similarList = new HashMap<>();
@@ -283,7 +328,7 @@ public class UserService {
         while (head != null && toReturn.size() < MAX_RECS) {
             if (toReturn.size() == 1) {
                 recNumber = "SecondRecommendation";
-            } else {
+            } else if (toReturn.size() != 0) {
                 recNumber = "ThirdRecommendation";
             }
             
@@ -300,25 +345,25 @@ public class UserService {
             } else {
                 toReturn.put(recNumber, mutateRecommendation(outfit, currWeather.getMaxApparentTemp(),
                                      toReturn, ownedMap, dirtyMap));
-            }       
+            }
+            head = similarityQueue.poll();
         }
         
+
         int loops = 0;
         // If there aren't enough entries in the database or there are no entries with similar weather,
         // make recommendations using the default algorithm.
         while (toReturn.size() < MAX_RECS) {
             if (loops >= MAX_LOOPS) {
-                System.out.println("Failed to find default recommendation after 10 attempts.");
                 break;
             }
             if (toReturn.size() == 1) {
                 recNumber = "SecondRecommendation";
-            } else {
+            } else if (toReturn.size() != 0) {
                 recNumber = "ThirdRecommendation";
             }
             // Make default recommendation if we weren't able to recommend from smart algorithm
             outfit = defaultRecommendation(toReturn, ownedMap, dirtyMap, currWeather);
-
             if (!toReturn.containsValue(outfit)) {
                 toReturn.put(recNumber, outfit);
             } else {
@@ -341,49 +386,69 @@ public class UserService {
         for (Clothes c : ownedMap.keySet()) {
             if (hasClean(c, ownedMap, dirtyMap)) {
                 if (!highTree.containsKey(Double.valueOf(c.getTempHigh()))) {
-                    highTree.put(new Double(c.getTempHigh()), Arrays.asList(c));
+                    highTree.put(new Double(c.getTempHigh()), new ArrayList<Clothes>(Arrays.asList(c)));
                 } else {
                     highTree.get(c.getTempHigh()).add(c);
                 }
-                if (!lowTree.containsKey(Double.valueOf(c.getTempHigh()))) {
-                    lowTree.put(new Double(c.getTempLow()), Arrays.asList(c));
+                if (!lowTree.containsKey(Double.valueOf(c.getTempLow()))) {
+                    lowTree.put(new Double(c.getTempLow()), new ArrayList<Clothes>(Arrays.asList(c)));
                 } else {
                     lowTree.get(c.getTempLow()).add(c);
                 }
             }
         }
 
+
         for (Clothes item : outfit.asClothesList()) {
             if (!hasClean(item, ownedMap, dirtyMap) || currRecs.containsValue(outfit)) {
                 Double highKey, lowKey;
                 List<Clothes> options = new ArrayList<>();
                 Clothes selection;
-                highKey = highTree.lowerKey(targetTemp);
-                lowKey = lowTree.higherKey(targetTemp);
-                options.addAll(highTree.get(highKey));
-                options.addAll(lowTree.get(lowKey));
-                
-                if (options != null) {
+                highKey = highTree.higherKey(targetTemp);
+                lowKey = lowTree.lowerKey(targetTemp);
+                // prioritize suggestions based on using tree
+                while (highKey != null && !highTree.get(highKey).get(0).getType().equals(item.getType())) {
+                    highKey = highTree.higherKey(highKey);
+                }
+                while (lowKey != null && !lowTree.get(lowKey).get(0).getType().equals(item.getType())) {
+                    lowKey = lowTree.lowerKey(lowKey);
+                }
+                if (highKey != null) {
+                    options.addAll(highTree.get(highKey));
+                }
+                if (lowKey != null) {
+                    options.addAll(lowTree.get(lowKey));
+                }
+                // but if no good options, just take things that are clean and work with that
+                if (options.size() == 0) {
+                    for (Clothes c : ownedMap.keySet()) {
+                        if (hasClean(c, ownedMap, dirtyMap) && item.getType().equals(c.getType())) {
+                            options.add(c);
+                        }
+                    }
+                }
+                if (options.size() != 0) {
                     selection = options.get(0);
                     double minDiff = Math.min(Math.abs(selection.getTempHigh() - targetTemp),
                                Math.abs(selection.getTempLow() - targetTemp));
                     double diff;
                     for (Clothes c : options) {
                         if (hasClean(c, ownedMap, dirtyMap) && c.getType().equals(item.getType()) && !c.getSpecificType().equals(item.getSpecificType())) {
-                            if (c.getTempHigh() >= targetTemp && c.getTempLow() <= targetTemp) {
+                            if (c.getTempHigh() >= targetTemp && c.getTempLow() <= targetTemp && !outfit.hasItem(c)) {
                                 selection = c;
                                 break;
                             } else {
                                 diff = Math.min(Math.abs(selection.getTempHigh() - targetTemp),
                                 Math.abs(selection.getTempLow() - targetTemp));
-                                if (diff < minDiff) {
+                                if (outfit.hasItem(c) || diff < minDiff) {
                                     selection = c;
+                                    minDiff = diff;
                                 }
                             }
                         }
                     }               
                 } else { // No possible replacements left. Recommend original.
-                    selection = item;
+                    selection = new Clothes("NONE", "NONE");
                 }
                 outfit.setItem(selection);
             }
@@ -436,7 +501,7 @@ public class UserService {
         }
 
         // set shirt.
-            //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
+        //if very hot, recommend tank. if somewhat cold, recommend long sleeve. either way, backup is t-shirt
         if (temp > lowMap.get("tank_top")) {
             // want to prefer tank
             if (hasClean("tank_top", ownedMap, dirtyMap)) {
@@ -473,29 +538,29 @@ public class UserService {
         // if not, but still cold, recommend shoes. if hot and clear, recommend sandals.
         if (weather.getPrecipType().equals("rain") || weather.getPrecipType().equals("snow")) {
             // wear boots
-            if (ownedMap.get("boots") > 0) {
+            if (hasClean("boots", ownedMap, dirtyMap)) {
                 footwearRecommendation = "boots";
-            } else if (ownedMap.get("shoes") > 0) {
+            } else if (hasClean("shoes", ownedMap, dirtyMap)) {
                 footwearRecommendation = "shoes";
-            } else if (ownedMap.get("sandals") > 0) {
+            } else if (hasClean("sandals", ownedMap, dirtyMap)) {
                 footwearRecommendation = "sandals";
             }
         } else if (weather.getMaxApparentTemp() > lowMap.get("sandals")) {
             // really hot, wear sandals
-            if (ownedMap.get("sandals") > 0) {
+            if (hasClean("sandals", ownedMap, dirtyMap)) {
                 footwearRecommendation = "sandals";            
-            } else if (ownedMap.get("shoes") > 0) {
+            } else if (hasClean("shoes", ownedMap, dirtyMap)) {
                 footwearRecommendation = "shoes";
-            } else if (ownedMap.get("boots") > 0) {
+            } else if (hasClean("boots", ownedMap, dirtyMap)) {
                 footwearRecommendation = "boots";
             }
         } else {
             // recommend shoes
-            if (ownedMap.get("shoes") > 0) {
+            if (hasClean("shoes", ownedMap, dirtyMap)) {
                 footwearRecommendation = "shoes";
-            } else if (ownedMap.get("boots") > 0) {
+            } else if (hasClean("boots", ownedMap, dirtyMap)) {
                 footwearRecommendation = "boots";
-            } else if (ownedMap.get("sandals") > 0) {
+            } else if (hasClean("sandals", ownedMap, dirtyMap)) {
                 footwearRecommendation = "sandals";
             }
         }
@@ -551,11 +616,11 @@ public class UserService {
         // if windy or cold, scarf. if raining and not windy, recommend umbrella.
         // prefer umbrella to scarf.
         if (weather.getPrecipType().equals("rain") && weather.getWindSpeed() < 30) {
-            if (ownedMap.get("umbrella") > 0) {
+            if (hasClean("umbrella", ownedMap, dirtyMap)) {
                 accessoryRecommendation = "umbrella";
             }
         } else if (temp < highMap.get("scarf") || weather.getWindSpeed() > 20) {
-            if (ownedMap.get("scarf") > 0) {
+            if (hasClean("scarf", ownedMap, dirtyMap)) {
                 accessoryRecommendation = "scarf";
             }
         }
@@ -563,19 +628,65 @@ public class UserService {
                       accessoryRecommendation, outwearRecommendation);  
     }
 
+    public void giveFeedback(int currId, String body) throws LocationService.LocationServiceException, UserServiceException {
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(body).getAsJsonObject();
+        // grab recommendation
+        String top = obj.get("top").getAsString();
+        String pants = obj.get("pants").getAsString();
+        String footwear = obj.get("footwear").getAsString();
+        String accessory = obj.get("accessory").getAsString();
+        String outerwear = obj.get("outerwear").getAsString();
+        // get adjustment value
+        double adjustment = obj.get("adjustment").getAsDouble();
+        // now fetch the weather for the day
+        Location currLocation = LocationService.getLocation(currId);
+        Weather currWeather = new Weather(currLocation.getLatitude(), currLocation.getLongitude());
+        // now store the daySummary
+        try (Connection conn = db.open()) {
+            String summaryUpdate = "INSERT INTO day_summaries (day_summary_id, user_id, max_temp, max_apparent_temp, top, pants, footwear, accessory, outerwear)" + "VALUES (:daySummaryId, :userId, :maxTemp, :maxApparentTemp, :top, :pants, :footwear, :accessory, :outerwear)";
+            conn.createQuery(summaryUpdate)
+                    .addColumnMapping("day_summary_id", "daySummaryId")
+                    .addColumnMapping("user_id", "userId")
+                    .addColumnMapping("max_temp", "maxTemp")
+                    .addColumnMapping("max_apparent_temp", "maxApparentTemp")
+                    .addColumnMapping("top", "top")
+                    .addColumnMapping("pants", "pants")
+                    .addColumnMapping("footwear", "footwear")
+                    .addColumnMapping("accessory", "accessory")
+                    .addColumnMapping("outerwear", "outerwear")
+                    .addParameter("daySummaryId", dayCounter++)
+                    .addParameter("userId", currId)
+                    .addParameter("maxTemp", currWeather.getMaxTemp() + adjustment)
+                    .addParameter("maxApparentTemp", currWeather.getMaxApparentTemp() + adjustment)
+                    .addParameter("top", top)
+                    .addParameter("pants", pants)
+                    .addParameter("footwear", footwear)
+                    .addParameter("accessory", accessory)
+                    .addParameter("outerwear", outerwear)
+                    .executeUpdate();
+        } catch (Sql2oException ex) {
+            logger.error("UserService.giveFeedback: Failed to add day_summmary");
+            throw new UserServiceException("UserService.giveFeedback: Failed to add day_summary", ex);
+        }
+        // fetch recommendation
+        // adjustment value
+    }
     //-----------------------------------------------------------------------------//
     // Helper Classes and Methods
     //-----------------------------------------------------------------------------//
     
     public boolean hasClean(Clothes item, HashMap<Clothes, Integer> ownedMap,
                 HashMap<Clothes, Integer> dirtyMap) {
-        return ownedMap.get(item) - dirtyMap.get(item) > 0;
+        if (item.getSpecificType().equals("NONE")) return true;
+        return (ownedMap.get(item) - dirtyMap.get(item)) > 0;
     }
 
     public boolean hasClean(String item, HashMap<Clothes, Integer> ownedMap,
                 HashMap<Clothes, Integer> dirtyMap) {
-    Clothes dummy = new Clothes(item);
-        return ownedMap.get(dummy) - dirtyMap.get(dummy) > 0;
+        if (item.equals("NONE")) return true;
+        Clothes dummy = new Clothes(item);
+        return (ownedMap.get(dummy) - dirtyMap.get(dummy)) > 0;
     }
 
     public boolean hasOutfit(Recommendation outfit, HashMap<Clothes, Integer> ownedMap, HashMap<Clothes, Integer> dirtyMap) {
