@@ -1,1 +1,8 @@
-# 2016-group-5
+# Dress Me
+
+## Vision Statement <a name="vision"></a>
+For many students and even adults, deciding on what to wear each day encompasses a lot of factors and an innate judgment that may not always be accurate or consistent. Whether it is the weather, schedule, or other factors, it is often easier to rely on information that suggests the type of clothing that would be appropriate for the day rather than collecting that data from multiple sources and then making that judgment decision yourself.
+
+This is problematic pain point as this decision requires multiple sources of data. Often times, one has to search multiple weather apps to find out weather data for not just that moment, but also throughout the day. Sometimes, one then also has to take into consideration such factors as an interview later that day, athletic gear for sports, etc. We found that many people find this decision making process cumbersome and making this decision inaccurate and inefficient.
+
+Our goal for this mobile application is to streamline this daily decision-making process. We aim to create a system that will use weather information (and possibly other factors as an extended feature) to help suggest a type of outfit and clothing needs for the day, which the user can choose to accept or ask for a new suggestion. At the end of the day, a brief request for feedback will be used to determine how suitable the suggestion was. Over time, our application will use this data and cognitive analytics to learn the user’s preferences and needs and develop a more accurate suggestion system for the optimal clothing combinations for our users.
